@@ -1,6 +1,18 @@
 // Grace Encounters — Prisma schema
 // Phase 0: Profile + Role only. Future models are reserved as TODO comments
 // below and will be introduced incrementally in later phases.
+//
+// TODO Phase 1: the seam between Supabase Auth and this schema is NOT enforced
+// in code yet. The following plumbing must land in `supabase/migrations/0000_init.sql`
+// before any sign-up flow ships (see `supabase/README.md` for the full
+// migration text):
+//   * FK from public.profiles.id to auth.users(id) on delete cascade
+//   * `on_auth_user_created` trigger that inserts the profile row
+//   * `on_auth_user_updated` trigger that mirrors email changes (the
+//     `email String @unique` column below is a cached mirror of auth.users.email)
+//   * RLS enabled on public.profiles plus owner-scoped read/update policies
+// Without these, the first sign-up produces an auth.users row with no
+// matching profile and every role helper silently resolves to false.
 
 generator client {
   provider = "prisma-client-js"

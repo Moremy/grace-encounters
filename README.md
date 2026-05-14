@@ -33,7 +33,10 @@ cp .env.example .env.local
 # fill in Supabase + database values
 pnpm prisma generate
 pnpm prisma migrate dev
-pnpm db:seed   # optional, requires SEED_ADMIN_EMAIL + SEED_ADMIN_ID
+# Optional: seed a launch admin. Requires SEED_ADMIN_EMAIL + SEED_ADMIN_ID.
+# Create the launch admin in the Supabase Auth dashboard first, then copy
+# that user's UUID into SEED_ADMIN_ID before running the seed script.
+pnpm db:seed
 pnpm dev
 ```
 
@@ -95,6 +98,13 @@ This repository is Phase 0: the scaffolding pass. Subsequent phases build on top
 - Phase 4: Prayer wall and intercession
 - Phase 5: Devotionals and series
 - Phase 6: Admin tooling and audit log
+
+> Note on Phase 0 commits: two of the eleven scaffolding commits carry slightly
+> off subjects relative to their diffs (the design tokens shipped with the
+> App Router scaffold rather than the later UI-primitives commit, and the route
+> group placeholders shipped before the auth helpers commit named them). The
+> content is complete and history was preserved as-is. See the v1 review notes
+> in `.agents/tasks/task-phase-0-scaffold/` for the audit trail.
 
 ## Contributing
 
