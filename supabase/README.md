@@ -1,130 +1,93 @@
-# Supabase Phase 1 backlog
+# Supabase migrations and SQL-Editor-first workflow
 
-Phase 0 ships the `Profile` table and the `@supabase/ssr` client triplet, but the
-mechanism that keeps `auth.users` and `public.profiles` in lockstep at runtime
-is intentionally deferred to Phase 1. This file is the audit trail so the next
-phase does not silently miss it.
+Phase 0 deferred all schema changes; Phase 1 introduces them via paste-ready
+SQL files committed under `supabase/migrations/`. Until pooler and direct-URL
+connectivity from local machines is reliable, those SQL files are the source
+of truth for the database schema. Prisma stays in sync as a typed client,
+generated offline from `prisma/schema.prisma`.
 
-## TODO Phase 1: SQL migration for `public.profiles`
+## Why SQL Editor first
 
-Add `supabase/migrations/0000_init.sql` (committed, formatted, idempotent
-where reasonable) covering all of the following. Today none of it is wired up
-in the repository.
+`pnpm prisma migrate dev` and `pnpm db:push` hang against the Supabase pooler
+on some networks, which blocks local development end to end. The repo
+therefore ships hand-authored, idempotent SQL files that paste cleanly into
+the Supabase SQL Editor. `prisma/schema.prisma` mirrors those files exactly,
+and `pnpm prisma generate` produces the typed `@prisma/client` from the
+schema alone (no DB connection required). When pooler or direct-URL
+connectivity is restored, `prisma db pull` and `prisma migrate diff`
+reconcile the two sides; until then, the SQL files are authoritative for the
+database and the schema file is authoritative for the application's types.
 
-### 1. Foreign key from `profiles` to `auth.users`
+## How to apply migrations
 
-`prisma/schema.prisma` documents that `Profile.id String @id @db.Uuid` mirrors
-`auth.users.id`, but Prisma cannot express the FK across schemas. Add it in
-SQL:
+1. Open the Supabase Dashboard for your project and choose `SQL Editor`.
+2. Open `supabase/migrations/0001_init_profiles.sql` in your editor of
+   choice, copy the entire file, paste it into a new query in the Supabase
+   SQL Editor, and run.
+3. Verify with the queries at the bottom of the file (the `-- Verification:`
+   block). You should see the profiles policies and the `on_auth_user_created`
+   and `on_auth_user_updated` triggers listed.
+4. Repeat for `supabase/migrations/0002_testimonies.sql` and then
+   `supabase/migrations/0003_audit_log.sql`. Each file is idempotent and safe
+   to re-run; if a previous attempt partially succeeded, re-running it is the
+   correct recovery.
+5. `supabase/migrations/0004_seed_admin.sql` is documentation, not auto-applied.
+   To promote a launch admin, run the `select id, email, ... from auth.users`
+   helper at the top, copy the chosen UUID into the parameterized
+   `update public.profiles set role = 'ADMIN' ...` statement, and run only
+   that line.
 
-```sql
-alter table public.profiles
-  add constraint profiles_id_fkey
-  foreign key (id) references auth.users(id)
-  on delete cascade;
-```
+## Keeping Prisma in sync
 
-### 2. `on_auth_user_created` trigger
+- After pulling the branch, run `pnpm prisma generate` to refresh
+  `@prisma/client` from `prisma/schema.prisma`. No DB connection is needed.
+- When pooler or direct-URL connectivity is restored, run `pnpm prisma db pull`
+  to re-derive the schema from the live database. The result should match
+  `prisma/schema.prisma`; if it does not, the SQL files drifted and must be
+  updated to converge.
+- `prisma migrate diff` (with the appropriate `--from-*` and `--to-*` flags)
+  is the long-term way to detect drift between SQL and schema. Phase 1 does
+  not adopt it as part of CI.
 
-Without this, the first sign-up creates an `auth.users` row with no matching
-`profiles` row. Every `prisma.profile.findUnique({ where: { id: user.id } })`
-returns `null`, and every role helper resolves to `false`.
-
-```sql
-create or replace function public.handle_new_auth_user()
-returns trigger
-language plpgsql
-security definer
-set search_path = public
-as $$
-begin
-  insert into public.profiles (id, email, "createdAt", "updatedAt")
-  values (new.id, new.email, now(), now())
-  on conflict (id) do nothing;
-  return new;
-end;
-$$;
-
-drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute function public.handle_new_auth_user();
-```
-
-### 3. Email sync trigger
-
-`prisma/schema.prisma` makes `email String @unique` on `Profile` while
-documenting that the canonical email lives in Supabase `auth.users`. If a user
-updates their email in Supabase, `profiles.email` drifts. The Phase 1
-migration must add an `on_auth_user_updated` trigger that mirrors email
-changes back into `public.profiles`, or mark the column as derived/cached.
+## Promoting an admin
 
 ```sql
-create or replace function public.handle_auth_user_email_change()
-returns trigger
-language plpgsql
-security definer
-set search_path = public
-as $$
-begin
-  if new.email is distinct from old.email then
-    update public.profiles
-       set email = new.email,
-           "updatedAt" = now()
-     where id = new.id;
-  end if;
-  return new;
-end;
-$$;
+select id, email, created_at from auth.users order by created_at desc limit 5;
 
-drop trigger if exists on_auth_user_updated on auth.users;
-create trigger on_auth_user_updated
-  after update of email on auth.users
-  for each row execute function public.handle_auth_user_email_change();
+update public.profiles
+   set role = 'ADMIN',
+       "updatedAt" = now()
+ where id = '00000000-0000-0000-0000-000000000000'; -- replace with the chosen UUID
 ```
 
-### 4. RLS policy stub
+The same one-liner lives at the bottom of
+`supabase/migrations/0004_seed_admin.sql` for copy/paste convenience.
 
-Phase 0 leaves RLS off; that is fine for an empty schema but unsafe the moment
-any user-owned data lands. The Phase 1 migration must:
+## Drift policy
 
-```sql
-alter table public.profiles enable row level security;
+New tables or columns are added in a NEW numbered SQL file under
+`supabase/migrations/` AND mirrored in `prisma/schema.prisma` in the same
+commit. Never edit a migration that has already been applied to a shared
+environment; create a new one and let it run idempotently. The
+`prisma/schema.prisma` file remains the typed surface for the application,
+and the SQL files remain authoritative for the database.
 
--- TODO Phase 2: tighten. This is a permissive baseline that lets any signed-in
--- user read their own row and update non-privileged columns. Admin reads/writes
--- happen through service-role server code, not RLS.
-create policy "Profiles are readable by their owner"
-  on public.profiles for select
-  using (auth.uid() = id);
+## RLS posture and DATABASE_URL roles
 
-create policy "Profiles are updatable by their owner"
-  on public.profiles for update
-  using (auth.uid() = id)
-  with check (auth.uid() = id);
-```
+- The `@supabase/ssr` clients (browser, server, middleware) hit the database
+  through PostgREST with the requester's JWT, so they are governed by RLS.
+  Anonymous reads of testimonies are limited by the `testimonies_public_read`
+  policy to approved + published rows; authors and moderators see more via
+  their own policies.
+- The Prisma client uses `DATABASE_URL`, which on Supabase typically resolves
+  to the `postgres` superuser role through the pooler. That role bypasses
+  RLS by design. Server actions therefore enforce authorization in
+  TypeScript via `requireRole` (`src/lib/auth/require-role.ts`); the SQL RLS
+  policies are the second line of defense for any path that ever reaches the
+  database via the `@supabase/ssr` clients.
+- Future work (post Phase 1): switch Prisma to the `service_role` connection
+  string for explicit intent, or move read-only paths onto an
+  `authenticator`/RLS-respecting connection. Recorded here so the next
+  engineer does not have to rediscover the trade-off.
 
-The role column must NOT be self-updatable; either move privilege escalation
-behind a server-only RPC or add a column-level policy in the same migration.
-
-## TODO Phase 1: helpers and hooks
-
-These were called out in the v1 review as "silent omissions" that will save
-Phase 1 friction:
-
-- `src/lib/supabase/use-supabase.ts` (or `use-supabase-client.ts`): a tiny
-  `'use client'` hook that memoizes `createClient()` so consumers do not
-  rebuild the browser client on every render.
-- `src/lib/auth/get-current-profile.ts`: a typed server helper that joins
-  `supabase.auth.getUser()` to `prisma.profile.findUnique` and returns
-  `Profile | null`. Every Phase 1 RSC will need it.
-- `prisma/migrations/`: committed (even initially empty after the first
-  `prisma migrate dev`) so new contributors do not run a bare schema push by
-  accident.
-
-## TODO Phase 1: layout consumes the validated env
-
-`src/app/layout.tsx` currently reads `process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'`,
-duplicating the default that already lives in `src/lib/env.ts`. Once the env
-loader is consumed beyond fail-fast validation, swap the metadataBase to read
-`env.NEXT_PUBLIC_SITE_URL` directly so the default lives in one place.
+_See [docs/PRODUCT_PLAN.md](../docs/PRODUCT_PLAN.md) for module roadmap and phase prioritization._
