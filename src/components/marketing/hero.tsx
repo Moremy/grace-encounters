@@ -1,7 +1,7 @@
 import * as React from 'react';
+import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
-import { Reveal } from '@/components/brand/reveal';
 
 export function Hero() {
   return (
@@ -11,7 +11,15 @@ export function Hero() {
         className="gradient-radial-gold pointer-events-none absolute inset-0"
       />
       <div className="relative max-w-3xl mx-auto px-6 py-32 text-center">
-        <Reveal>
+        {/*
+         * Hero content uses a CSS-driven `animate-fade-up` (defined in
+         * tailwind.config.ts) instead of the `<Reveal>` Framer primitive so
+         * the H1 and CTAs paint with the SSR markup. `<Reveal>` initial-states
+         * content at opacity 0 until JS hydrates and IntersectionObserver
+         * fires, which leaves the hero blank for SSR snapshots, no-JS
+         * visitors, and Lighthouse LCP measurements.
+         */}
+        <div className="motion-safe:animate-fade-up">
           <p className="text-xs uppercase tracking-widest text-muted-foreground">
             Grace Encounters
           </p>
@@ -22,11 +30,11 @@ export function Hero() {
             Real encounters with Jesus. Shared in reverence. Held in prayer.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-3">
-            <Button variant="sacred" size="lg">
-              Share Your Testimony
+            <Button variant="sacred" size="lg" asChild>
+              <Link href="#share">Share Your Testimony</Link>
             </Button>
-            <Button variant="outline" size="lg">
-              Read Testimonies
+            <Button variant="outline" size="lg" asChild>
+              <Link href="#testimonies">Read Testimonies</Link>
             </Button>
           </div>
           <div className="mt-14 text-muted-foreground">
@@ -35,7 +43,7 @@ export function Hero() {
             </p>
             <p className="mt-2 font-serif text-sm">— Revelation 12:11</p>
           </div>
-        </Reveal>
+        </div>
       </div>
     </section>
   );

@@ -2,6 +2,7 @@ import * as React from 'react';
 import Link from 'next/link';
 
 import { Wordmark } from '@/components/brand/wordmark';
+import { CurrentYear } from '@/components/layout/current-year';
 
 type FooterColumn = {
   heading: string;
@@ -78,7 +79,7 @@ export function SiteFooter() {
             Submitted testimonies are reviewed before publishing.
           </p>
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Grace Encounters.
+            © <CurrentYear /> Grace Encounters.
           </p>
         </div>
       </div>

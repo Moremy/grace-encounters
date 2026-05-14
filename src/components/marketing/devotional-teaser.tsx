@@ -10,22 +10,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { TodayDate } from '@/components/marketing/today-date';
 
 export function DevotionalTeaser() {
-  const today = new Date().toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-  });
-
   return (
     <section className="py-24">
       <div className="max-w-6xl mx-auto px-6">
         <Card className="max-w-3xl mx-auto">
           <CardHeader>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">
-              {today}
-            </p>
+            <TodayDate className="text-xs uppercase tracking-widest text-muted-foreground" />
             <CardTitle className="mt-3 font-serif text-3xl md:text-4xl text-navy">
               Be still, and know that I am God.
             </CardTitle>

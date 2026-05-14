@@ -1,39 +1,29 @@
-'use client';
-
 import * as React from 'react';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 import { Wordmark } from '@/components/brand/wordmark';
-import { cn } from '@/lib/utils';
+import { ScrollAwareShell } from '@/components/layout/scroll-aware-shell';
 
 const navLinks: { label: string; href: string }[] = [
-  { label: 'Testimonies', href: '#' },
-  { label: 'Prayer Wall', href: '#' },
-  { label: 'Devotionals', href: '#' },
-  { label: 'About', href: '#' },
+  { label: 'Testimonies', href: '#testimonies' },
+  { label: 'Prayer Wall', href: '#prayer-wall' },
+  { label: 'Devotionals', href: '#devotionals' },
+  { label: 'About', href: '#about' },
 ];
 
+/**
+ * Server-rendered marketing header. The only piece that needs the browser
+ * is the scroll-driven backdrop blur, which is isolated in
+ * `<ScrollAwareShell>` so the wordmark, nav links, and CTA ship as static
+ * markup.
+ */
 export function SiteHeader() {
-  const [scrolled, setScrolled] = React.useState(false);
-
-  React.useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.scrollY > 8);
-    };
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
   return (
-    <header
-      className={cn(
-        'sticky top-0 z-40 w-full transition-colors duration-300',
-        scrolled
-          ? 'backdrop-blur-md bg-ivory/70 border-b border-border/50'
-          : 'bg-transparent',
-      )}
+    <ScrollAwareShell
+      className="sticky top-0 z-40 w-full transition-colors duration-300"
+      baseClassName="bg-transparent"
+      scrolledClassName="backdrop-blur-md bg-ivory/70 border-b border-border/50"
     >
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link href="/" aria-label="Grace Encounters home" className="flex items-center">
@@ -54,6 +44,6 @@ export function SiteHeader() {
           <Link href="#share">Share Your Story</Link>
         </Button>
       </div>
-    </header>
+    </ScrollAwareShell>
   );
 }
