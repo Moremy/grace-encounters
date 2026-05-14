@@ -1,0 +1,51 @@
+// Grace Encounters — Prisma schema
+// Phase 0: Profile + Role only. Future models are reserved as TODO comments
+// below and will be introduced incrementally in later phases.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  USER
+  MODERATOR
+  ADMIN
+}
+
+model Profile {
+  // The Profile.id is the same UUID as Supabase auth.users.id. We mirror
+  // Supabase's auth user into this row so app data can FK to a stable id
+  // without joining across schemas.
+  id          String   @id @db.Uuid
+  email       String   @unique
+  displayName String?
+  avatarUrl   String?
+  role        Role     @default(USER)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([role])
+  @@map("profiles")
+}
+
+// ---------------------------------------------------------------------------
+// TODO: Phase 3+ — reserved model names. Do NOT define these yet; they are
+// listed here so naming stays consistent as features land.
+// ---------------------------------------------------------------------------
+// TODO: Phase 3+ Testimony            — user-submitted stories of encounters with Jesus.
+// TODO: Phase 3+ TestimonyReaction    — lightweight reactions (amen/pray/etc.) on a Testimony.
+// TODO: Phase 3+ Comment              — threaded comments on testimonies and devotionals.
+// TODO: Phase 3+ PrayerRequest        — prayer requests submitted by users (public or private).
+// TODO: Phase 3+ PrayerIntercession   — record of a user interceding/praying for a request.
+// TODO: Phase 3+ Devotional           — a single devotional reading entry.
+// TODO: Phase 3+ DevotionalSeries     — an ordered collection of Devotional entries.
+// TODO: Phase 3+ AgendaEntry          — scheduled items on the editorial/publishing agenda.
+// TODO: Phase 3+ Notification         — per-user notifications (mentions, replies, prayers).
+// TODO: Phase 3+ Report               — user-submitted reports for moderation review.
+// TODO: Phase 3+ AuditLog             — admin/moderator action audit trail.
