@@ -1,18 +1,17 @@
-// Grace Encounters — Prisma schema
+// Grace Encounters - Prisma schema
 // Phase 0: Profile + Role only. Future models are reserved as TODO comments
 // below and will be introduced incrementally in later phases.
 //
-// TODO Phase 1: the seam between Supabase Auth and this schema is NOT enforced
-// in code yet. The following plumbing must land in `supabase/migrations/0000_init.sql`
-// before any sign-up flow ships (see `supabase/README.md` for the full
-// migration text):
-//   * FK from public.profiles.id to auth.users(id) on delete cascade
-//   * `on_auth_user_created` trigger that inserts the profile row
-//   * `on_auth_user_updated` trigger that mirrors email changes (the
-//     `email String @unique` column below is a cached mirror of auth.users.email)
-//   * RLS enabled on public.profiles plus owner-scoped read/update policies
-// Without these, the first sign-up produces an auth.users row with no
-// matching profile and every role helper silently resolves to false.
+// Phase 1 IMPLEMENTED in supabase/migrations/0001_init_profiles.sql, 0002_testimonies.sql, 0003_audit_log.sql.
+// The Supabase-Auth-to-app seam below is now enforced by SQL. Audit trail:
+//   * FK from public.profiles.id to auth.users(id) on delete cascade - added in 0001_init_profiles.sql
+//   * `on_auth_user_created` trigger that inserts the profile row - added in 0001_init_profiles.sql
+//   * `on_auth_user_updated` trigger that mirrors email changes (the `email String @unique`
+//     column below is a cached mirror of auth.users.email) - added in 0001_init_profiles.sql
+//   * RLS enabled on public.profiles plus owner-scoped read/update policies - added in 0001_init_profiles.sql
+//   * `public.is_admin` and `public.is_moderator` security-definer helpers - added in 0001_init_profiles.sql
+//   * Testimony domain (testimonies table, btree+GIN indexes, publish guard trigger, RLS) - added in 0002_testimonies.sql
+//   * Moderation audit log (audit_log table, admin-only read RLS) - added in 0003_audit_log.sql
 
 generator client {
   provider = "prisma-client-js"
@@ -24,11 +23,11 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-enum Role {
-  USER
-  MODERATOR
-  ADMIN
-}
+// Role is stored as text with a SQL CHECK constraint
+// (see supabase/migrations/0001_init_profiles.sql). Kept as String here to
+// keep the SQL-Editor migration flow free of Postgres-enum coordination.
+// The TypeScript Role union lives in src/lib/auth/roles.ts; the adapter is
+// fromPrismaRole.
 
 model Profile {
   // The Profile.id is the same UUID as Supabase auth.users.id. We mirror
@@ -38,26 +37,73 @@ model Profile {
   email       String   @unique
   displayName String?
   avatarUrl   String?
-  role        Role     @default(USER)
+  role        String   @default("USER") // CHECK: USER|MODERATOR|ADMIN (enforced in SQL)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  testimonies         Testimony[] @relation("TestimonyAuthor")
+  reviewedTestimonies Testimony[] @relation("TestimonyReviewer")
+  auditEntries        AuditLog[]  @relation("AuditLogActor")
 
   @@index([role])
   @@map("profiles")
 }
 
+model Testimony {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  authorId        String?  @db.Uuid
+  title           String
+  slug            String?  @unique
+  category        String   // CHECK: salvation|healing|deliverance|provision|restoration|miracle|answered_prayer|other (SQL)
+  body            String
+  scriptureRefs   String[]
+  coverImageUrl   String?
+  isAnonymous     Boolean  @default(false)
+  status          String   @default("submitted") // CHECK: draft|submitted|in_review|needs_revision|approved|rejected (SQL)
+  isPublished     Boolean  @default(false)
+  isFeatured      Boolean  @default(false)
+  reviewedById    String?  @db.Uuid
+  reviewedAt      DateTime?
+  reviewNote      String?
+  publishedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  author          Profile? @relation("TestimonyAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  reviewer        Profile? @relation("TestimonyReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([isPublished, publishedAt(sort: Desc)])
+  @@index([category])
+  @@map("testimonies")
+}
+
+model AuditLog {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  actorId     String?  @db.Uuid
+  action      String
+  targetType  String
+  targetId    String   @db.Uuid
+  metadata    Json     @default("{}")
+  createdAt   DateTime @default(now())
+
+  actor       Profile? @relation("AuditLogActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([targetType, targetId])
+  @@index([actorId, createdAt(sort: Desc)])
+  @@map("audit_log")
+}
+
 // ---------------------------------------------------------------------------
-// TODO: Phase 3+ — reserved model names. Do NOT define these yet; they are
+// TODO: Phase 3+ - reserved model names. Do NOT define these yet; they are
 // listed here so naming stays consistent as features land.
 // ---------------------------------------------------------------------------
-// TODO: Phase 3+ Testimony            — user-submitted stories of encounters with Jesus.
-// TODO: Phase 3+ TestimonyReaction    — lightweight reactions (amen/pray/etc.) on a Testimony.
-// TODO: Phase 3+ Comment              — threaded comments on testimonies and devotionals.
-// TODO: Phase 3+ PrayerRequest        — prayer requests submitted by users (public or private).
-// TODO: Phase 3+ PrayerIntercession   — record of a user interceding/praying for a request.
-// TODO: Phase 3+ Devotional           — a single devotional reading entry.
-// TODO: Phase 3+ DevotionalSeries     — an ordered collection of Devotional entries.
-// TODO: Phase 3+ AgendaEntry          — scheduled items on the editorial/publishing agenda.
-// TODO: Phase 3+ Notification         — per-user notifications (mentions, replies, prayers).
-// TODO: Phase 3+ Report               — user-submitted reports for moderation review.
-// TODO: Phase 3+ AuditLog             — admin/moderator action audit trail.
+// TODO: Phase 3+ TestimonyReaction    - lightweight reactions (amen/pray/etc.) on a Testimony.
+// TODO: Phase 3+ Comment              - threaded comments on testimonies and devotionals.
+// TODO: Phase 3+ PrayerRequest        - prayer requests submitted by users (public or private).
+// TODO: Phase 3+ PrayerIntercession   - record of a user interceding/praying for a request.
+// TODO: Phase 3+ Devotional           - a single devotional reading entry.
+// TODO: Phase 3+ DevotionalSeries     - an ordered collection of Devotional entries.
+// TODO: Phase 3+ AgendaEntry          - scheduled items on the editorial/publishing agenda.
+// TODO: Phase 3+ Notification         - per-user notifications (mentions, replies, prayers).
+// TODO: Phase 3+ Report               - user-submitted reports for moderation review.
