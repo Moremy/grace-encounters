@@ -99,6 +99,8 @@ This repository is Phase 0: the scaffolding pass. Subsequent phases build on top
 - Phase 5: Devotionals and series
 - Phase 6: Admin tooling and audit log
 
+For the full module roadmap and phase prioritization, see [docs/PRODUCT_PLAN.md](./docs/PRODUCT_PLAN.md).
+
 > Note on Phase 0 commits: two of the eleven scaffolding commits carry slightly
 > off subjects relative to their diffs (the design tokens shipped with the
 > App Router scaffold rather than the later UI-primitives commit, and the route
