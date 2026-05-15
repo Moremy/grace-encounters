@@ -60,6 +60,18 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Protected prayer wall routes: /prayer-wall/new and /prayer-wall/mine
+  // If no user, redirect to sign-in
+  if (
+    (pathname.startsWith('/prayer-wall/new') ||
+      pathname.startsWith('/prayer-wall/mine')) &&
+    !user
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/sign-in';
+    return NextResponse.redirect(url);
+  }
+
   // Protected admin routes: /admin/*
   // If no user, redirect to sign-in
   // If user but not admin/moderator, redirect to dashboard

@@ -6,6 +6,7 @@ import {
   Users,
   Sun,
   Settings,
+  HandHeart,
 } from 'lucide-react';
 
 import { Wordmark } from '@/components/brand/wordmark';
@@ -15,6 +16,7 @@ import { cn } from '@/lib/utils';
 const adminNavItems = [
   { label: 'Overview', href: '/admin', icon: LayoutDashboard },
   { label: 'Pending Reviews', href: '/admin/reviews', icon: ClipboardCheck },
+  { label: 'Prayer Requests', href: '/admin/prayers', icon: HandHeart },
   { label: 'Users', href: '/admin/users', icon: Users },
   { label: 'Devotionals', href: '/admin/devotionals', icon: Sun },
   { label: 'Settings', href: '/admin/settings', icon: Settings },
