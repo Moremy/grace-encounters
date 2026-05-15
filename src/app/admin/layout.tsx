@@ -19,6 +19,7 @@ const adminNavItems = [
   { label: 'Prayer Requests', href: '/admin/prayers', icon: HandHeart },
   { label: 'Users', href: '/admin/users', icon: Users },
   { label: 'Devotionals', href: '/admin/devotionals', icon: Sun },
+  { label: 'Community', href: '/admin/community', icon: Users },
   { label: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
