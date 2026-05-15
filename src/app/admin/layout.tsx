@@ -8,6 +8,7 @@ import {
   Settings,
   HandHeart,
   Calendar,
+  PenLine,
 } from 'lucide-react';
 
 import { Wordmark } from '@/components/brand/wordmark';
@@ -22,6 +23,7 @@ const adminNavItems = [
   { label: 'Devotionals', href: '/admin/devotionals', icon: Sun },
   { label: 'Community', href: '/admin/community', icon: Users },
   { label: 'Events', href: '/admin/events', icon: Calendar },
+  { label: 'Blog', href: '/admin/blog', icon: PenLine },
   { label: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
