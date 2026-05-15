@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/lib/prisma';
 import { canModerate, fromPrismaRole } from '@/lib/auth/roles';
+import { createNotification } from '@/lib/notification/actions';
 
 const VALID_STATUSES = [
   'PENDING',
@@ -193,7 +194,7 @@ export async function prayForRequest(prayerRequestId: string) {
   }
 
   // Use a transaction for atomicity: upsert intercession + increment count
-  await prisma.$transaction(async (tx) => {
+  const isNew = await prisma.$transaction(async (tx) => {
     const existing = await tx.prayerIntercession.findUnique({
       where: {
         prayerRequestId_userId: {
@@ -209,7 +210,7 @@ export async function prayForRequest(prayerRequestId: string) {
         where: { id: existing.id },
         data: { createdAt: new Date() },
       });
-      return;
+      return false;
     }
 
     await tx.prayerIntercession.create({
@@ -223,7 +224,24 @@ export async function prayForRequest(prayerRequestId: string) {
       where: { id: prayerRequestId },
       data: { prayerCount: { increment: 1 } },
     });
+
+    return true;
   });
+
+  // Notify the prayer request author (only for new intercessions, not self)
+  if (isNew && prayerRequest.authorId !== user.id) {
+    try {
+      await createNotification(
+        prayerRequest.authorId,
+        'PRAYER_REPLY',
+        'Someone prayed for you',
+        'A member of Light and Salt has interceded for your prayer request.',
+        '/prayer-wall',
+      );
+    } catch {
+      // Notifications are non-critical
+    }
+  }
 
   revalidatePath('/prayer-wall');
 }

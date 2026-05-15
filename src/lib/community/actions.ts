@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/lib/prisma';
 import { canModerate, fromPrismaRole } from '@/lib/auth/roles';
 import { slugify } from './utils';
+import { createNotification } from '@/lib/notification/actions';
 
 const VALID_CATEGORIES = [
   'PRAYER',
@@ -301,6 +302,29 @@ export async function createDiscussionReply(formData: FormData) {
     });
   } catch {
     return;
+  }
+
+  // Notify the discussion author (if not self)
+  try {
+    const discussion = await prisma.groupDiscussion.findUnique({
+      where: { id: discussionId },
+      select: {
+        authorId: true,
+        group: { select: { slug: true } },
+      },
+    });
+
+    if (discussion && discussion.authorId !== user.id) {
+      await createNotification(
+        discussion.authorId,
+        'GENERAL',
+        'New reply on your discussion',
+        'Someone replied to your discussion in the community.',
+        `/community/${discussion.group.slug}`,
+      );
+    }
+  } catch {
+    // Notifications are non-critical
   }
 
   revalidatePath('/community');
