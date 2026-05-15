@@ -1,11 +1,9 @@
 import type { Metadata } from 'next';
 import { Info } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { createTestimony } from '@/lib/testimony/actions';
+import { TestimonyFormClient } from './testimony-form-client';
 
 export const metadata: Metadata = {
   title: 'Share a Testimony | Light and Salt',
@@ -53,49 +51,7 @@ export default function NewTestimonyPage({
           <CardTitle>Testimony Details</CardTitle>
         </CardHeader>
         <CardContent>
-          <form action={createTestimony} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
-              <Input
-                id="title"
-                name="title"
-                placeholder="e.g. How God Healed My Marriage"
-                required
-                minLength={5}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="excerpt">Short Summary</Label>
-              <textarea
-                id="excerpt"
-                name="excerpt"
-                placeholder="A brief summary of your testimony (10-200 characters)"
-                required
-                minLength={10}
-                maxLength={200}
-                rows={2}
-                className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="content">Full Testimony</Label>
-              <textarea
-                id="content"
-                name="content"
-                placeholder="Share the full story of what God has done..."
-                required
-                minLength={50}
-                rows={10}
-                className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              />
-            </div>
-
-            <Button type="submit" variant="sacred">
-              Submit Testimony
-            </Button>
-          </form>
+          <TestimonyFormClient action={createTestimony} />
         </CardContent>
       </Card>
     </div>

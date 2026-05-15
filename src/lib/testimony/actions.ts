@@ -2,11 +2,11 @@
 
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/lib/prisma';
 import { canModerate, fromPrismaRole } from '@/lib/auth/roles';
 import { slugify } from './utils';
+import { createTestimonySchema } from './schemas';
 
 const VALID_STATUSES = [
   'PENDING',
@@ -15,12 +15,6 @@ const VALID_STATUSES = [
   'REJECTED',
   'FEATURED',
 ] as const;
-
-const createTestimonySchema = z.object({
-  title: z.string().min(5, 'Title must be at least 5 characters').max(200, 'Title must be at most 200 characters'),
-  excerpt: z.string().min(10, 'Excerpt must be at least 10 characters').max(200, 'Excerpt must be at most 200 characters'),
-  content: z.string().min(50, 'Content must be at least 50 characters').max(10000, 'Content must be at most 10000 characters'),
-});
 
 export async function createTestimony(formData: FormData) {
   const supabase = await createClient();
@@ -33,13 +27,32 @@ export async function createTestimony(formData: FormData) {
   const title = formData.get('title') as string;
   const content = formData.get('content') as string;
   const excerpt = formData.get('excerpt') as string;
+  const mediaType = (formData.get('mediaType') as string) || 'TEXT';
+  const mediaUrl = (formData.get('mediaUrl') as string) || undefined;
+  const thumbnailUrl = (formData.get('thumbnailUrl') as string) || undefined;
+  const category = (formData.get('category') as string) || undefined;
+  const tagsRaw = (formData.get('tags') as string) || '';
 
-  const validation = createTestimonySchema.safeParse({ title, excerpt, content });
+  const validation = createTestimonySchema.safeParse({
+    title,
+    excerpt,
+    content,
+    mediaType,
+    mediaUrl,
+    thumbnailUrl,
+    category: category || undefined,
+    tags: tagsRaw,
+  });
 
   if (!validation.success) {
     const message = encodeURIComponent(validation.error.errors[0]?.message ?? 'Invalid input');
     redirect(`/testimonies/new?error=${message}`);
   }
+
+  // Parse tags from comma-separated string
+  const tags = tagsRaw
+    ? tagsRaw.split(',').map((t) => t.trim()).filter(Boolean)
+    : [];
 
   const slug = slugify(title);
 
@@ -52,6 +65,11 @@ export async function createTestimony(formData: FormData) {
         excerpt,
         authorId: user.id,
         status: 'PENDING',
+        mediaType: mediaType as 'TEXT' | 'PDF' | 'AUDIO' | 'VIDEO',
+        mediaUrl: mediaUrl || null,
+        thumbnailUrl: thumbnailUrl || null,
+        category: category as 'HEALING' | 'SALVATION' | 'DELIVERANCE' | 'PROVISION' | 'RESTORATION' | 'FAITH' | 'OTHER' | undefined,
+        tags,
       },
     });
   } catch (err: unknown) {
@@ -72,6 +90,11 @@ export async function createTestimony(formData: FormData) {
             excerpt,
             authorId: user.id,
             status: 'PENDING',
+            mediaType: mediaType as 'TEXT' | 'PDF' | 'AUDIO' | 'VIDEO',
+            mediaUrl: mediaUrl || null,
+            thumbnailUrl: thumbnailUrl || null,
+            category: category as 'HEALING' | 'SALVATION' | 'DELIVERANCE' | 'PROVISION' | 'RESTORATION' | 'FAITH' | 'OTHER' | undefined,
+            tags,
           },
         });
       } catch (retryErr: unknown) {
@@ -211,5 +234,66 @@ export async function getPendingTestimonies() {
       author: { select: { displayName: true } },
     },
     orderBy: { createdAt: 'asc' },
+  });
+}
+
+export async function getFeaturedTestimonies() {
+  return prisma.testimony.findMany({
+    where: {
+      OR: [{ status: 'FEATURED' }, { featured: true }],
+    },
+    include: {
+      author: { select: { displayName: true } },
+    },
+    orderBy: { publishedAt: 'desc' },
+    take: 10,
+  });
+}
+
+export async function getTestimoniesByCategory(category: string) {
+  return prisma.testimony.findMany({
+    where: {
+      status: { in: ['APPROVED', 'FEATURED'] },
+      category: category as 'HEALING' | 'SALVATION' | 'DELIVERANCE' | 'PROVISION' | 'RESTORATION' | 'FAITH' | 'OTHER',
+    },
+    include: {
+      author: { select: { displayName: true } },
+    },
+    orderBy: { publishedAt: 'desc' },
+  });
+}
+
+export async function searchTestimonies(query: string) {
+  return prisma.testimony.findMany({
+    where: {
+      status: { in: ['APPROVED', 'FEATURED'] },
+      title: { contains: query, mode: 'insensitive' },
+    },
+    include: {
+      author: { select: { displayName: true } },
+    },
+    orderBy: { publishedAt: 'desc' },
+  });
+}
+
+export async function getFilteredTestimonies(category?: string, mediaType?: string) {
+  const where: Record<string, unknown> = {
+    status: { in: ['APPROVED', 'FEATURED'] },
+  };
+
+  if (category) {
+    where.category = category;
+  }
+
+  if (mediaType) {
+    where.mediaType = mediaType;
+  }
+
+  return prisma.testimony.findMany({
+    where,
+    include: {
+      author: { select: { displayName: true } },
+    },
+    orderBy: { publishedAt: 'desc' },
   });
 }

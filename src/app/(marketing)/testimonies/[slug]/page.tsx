@@ -5,6 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/brand/reveal';
+import { MediaPlayer } from '@/components/testimony/media-player';
 import { getTestimonyBySlug } from '@/lib/testimony/actions';
 
 type Props = {
@@ -55,12 +56,40 @@ export default async function TestimonyDetailPage({ params }: Props) {
               })}
             </p>
           )}
+
+          {/* Category and Tags */}
+          <div className="mt-4 flex items-center justify-center gap-2 flex-wrap">
+            {testimony.category && (
+              <span className="rounded-full bg-gold/15 px-3 py-1 text-xs font-medium text-gold">
+                {testimony.category.charAt(0) + testimony.category.slice(1).toLowerCase()}
+              </span>
+            )}
+            {testimony.tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full bg-navy/5 px-3 py-1 text-xs text-navy/70"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
         </div>
       </section>
 
       <section className="bg-background py-24">
         <div className="max-w-3xl mx-auto px-6">
           <Reveal>
+            {/* Media Player */}
+            {testimony.mediaUrl && testimony.mediaType !== 'TEXT' && (
+              <div className="mb-10">
+                <MediaPlayer
+                  mediaType={testimony.mediaType as 'AUDIO' | 'VIDEO' | 'PDF'}
+                  mediaUrl={testimony.mediaUrl}
+                  title={testimony.title}
+                />
+              </div>
+            )}
+
             <div className="whitespace-pre-wrap text-muted-foreground leading-relaxed">
               {testimony.content}
             </div>

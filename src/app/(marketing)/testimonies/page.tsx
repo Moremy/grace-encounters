@@ -1,17 +1,11 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
-import { BookHeart } from 'lucide-react';
+import { Suspense } from 'react';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/brand/reveal';
-import { getApprovedTestimonies } from '@/lib/testimony/actions';
+import { TestimonyCard } from '@/components/testimony/testimony-card';
+import { FeaturedTestimonies } from '@/components/testimony/featured-testimonies';
+import { TestimonyFilters } from '@/components/testimony/testimony-filters';
+import { getFeaturedTestimonies, getFilteredTestimonies } from '@/lib/testimony/actions';
 
 export const metadata: Metadata = {
   title: 'Testimonies',
@@ -19,8 +13,20 @@ export const metadata: Metadata = {
     'Stories of grace, healing, and transformation from the Light and Salt community.',
 };
 
-export default async function TestimoniesPage() {
-  const testimonies = await getApprovedTestimonies();
+export default async function TestimoniesPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  const category =
+    typeof searchParams.category === 'string' ? searchParams.category : undefined;
+  const mediaType =
+    typeof searchParams.mediaType === 'string' ? searchParams.mediaType : undefined;
+
+  const [featured, testimonies] = await Promise.all([
+    getFeaturedTestimonies(),
+    getFilteredTestimonies(category, mediaType),
+  ]);
 
   return (
     <>
@@ -39,8 +45,18 @@ export default async function TestimoniesPage() {
         </div>
       </section>
 
+      {/* Featured Section */}
+      <FeaturedTestimonies testimonies={featured} />
+
       <section className="bg-background py-24">
         <div className="max-w-6xl mx-auto px-6">
+          {/* Filters */}
+          <div className="mb-8">
+            <Suspense fallback={null}>
+              <TestimonyFilters />
+            </Suspense>
+          </div>
+
           <Reveal>
             {testimonies.length === 0 ? (
               <div className="text-center py-16">
@@ -52,27 +68,7 @@ export default async function TestimoniesPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {testimonies.map((testimony) => (
-                  <Card key={testimony.id}>
-                    <CardHeader>
-                      <div className="h-10 w-10 rounded-full bg-gold/15 text-gold flex items-center justify-center">
-                        <BookHeart className="h-5 w-5" />
-                      </div>
-                      <CardDescription className="mt-4">
-                        {testimony.author.displayName}
-                      </CardDescription>
-                      <CardTitle>{testimony.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">
-                        {testimony.excerpt}
-                      </p>
-                      <Button variant="link" className="mt-4 px-0" asChild>
-                        <Link href={`/testimonies/${testimony.slug}`}>
-                          Read More
-                        </Link>
-                      </Button>
-                    </CardContent>
-                  </Card>
+                  <TestimonyCard key={testimony.id} testimony={testimony} />
                 ))}
               </div>
             )}

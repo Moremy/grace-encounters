@@ -9,6 +9,7 @@ import {
   HandHeart,
   Calendar,
   PenLine,
+  BookHeart,
 } from 'lucide-react';
 
 import { Wordmark } from '@/components/brand/wordmark';
@@ -18,6 +19,7 @@ import { cn } from '@/lib/utils';
 const adminNavItems = [
   { label: 'Overview', href: '/admin', icon: LayoutDashboard },
   { label: 'Pending Reviews', href: '/admin/reviews', icon: ClipboardCheck },
+  { label: 'Testimonies', href: '/admin/testimonies', icon: BookHeart },
   { label: 'Prayer Requests', href: '/admin/prayers', icon: HandHeart },
   { label: 'Users', href: '/admin/users', icon: Users },
   { label: 'Devotionals', href: '/admin/devotionals', icon: Sun },
