@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Link from 'next/link';
+import { Search } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Wordmark } from '@/components/brand/wordmark';
@@ -46,9 +47,16 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <Button variant="sacred" asChild className="hidden sm:inline-flex">
-          <Link href="#share">Share Your Story</Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" asChild className="hidden sm:inline-flex">
+            <Link href="/search" aria-label="Search">
+              <Search className="h-4 w-4" />
+            </Link>
+          </Button>
+          <Button variant="sacred" asChild className="hidden sm:inline-flex">
+            <Link href="#share">Share Your Story</Link>
+          </Button>
+        </div>
       </div>
     </ScrollAwareShell>
   );
