@@ -12,6 +12,7 @@ const navLinks: { label: string; href: string }[] = [
   { label: 'Events', href: '/events' },
   { label: 'Media', href: '/media' },
   { label: 'Community', href: '/community' },
+  { label: 'Donate', href: '/donate' },
 ];
 
 /**

@@ -13,6 +13,7 @@ import {
   Play,
   Headphones,
   Radio,
+  Heart,
 } from 'lucide-react';
 
 import { Wordmark } from '@/components/brand/wordmark';
@@ -30,6 +31,7 @@ const adminNavItems = [
   { label: 'Media', href: '/admin/media', icon: Play },
   { label: 'Sermons', href: '/admin/sermons', icon: Headphones },
   { label: 'Prayer Rooms', href: '/admin/prayer-rooms', icon: Radio },
+  { label: 'Donations', href: '/admin/donations', icon: Heart },
   { label: 'Events', href: '/admin/events', icon: Calendar },
   { label: 'Blog', href: '/admin/blog', icon: PenLine },
   { label: 'Settings', href: '/admin/settings', icon: Settings },
