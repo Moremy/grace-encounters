@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
 import { Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -11,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { createClient } from '@/lib/supabase/server';
 import { getMyTestimonies } from '@/lib/testimony/actions';
 
 export const metadata: Metadata = {
@@ -36,16 +34,7 @@ const statusLabels: Record<string, string> = {
 };
 
 export default async function MyTestimoniesPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect('/sign-in');
-  }
-
-  const testimonies = await getMyTestimonies(user.id);
+  const testimonies = await getMyTestimonies();
 
   return (
     <div className="space-y-8">
