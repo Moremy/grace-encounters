@@ -6,10 +6,11 @@ import { Wordmark } from '@/components/brand/wordmark';
 import { ScrollAwareShell } from '@/components/layout/scroll-aware-shell';
 
 const navLinks: { label: string; href: string }[] = [
-  { label: 'Testimonies', href: '#testimonies' },
-  { label: 'Prayer Wall', href: '#prayer-wall' },
-  { label: 'Devotionals', href: '#devotionals' },
-  { label: 'About', href: '#about' },
+  { label: 'Books', href: '/books' },
+  { label: 'Blog', href: '/blog' },
+  { label: 'Events', href: '/events' },
+  { label: 'Media', href: '/media' },
+  { label: 'Community', href: '/community' },
 ];
 
 /**
