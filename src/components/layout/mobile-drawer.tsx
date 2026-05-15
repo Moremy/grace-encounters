@@ -69,7 +69,7 @@ export function MobileDrawer() {
         type="button"
         aria-label="Open navigation menu"
         className={cn(
-          'md:hidden inline-flex items-center justify-center rounded-md p-2',
+          'inline-flex items-center justify-center rounded-md p-2',
           'text-navy hover:text-gold transition-colors',
         )}
         onClick={() => setIsOpen(true)}
@@ -112,7 +112,7 @@ export function MobileDrawer() {
         </div>
 
         {/* Navigation links */}
-        <nav aria-label="Mobile navigation" className="flex-1 overflow-y-auto px-6 py-4">
+        <nav aria-label="Navigation" className="flex-1 overflow-y-auto px-6 py-4">
           <ul className="space-y-0">
             {publicLinks.map((link, index) => (
               <li key={link.href}>

@@ -45,7 +45,7 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <Button variant="sacred" asChild className="hidden md:inline-flex">
+        <Button variant="sacred" asChild className="hidden sm:inline-flex">
           <Link href="#share">Share Your Story</Link>
         </Button>
       </div>
