@@ -30,6 +30,46 @@ enum Role {
   ADMIN
 }
 
+enum GroupCategory {
+  PRAYER
+  BIBLE_STUDY
+  WORSHIP
+  FELLOWSHIP
+  OUTREACH
+  YOUTH
+  WOMEN
+  MEN
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+}
+
+enum BlogCategory {
+  DEVOTIONAL_THOUGHT
+  FAITH_LIVING
+  TESTIMONY_REFLECTION
+  CHURCH_NEWS
+  MISSIONS
+  PRAYER
+}
+
+enum BlogArticleStatus {
+  DRAFT
+  PUBLISHED
+  SCHEDULED
+}
+
+enum NotificationType {
+  PRAYER_REPLY
+  TESTIMONY_APPROVED
+  GROUP_INVITATION
+  EVENT_REMINDER
+  GENERAL
+}
+
 model Profile {
   // The Profile.id is the same UUID as Supabase auth.users.id. We mirror
   // Supabase's auth user into this row so app data can FK to a stable id
@@ -38,6 +78,7 @@ model Profile {
   email       String   @unique
   displayName String?
   avatarUrl   String?
+  bio         String?
   role        Role     @default(USER)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -46,6 +87,12 @@ model Profile {
   prayerRequests    PrayerRequest[]      @relation("ProfilePrayerRequests")
   prayerIntercessions PrayerIntercession[] @relation("ProfilePrayerIntercessions")
   devotionals Devotional[]
+  communityGroupMembers CommunityGroupMember[]
+  groupDiscussions      GroupDiscussion[]
+  groupDiscussionReplies GroupDiscussionReply[]
+  events                Event[]
+  blogArticles          BlogArticle[]
+  notifications         Notification[]
 
   @@index([role])
   @@map("profiles")
@@ -164,13 +211,139 @@ model Devotional {
 }
 
 // ---------------------------------------------------------------------------
-// TODO: Phase 3+ — reserved model names. Do NOT define these yet; they are
-// listed here so naming stays consistent as features land.
+// Community Groups models
 // ---------------------------------------------------------------------------
-// TODO: Phase 3+ TestimonyReaction    — lightweight reactions (amen/pray/etc.) on a Testimony.
-// TODO: Phase 3+ Comment              — threaded comments on testimonies and devotionals.
-// TODO: Phase 3+ DevotionalSeries     — an ordered collection of Devotional entries.
-// TODO: Phase 3+ AgendaEntry          — scheduled items on the editorial/publishing agenda.
-// TODO: Phase 3+ Notification         — per-user notifications (mentions, replies, prayers).
-// TODO: Phase 3+ Report               — user-submitted reports for moderation review.
-// TODO: Phase 3+ AuditLog             — admin/moderator action audit trail.
+
+model CommunityGroup {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  name        String
+  description String
+  category    GroupCategory
+  imageUrl    String?
+  memberCount Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  members     CommunityGroupMember[]
+  discussions GroupDiscussion[]
+
+  @@map("community_groups")
+}
+
+model CommunityGroupMember {
+  id       String   @id @default(cuid())
+  groupId  String
+  userId   String   @db.Uuid
+  joinedAt DateTime @default(now())
+
+  group CommunityGroup @relation(fields: [groupId], references: [id])
+  user  Profile        @relation(fields: [userId], references: [id])
+
+  @@unique([groupId, userId])
+  @@map("community_group_members")
+}
+
+model GroupDiscussion {
+  id             String   @id @default(cuid())
+  groupId        String
+  authorId       String   @db.Uuid
+  title          String
+  content        String
+  isPrayerThread Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  group   CommunityGroup       @relation(fields: [groupId], references: [id])
+  author  Profile              @relation(fields: [authorId], references: [id])
+  replies GroupDiscussionReply[]
+
+  @@map("group_discussions")
+}
+
+model GroupDiscussionReply {
+  id           String   @id @default(cuid())
+  discussionId String
+  authorId     String   @db.Uuid
+  content      String
+  createdAt    DateTime @default(now())
+
+  discussion GroupDiscussion @relation(fields: [discussionId], references: [id])
+  author     Profile         @relation(fields: [authorId], references: [id])
+
+  @@map("group_discussion_replies")
+}
+
+// ---------------------------------------------------------------------------
+// Events model
+// ---------------------------------------------------------------------------
+
+model Event {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  title       String
+  description String
+  location    String
+  date        DateTime
+  endDate     DateTime?
+  imageUrl    String?
+  featured    Boolean     @default(false)
+  status      EventStatus @default(DRAFT)
+  createdById String      @db.Uuid
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  createdBy Profile @relation(fields: [createdById], references: [id])
+
+  @@index([status])
+  @@index([date])
+  @@map("events")
+}
+
+// ---------------------------------------------------------------------------
+// Blog Articles model
+// ---------------------------------------------------------------------------
+
+model BlogArticle {
+  id          String            @id @default(cuid())
+  slug        String            @unique
+  title       String
+  content     String
+  excerpt     String
+  category    BlogCategory
+  imageUrl    String?
+  featured    Boolean           @default(false)
+  authorId    String            @db.Uuid
+  status      BlogArticleStatus @default(DRAFT)
+  publishDate DateTime?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  author Profile @relation(fields: [authorId], references: [id])
+
+  @@index([status])
+  @@index([authorId])
+  @@index([category])
+  @@map("blog_articles")
+}
+
+// ---------------------------------------------------------------------------
+// Notifications model
+// ---------------------------------------------------------------------------
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String           @db.Uuid
+  type      NotificationType
+  title     String
+  message   String
+  link      String?
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user Profile @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([read])
+  @@map("notifications")
+}
