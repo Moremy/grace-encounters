@@ -7,9 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { AuthMessage } from '@/components/auth/auth-message';
-import { signUp } from '@/lib/auth/actions';
+import { resetPassword } from '@/lib/auth/actions';
 
-export default function SignUpPage() {
+export default function ResetPasswordPage() {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -33,15 +33,15 @@ export default function SignUpPage() {
     }
 
     setPending(true);
-    await signUp(formData);
+    await resetPassword(formData);
     setPending(false);
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-navy">Create Account</CardTitle>
-        <CardDescription>Join the Grace Encounters community.</CardDescription>
+        <CardTitle className="text-navy">Reset Password</CardTitle>
+        <CardDescription>Enter your new password below.</CardDescription>
       </CardHeader>
       <CardContent>
         <AuthMessage />
@@ -52,15 +52,7 @@ export default function SignUpPage() {
         )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="display-name">Display Name</Label>
-            <Input id="display-name" name="displayName" type="text" placeholder="Your name" required />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" name="email" type="email" placeholder="you@example.com" required />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">New Password</Label>
             <Input id="password" name="password" type="password" required />
           </div>
           <div className="space-y-2">
@@ -68,17 +60,17 @@ export default function SignUpPage() {
             <Input id="confirm-password" name="confirmPassword" type="password" required />
           </div>
           <Button type="submit" variant="sacred" className="w-full" disabled={pending}>
-            {pending ? 'Please wait...' : 'Create Account'}
+            {pending ? 'Please wait...' : 'Reset Password'}
           </Button>
         </form>
       </CardContent>
       <CardFooter className="justify-center">
-        <p className="text-sm text-muted-foreground">
-          Already have an account?{' '}
-          <Link href="/sign-in" className="font-medium text-navy underline-offset-4 hover:underline">
-            Sign in
-          </Link>
-        </p>
+        <Link
+          href="/sign-in"
+          className="text-sm font-medium text-navy underline-offset-4 hover:underline"
+        >
+          Back to sign in
+        </Link>
       </CardFooter>
     </Card>
   );

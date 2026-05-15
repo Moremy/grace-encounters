@@ -1,15 +1,23 @@
-import type { Metadata } from 'next';
+'use client';
+
 import Link from 'next/link';
+import { useFormStatus } from 'react-dom';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { AuthMessage } from '@/components/auth/auth-message';
+import { signIn } from '@/lib/auth/actions';
 
-export const metadata: Metadata = {
-  title: 'Sign In - Grace Encounters',
-  description: 'Sign in to your Grace Encounters account.',
-};
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" variant="sacred" className="w-full" disabled={pending}>
+      {pending ? 'Please wait...' : 'Sign In'}
+    </Button>
+  );
+}
 
 export default function SignInPage() {
   return (
@@ -19,7 +27,8 @@ export default function SignInPage() {
         <CardDescription>Welcome back. Enter your credentials to continue.</CardDescription>
       </CardHeader>
       <CardContent>
-        <form className="space-y-4">
+        <AuthMessage />
+        <form action={signIn} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" name="email" type="email" placeholder="you@example.com" required />
@@ -36,9 +45,7 @@ export default function SignInPage() {
             </div>
             <Input id="password" name="password" type="password" required />
           </div>
-          <Button type="submit" variant="sacred" className="w-full">
-            Sign In
-          </Button>
+          <SubmitButton />
         </form>
         <Separator className="my-6" />
         <div className="text-center">
