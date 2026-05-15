@@ -29,6 +29,7 @@ const createDevotionalSchema = z.object({
   content: z
     .string()
     .min(20, 'Content must be at least 20 characters'),
+  status: z.enum(VALID_STATUSES).default('DRAFT'),
 });
 
 export async function createDevotional(formData: FormData) {
@@ -58,7 +59,7 @@ export async function createDevotional(formData: FormData) {
   const scripture = formData.get('scripture') as string;
   const scriptureReference = formData.get('scriptureReference') as string;
   const excerpt = formData.get('excerpt') as string;
-  const status = (formData.get('status') as string) || 'DRAFT';
+  const statusRaw = (formData.get('status') as string) || 'DRAFT';
   const publishDateRaw = formData.get('publishDate') as string;
 
   const validation = createDevotionalSchema.safeParse({
@@ -67,11 +68,21 @@ export async function createDevotional(formData: FormData) {
     scripture,
     scriptureReference,
     excerpt,
+    status: statusRaw,
   });
 
   if (!validation.success) {
     const message = encodeURIComponent(
       validation.error.errors[0]?.message ?? 'Invalid input',
+    );
+    redirect(`/admin/devotionals/new?error=${message}`);
+  }
+
+  const { status } = validation.data;
+
+  if (status === 'SCHEDULED' && !publishDateRaw) {
+    const message = encodeURIComponent(
+      'Publish date is required for scheduled devotionals.',
     );
     redirect(`/admin/devotionals/new?error=${message}`);
   }
@@ -204,8 +215,10 @@ export async function updateDevotionalStatus(
 export async function getPublishedDevotionals() {
   return prisma.devotional.findMany({
     where: {
-      status: 'PUBLISHED',
-      publishDate: { lte: new Date() },
+      OR: [
+        { status: 'PUBLISHED', publishDate: { lte: new Date() } },
+        { status: 'SCHEDULED', publishDate: { lte: new Date() } },
+      ],
     },
     include: {
       author: { select: { displayName: true } },
@@ -218,8 +231,10 @@ export async function getDevotionalBySlug(slug: string) {
   return prisma.devotional.findFirst({
     where: {
       slug,
-      status: 'PUBLISHED',
-      publishDate: { lte: new Date() },
+      OR: [
+        { status: 'PUBLISHED', publishDate: { lte: new Date() } },
+        { status: 'SCHEDULED', publishDate: { lte: new Date() } },
+      ],
     },
     include: {
       author: { select: { displayName: true } },
@@ -260,8 +275,10 @@ export async function getAllDevotionalsAdmin() {
 export async function getTodayDevotional() {
   return prisma.devotional.findFirst({
     where: {
-      status: 'PUBLISHED',
-      publishDate: { lte: new Date() },
+      OR: [
+        { status: 'PUBLISHED', publishDate: { lte: new Date() } },
+        { status: 'SCHEDULED', publishDate: { lte: new Date() } },
+      ],
     },
     include: {
       author: { select: { displayName: true } },

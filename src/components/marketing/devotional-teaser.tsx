@@ -14,7 +14,12 @@ import { TodayDate } from '@/components/marketing/today-date';
 import { getTodayDevotional } from '@/lib/devotional/actions';
 
 export async function DevotionalTeaser() {
-  const devotional = await getTodayDevotional();
+  let devotional: Awaited<ReturnType<typeof getTodayDevotional>> = null;
+  try {
+    devotional = await getTodayDevotional();
+  } catch (error) {
+    console.error('[DevotionalTeaser] Failed to fetch today devotional:', error);
+  }
 
   return (
     <section className="py-24">
