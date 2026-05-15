@@ -68,6 +68,85 @@ enum NotificationType {
   GROUP_INVITATION
   EVENT_REMINDER
   GENERAL
+  MESSAGE_RECEIVED
+  DONATION_RECEIVED
+  PRAYER_ROOM_STARTING
+  BIBLE_STUDY_REMINDER
+  TESTIMONY_FEATURED
+  SERMON_PUBLISHED
+}
+
+// ---------------------------------------------------------------------------
+// Testimony enums
+// ---------------------------------------------------------------------------
+
+enum TestimonyMediaType {
+  TEXT
+  PDF
+  AUDIO
+  VIDEO
+}
+
+enum TestimonyCategory {
+  HEALING
+  SALVATION
+  DELIVERANCE
+  PROVISION
+  RESTORATION
+  FAITH
+  OTHER
+}
+
+// ---------------------------------------------------------------------------
+// Media Library enums
+// ---------------------------------------------------------------------------
+
+enum MediaType {
+  SERMON_AUDIO
+  SERMON_VIDEO
+  WORSHIP_AUDIO
+  VIDEO_MESSAGE
+  PDF_RESOURCE
+}
+
+enum MediaCategory {
+  SERMON
+  WORSHIP
+  TEACHING
+  TESTIMONY
+  CONFERENCE
+}
+
+// ---------------------------------------------------------------------------
+// Donations enums
+// ---------------------------------------------------------------------------
+
+enum PaymentProvider {
+  STRIPE
+  MPESA
+  PAYPAL
+}
+
+enum DonationStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+// ---------------------------------------------------------------------------
+// Messaging enums
+// ---------------------------------------------------------------------------
+
+enum MessageMediaType {
+  IMAGE
+  FILE
+  AUDIO
+}
+
+enum ConversationType {
+  DIRECT
+  GROUP
 }
 
 model Profile {
@@ -94,6 +173,27 @@ model Profile {
   blogArticles          BlogArticle[]
   notifications         Notification[]
 
+  // Media & Sermon relations
+  mediaItems            MediaItem[]          @relation("ProfileMediaItems")
+  sermons               Sermon[]             @relation("ProfileSermons")
+
+  // Prayer Room relations
+  createdPrayerRooms    PrayerRoom[]         @relation("ProfileCreatedPrayerRooms")
+  prayerRoomParticipants PrayerRoomParticipant[]
+  prayerRoomMessages    PrayerRoomMessage[]
+
+  // Bible Study relations
+  createdBibleStudyPlans BibleStudyPlan[]
+  bibleStudyProgress    BibleStudyProgress[]
+  scriptureBookmarks    ScriptureBookmark[]
+
+  // Donation relations
+  donations             Donation[]
+
+  // Messaging relations
+  messages              Message[]
+  conversationParticipants ConversationParticipant[]
+
   @@index([role])
   @@map("profiles")
 }
@@ -107,23 +207,33 @@ enum TestimonyStatus {
 }
 
 model Testimony {
-  id           String          @id @default(cuid())
-  slug         String          @unique
+  id           String            @id @default(cuid())
+  slug         String            @unique
   title        String
   content      String
   excerpt      String
-  authorId     String          @db.Uuid
-  status       TestimonyStatus @default(PENDING)
-  featured     Boolean         @default(false)
+  authorId     String            @db.Uuid
+  status       TestimonyStatus   @default(PENDING)
+  featured     Boolean           @default(false)
   revisionNote String?
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
   publishedAt  DateTime?
+
+  // Media & categorization extensions
+  mediaType    TestimonyMediaType @default(TEXT)
+  mediaUrl     String?
+  thumbnailUrl String?
+  category     TestimonyCategory?
+  tags         String[]
+  fileSize     Int?
 
   author Profile @relation(fields: [authorId], references: [id])
 
   @@index([status])
   @@index([authorId])
+  @@index([category])
+  @@index([mediaType])
   @@map("testimonies")
 }
 
@@ -346,4 +456,317 @@ model Notification {
   @@index([userId])
   @@index([read])
   @@map("notifications")
+}
+
+// ---------------------------------------------------------------------------
+// Media Library models
+// ---------------------------------------------------------------------------
+
+model MediaPlaylist {
+  id            String        @id @default(cuid())
+  slug          String        @unique
+  title         String
+  description   String
+  coverImageUrl String?
+  category      MediaCategory
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  items MediaItem[]
+
+  @@map("media_playlists")
+}
+
+model MediaItem {
+  id           String        @id @default(cuid())
+  slug         String        @unique
+  title        String
+  description  String
+  mediaType    MediaType
+  url          String
+  thumbnailUrl String?
+  duration     Int?
+  fileSize     Int?
+  category     MediaCategory
+  playlistId   String?
+  featured     Boolean       @default(false)
+  speakerId    String?       @db.Uuid
+  publishedAt  DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  playlist MediaPlaylist? @relation(fields: [playlistId], references: [id])
+  speaker  Profile?       @relation("ProfileMediaItems", fields: [speakerId], references: [id])
+
+  @@index([mediaType])
+  @@index([category])
+  @@index([featured])
+  @@index([publishedAt])
+  @@index([speakerId])
+  @@map("media_items")
+}
+
+// ---------------------------------------------------------------------------
+// Sermons models
+// ---------------------------------------------------------------------------
+
+model SermonSeries {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  title         String
+  description   String
+  coverImageUrl String?
+  order         Int
+  createdAt     DateTime @default(now())
+
+  sermons Sermon[]
+
+  @@map("sermon_series")
+}
+
+model Sermon {
+  id            String    @id @default(cuid())
+  slug          String    @unique
+  title         String
+  description   String
+  scripture     String?
+  seriesId      String?
+  speakerId     String    @db.Uuid
+  audioUrl      String?
+  videoUrl      String?
+  transcriptUrl String?
+  notesUrl      String?
+  thumbnailUrl  String?
+  duration      Int?
+  featured      Boolean   @default(false)
+  publishedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  series  SermonSeries? @relation(fields: [seriesId], references: [id])
+  speaker Profile       @relation("ProfileSermons", fields: [speakerId], references: [id])
+
+  @@index([seriesId])
+  @@index([speakerId])
+  @@index([featured])
+  @@index([publishedAt])
+  @@map("sermons")
+}
+
+// ---------------------------------------------------------------------------
+// Live Prayer Room models
+// ---------------------------------------------------------------------------
+
+model PrayerRoom {
+  id              String    @id @default(cuid())
+  slug            String    @unique
+  title           String
+  description     String
+  scheduledAt     DateTime?
+  endAt           DateTime?
+  isLive          Boolean   @default(false)
+  createdById     String    @db.Uuid
+  maxParticipants Int       @default(50)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  createdBy    Profile                @relation("ProfileCreatedPrayerRooms", fields: [createdById], references: [id])
+  participants PrayerRoomParticipant[]
+  messages     PrayerRoomMessage[]
+
+  @@index([isLive])
+  @@index([scheduledAt])
+  @@index([createdById])
+  @@map("prayer_rooms")
+}
+
+model PrayerRoomParticipant {
+  id       String   @id @default(cuid())
+  roomId   String
+  userId   String   @db.Uuid
+  joinedAt DateTime @default(now())
+
+  room PrayerRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user Profile    @relation(fields: [userId], references: [id])
+
+  @@unique([roomId, userId])
+  @@map("prayer_room_participants")
+}
+
+model PrayerRoomMessage {
+  id        String   @id @default(cuid())
+  roomId    String
+  authorId  String   @db.Uuid
+  content   String
+  createdAt DateTime @default(now())
+
+  room   PrayerRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  author Profile    @relation(fields: [authorId], references: [id])
+
+  @@index([roomId])
+  @@index([authorId])
+  @@map("prayer_room_messages")
+}
+
+// ---------------------------------------------------------------------------
+// Bible Study models
+// ---------------------------------------------------------------------------
+
+model BibleStudyPlan {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  title         String
+  description   String
+  coverImageUrl String?
+  totalDays     Int
+  createdById   String   @db.Uuid
+  createdAt     DateTime @default(now())
+
+  createdBy Profile            @relation(fields: [createdById], references: [id])
+  days      BibleStudyDay[]
+  progress  BibleStudyProgress[]
+
+  @@index([createdById])
+  @@map("bible_study_plans")
+}
+
+model BibleStudyDay {
+  id                 String   @id @default(cuid())
+  planId             String
+  dayNumber          Int
+  title              String
+  scripture          String
+  scriptureReference String
+  reflection         String?
+  createdAt          DateTime @default(now())
+
+  plan BibleStudyPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@index([planId])
+  @@map("bible_study_days")
+}
+
+model BibleStudyProgress {
+  id          String    @id @default(cuid())
+  planId      String
+  userId      String    @db.Uuid
+  dayNumber   Int
+  completed   Boolean   @default(false)
+  notes       String?
+  completedAt DateTime?
+
+  plan BibleStudyPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  user Profile        @relation(fields: [userId], references: [id])
+
+  @@index([planId])
+  @@index([userId])
+  @@map("bible_study_progress")
+}
+
+model ScriptureBookmark {
+  id        String   @id @default(cuid())
+  userId    String   @db.Uuid
+  reference String
+  content   String?
+  note      String?
+  createdAt DateTime @default(now())
+
+  user Profile @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("scripture_bookmarks")
+}
+
+// ---------------------------------------------------------------------------
+// Donations models
+// ---------------------------------------------------------------------------
+
+model DonationCampaign {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  title         String
+  description   String
+  goalAmount    Decimal
+  currentAmount Decimal  @default(0)
+  imageUrl      String?
+  active        Boolean  @default(true)
+  startDate     DateTime
+  endDate       DateTime?
+  createdAt     DateTime @default(now())
+
+  donations Donation[]
+
+  @@index([active])
+  @@map("donation_campaigns")
+}
+
+model Donation {
+  id                    String         @id @default(cuid())
+  donorId               String         @db.Uuid
+  amount                Decimal
+  currency              String         @default("USD")
+  provider              PaymentProvider
+  providerTransactionId String?
+  campaignId            String?
+  status                DonationStatus @default(PENDING)
+  recurring             Boolean        @default(false)
+  recurringInterval     String?
+  createdAt             DateTime       @default(now())
+
+  donor    Profile           @relation(fields: [donorId], references: [id])
+  campaign DonationCampaign? @relation(fields: [campaignId], references: [id])
+
+  @@index([donorId])
+  @@index([campaignId])
+  @@index([status])
+  @@map("donations")
+}
+
+// ---------------------------------------------------------------------------
+// Messaging models
+// ---------------------------------------------------------------------------
+
+model Conversation {
+  id        String           @id @default(cuid())
+  type      ConversationType
+  title     String?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  participants ConversationParticipant[]
+  messages     Message[]
+
+  @@map("conversations")
+}
+
+model ConversationParticipant {
+  id             String    @id @default(cuid())
+  conversationId String
+  userId         String    @db.Uuid
+  joinedAt       DateTime  @default(now())
+  lastReadAt     DateTime?
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         Profile      @relation(fields: [userId], references: [id])
+
+  @@unique([conversationId, userId])
+  @@map("conversation_participants")
+}
+
+model Message {
+  id             String           @id @default(cuid())
+  conversationId String
+  senderId       String           @db.Uuid
+  content        String
+  mediaUrl       String?
+  mediaType      MessageMediaType?
+  read           Boolean          @default(false)
+  createdAt      DateTime         @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       Profile      @relation(fields: [senderId], references: [id])
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@map("messages")
 }
