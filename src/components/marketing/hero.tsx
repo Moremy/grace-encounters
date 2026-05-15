@@ -24,10 +24,10 @@ export function Hero() {
             Light and Salt
           </p>
           <h1 className="mt-6 font-serif text-balance text-5xl md:text-7xl text-navy">
-            Where Heaven Meets Story.
+            Be the Light. Preserve the Truth.
           </h1>
           <p className="mt-6 text-lg md:text-xl text-foreground/80">
-            Real encounters with Jesus. Shared in reverence. Held in prayer.
+            A Christ-centered community for testimonies, prayer, truth, and spiritual growth.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-3">
             <Button variant="sacred" size="lg" asChild>
