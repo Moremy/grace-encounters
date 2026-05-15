@@ -10,6 +10,8 @@ import {
   Calendar,
   PenLine,
   BookHeart,
+  Play,
+  Headphones,
 } from 'lucide-react';
 
 import { Wordmark } from '@/components/brand/wordmark';
@@ -24,6 +26,8 @@ const adminNavItems = [
   { label: 'Users', href: '/admin/users', icon: Users },
   { label: 'Devotionals', href: '/admin/devotionals', icon: Sun },
   { label: 'Community', href: '/admin/community', icon: Users },
+  { label: 'Media', href: '/admin/media', icon: Play },
+  { label: 'Sermons', href: '/admin/sermons', icon: Headphones },
   { label: 'Events', href: '/admin/events', icon: Calendar },
   { label: 'Blog', href: '/admin/blog', icon: PenLine },
   { label: 'Settings', href: '/admin/settings', icon: Settings },

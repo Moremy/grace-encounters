@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Link from 'next/link';
-import { LayoutDashboard, BookHeart, HandHeart, Sun, User } from 'lucide-react';
+import { LayoutDashboard, BookHeart, HandHeart, Sun, User, Play, Headphones } from 'lucide-react';
 
 import { Wordmark } from '@/components/brand/wordmark';
 import { cn } from '@/lib/utils';
@@ -10,6 +10,8 @@ const navItems = [
   { label: 'My Testimonies', href: '/testimonies/mine', icon: BookHeart },
   { label: 'Prayer Wall', href: '/prayer-wall', icon: HandHeart },
   { label: 'Devotionals', href: '/devotionals', icon: Sun },
+  { label: 'Media', href: '/media', icon: Play },
+  { label: 'Sermons', href: '/sermons', icon: Headphones },
   { label: 'Profile', href: '/profile', icon: User },
 ];
 
