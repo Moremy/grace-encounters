@@ -204,6 +204,11 @@ model Profile {
   liveStreams            LiveStream[]         @relation("ProfileLiveStreams")
   liveStreamChats       LiveStreamChat[]     @relation("ProfileLiveStreamChats")
 
+  // Email & Notification relations
+  emailLogs             EmailLog[]
+  newsletterSubscription NewsletterSubscription?
+  notificationPreference NotificationPreference?
+
   @@index([role])
   @@map("profiles")
 }
@@ -899,4 +904,77 @@ model LiveStreamReplay {
   stream LiveStream @relation(fields: [streamId], references: [id], onDelete: Cascade)
 
   @@map("live_stream_replays")
+}
+
+// ---------------------------------------------------------------------------
+// Email & Notification Preferences models
+// ---------------------------------------------------------------------------
+
+enum EmailStatus {
+  QUEUED
+  SENT
+  FAILED
+  BOUNCED
+}
+
+model EmailTemplate {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  subject     String
+  htmlContent String
+  textContent String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("email_templates")
+}
+
+model EmailLog {
+  id             String      @id @default(cuid())
+  recipientId    String?     @db.Uuid
+  recipientEmail String
+  templateSlug   String
+  subject        String
+  status         EmailStatus @default(QUEUED)
+  sentAt         DateTime?
+  errorMessage   String?
+  createdAt      DateTime    @default(now())
+
+  recipient Profile? @relation(fields: [recipientId], references: [id])
+
+  @@index([recipientId])
+  @@index([status])
+  @@map("email_logs")
+}
+
+model NewsletterSubscription {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  userId         String?   @unique @db.Uuid
+  subscribedAt   DateTime  @default(now())
+  unsubscribedAt DateTime?
+  active         Boolean   @default(true)
+
+  user Profile? @relation(fields: [userId], references: [id])
+
+  @@index([active])
+  @@map("newsletter_subscriptions")
+}
+
+model NotificationPreference {
+  id                       String   @id @default(cuid())
+  userId                   String   @unique @db.Uuid
+  emailNewsletter          Boolean  @default(true)
+  prayerReminders          Boolean  @default(true)
+  devotionalNotifications  Boolean  @default(true)
+  eventReminders           Boolean  @default(true)
+  donationReceipts         Boolean  @default(true)
+  pushEnabled              Boolean  @default(true)
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  user Profile @relation(fields: [userId], references: [id])
+
+  @@map("notification_preferences")
 }

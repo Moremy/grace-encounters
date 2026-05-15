@@ -1,11 +1,15 @@
 import { Bell } from 'lucide-react';
 import { PushNotificationToggle } from '@/components/pwa/push-notification-toggle';
+import { EmailPreferences } from '@/components/email/email-preferences';
+import { getNotificationPreferences } from '@/lib/email/actions';
 
 export const metadata = {
   title: 'Notification Settings — Light and Salt',
 };
 
-export default function NotificationSettingsPage() {
+export default async function NotificationSettingsPage() {
+  const prefs = await getNotificationPreferences();
+
   return (
     <div className="mx-auto max-w-2xl space-y-6 p-4 md:p-6">
       <div className="flex items-center gap-3">
@@ -27,6 +31,18 @@ export default function NotificationSettingsPage() {
           actively using the app. You can disable them at any time.
         </p>
       </div>
+
+      <hr className="border-gray-200" />
+
+      <EmailPreferences
+        initialPrefs={{
+          emailNewsletter: prefs.emailNewsletter,
+          prayerReminders: prefs.prayerReminders,
+          devotionalNotifications: prefs.devotionalNotifications,
+          eventReminders: prefs.eventReminders,
+          donationReceipts: prefs.donationReceipts,
+        }}
+      />
     </div>
   );
 }

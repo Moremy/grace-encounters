@@ -6,6 +6,7 @@ import { FeaturedTestimony } from '@/components/marketing/featured-testimony';
 import { DevotionalTeaser } from '@/components/marketing/devotional-teaser';
 import { PrayerWallPreview } from '@/components/marketing/prayer-wall-preview';
 import { ScriptureBanner } from '@/components/marketing/scripture-banner';
+import { NewsletterSection } from '@/components/marketing/newsletter-section';
 
 export const metadata: Metadata = {
   description:
@@ -21,6 +22,7 @@ export default function MarketingHomePage() {
       <DevotionalTeaser />
       <PrayerWallPreview />
       <ScriptureBanner />
+      <NewsletterSection />
     </>
   );
 }
