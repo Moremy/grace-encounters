@@ -1,8 +1,9 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-export function AuthMessage() {
+function AuthMessageContent() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
   const success = searchParams.get('success');
@@ -24,5 +25,13 @@ export function AuthMessage() {
         </div>
       )}
     </div>
+  );
+}
+
+export function AuthMessage() {
+  return (
+    <Suspense fallback={null}>
+      <AuthMessageContent />
+    </Suspense>
   );
 }

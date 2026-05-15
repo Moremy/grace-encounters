@@ -33,8 +33,11 @@ export default function ResetPasswordPage() {
     }
 
     setPending(true);
-    await resetPassword(formData);
-    setPending(false);
+    try {
+      await resetPassword(formData);
+    } finally {
+      setPending(false);
+    }
   }
 
   return (

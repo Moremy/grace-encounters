@@ -33,8 +33,11 @@ export default function SignUpPage() {
     }
 
     setPending(true);
-    await signUp(formData);
-    setPending(false);
+    try {
+      await signUp(formData);
+    } finally {
+      setPending(false);
+    }
   }
 
   return (
