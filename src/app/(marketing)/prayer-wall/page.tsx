@@ -14,7 +14,7 @@ import { PrayButton } from '@/components/prayer/pray-button';
 import { getApprovedPrayerRequests } from '@/lib/prayer/actions';
 
 export const metadata: Metadata = {
-  title: 'Prayer Wall | Grace Encounters',
+  title: 'Prayer Wall | Light and Salt',
   description:
     'Join our community in prayer. Read, pray, and stand alongside one another in faith.',
 };

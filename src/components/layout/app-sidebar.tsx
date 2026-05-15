@@ -22,7 +22,7 @@ export function AppSidebar({ className }: { className?: string }) {
       )}
     >
       <div className="flex items-center px-6 py-5">
-        <Link href="/dashboard" aria-label="Grace Encounters home">
+        <Link href="/dashboard" aria-label="Light and Salt home">
           <Wordmark variant="inverted" size="md" />
         </Link>
       </div>

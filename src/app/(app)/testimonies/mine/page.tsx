@@ -13,7 +13,7 @@ import {
 import { getMyTestimonies } from '@/lib/testimony/actions';
 
 export const metadata: Metadata = {
-  title: 'My Testimonies | Grace Encounters',
+  title: 'My Testimonies | Light and Salt',
   description: 'View and manage your submitted testimonies.',
 };
 

@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { createTestimony } from '@/lib/testimony/actions';
 
 export const metadata: Metadata = {
-  title: 'Share a Testimony | Grace Encounters',
+  title: 'Share a Testimony | Light and Salt',
   description: 'Share your testimony of how God has moved in your life.',
 };
 

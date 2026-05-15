@@ -16,7 +16,7 @@ import { getApprovedTestimonies } from '@/lib/testimony/actions';
 export const metadata: Metadata = {
   title: 'Testimonies',
   description:
-    'Stories of grace, healing, and transformation from the Grace Encounters community.',
+    'Stories of grace, healing, and transformation from the Light and Salt community.',
 };
 
 export default async function TestimoniesPage() {

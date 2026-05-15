@@ -10,8 +10,8 @@ import {
 } from '@/components/ui/card';
 
 export const metadata: Metadata = {
-  title: 'Admin Dashboard | Grace Encounters',
-  description: 'Administration overview for Grace Encounters.',
+  title: 'Admin Dashboard | Light and Salt',
+  description: 'Administration overview for Light and Salt.',
 };
 
 const statCards = [

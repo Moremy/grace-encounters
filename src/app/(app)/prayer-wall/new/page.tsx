@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { createPrayerRequest } from '@/lib/prayer/actions';
 
 export const metadata: Metadata = {
-  title: 'Submit a Prayer Request | Grace Encounters',
+  title: 'Submit a Prayer Request | Light and Salt',
   description: 'Share your prayer needs with the community.',
 };
 

@@ -44,7 +44,7 @@ export default function SignUpPage() {
     <Card>
       <CardHeader>
         <CardTitle className="text-navy">Create Account</CardTitle>
-        <CardDescription>Join the Grace Encounters community.</CardDescription>
+        <CardDescription>Join the Light and Salt community.</CardDescription>
       </CardHeader>
       <CardContent>
         <AuthMessage />

@@ -18,16 +18,16 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Grace Encounters — Real encounters with Jesus.',
+  title: 'Light and Salt — Real encounters with Jesus.',
   description: 'A reverent space for testimonies, prayer, and daily devotion.',
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
   ),
   openGraph: {
-    title: 'Grace Encounters — Real encounters with Jesus.',
+    title: 'Light and Salt — Real encounters with Jesus.',
     description: 'A reverent space for testimonies, prayer, and daily devotion.',
     type: 'website',
-    siteName: 'Grace Encounters',
+    siteName: 'Light and Salt',
   },
   twitter: {
     card: 'summary_large_image',

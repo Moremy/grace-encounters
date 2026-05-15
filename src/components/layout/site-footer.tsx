@@ -105,7 +105,7 @@ export function SiteFooter() {
           </div>
 
           <p className="text-sm text-muted-foreground">
-            © <CurrentYear /> Grace Encounters.
+            © <CurrentYear /> Light and Salt.
           </p>
         </div>
       </div>

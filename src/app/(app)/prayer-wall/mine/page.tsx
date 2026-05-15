@@ -13,7 +13,7 @@ import {
 import { getMyPrayerRequests } from '@/lib/prayer/actions';
 
 export const metadata: Metadata = {
-  title: 'My Prayer Requests | Grace Encounters',
+  title: 'My Prayer Requests | Light and Salt',
   description: 'View and manage your submitted prayer requests.',
 };
 

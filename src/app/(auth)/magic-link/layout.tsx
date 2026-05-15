@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Magic Link | Grace Encounters',
+  title: 'Magic Link | Light and Salt',
   description: 'Sign in with a magic link sent to your email.',
 };
 

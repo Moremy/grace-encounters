@@ -49,7 +49,7 @@ export default function CommunityPage() {
               </CardHeader>
               <CardContent className="text-center space-y-4">
                 <p className="text-muted-foreground">
-                  The Grace Encounters community is a gathering place for believers who long
+                  The Light and Salt community is a gathering place for believers who long
                   for authentic connection. Here, testimonies are shared without pretense,
                   prayers are offered with genuine care, and every story is honored as a
                   witness to God&apos;s faithfulness.

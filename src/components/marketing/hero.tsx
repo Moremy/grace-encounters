@@ -21,7 +21,7 @@ export function Hero() {
          */}
         <div className="motion-safe:animate-fade-up">
           <p className="text-xs uppercase tracking-widest text-muted-foreground">
-            Grace Encounters
+            Light and Salt
           </p>
           <h1 className="mt-6 font-serif text-balance text-5xl md:text-7xl text-navy">
             Where Heaven Meets Story.

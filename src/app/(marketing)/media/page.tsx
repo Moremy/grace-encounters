@@ -15,7 +15,7 @@ import { Reveal } from '@/components/brand/reveal';
 export const metadata: Metadata = {
   title: 'Media',
   description:
-    'Watch, listen, and connect with Grace Encounters through our YouTube channel, podcast, and social platforms.',
+    'Watch, listen, and connect with Light and Salt through our YouTube channel, podcast, and social platforms.',
 };
 
 export default function MediaPage() {

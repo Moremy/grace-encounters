@@ -17,7 +17,7 @@ import {
 } from '@/lib/testimony/actions';
 
 export const metadata: Metadata = {
-  title: 'Review Testimonies | Admin | Grace Encounters',
+  title: 'Review Testimonies | Admin | Light and Salt',
   description: 'Review and moderate submitted testimonies.',
 };
 

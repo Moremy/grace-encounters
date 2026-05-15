@@ -15,7 +15,7 @@ import { Reveal } from '@/components/brand/reveal';
 export const metadata: Metadata = {
   title: 'Blog',
   description:
-    'Reflections, writings, and devotional thoughts from the Grace Encounters community.',
+    'Reflections, writings, and devotional thoughts from the Light and Salt community.',
 };
 
 type BlogPost = {

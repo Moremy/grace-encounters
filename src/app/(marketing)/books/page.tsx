@@ -13,7 +13,7 @@ import { Reveal } from '@/components/brand/reveal';
 export const metadata: Metadata = {
   title: 'Books & Recommendations',
   description:
-    'Curated books and resources to renew your mind through the written word. Faith-building reads recommended by the Grace Encounters community.',
+    'Curated books and resources to renew your mind through the written word. Faith-building reads recommended by the Light and Salt community.',
 };
 
 type BookItem = {

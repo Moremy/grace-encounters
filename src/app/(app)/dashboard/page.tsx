@@ -12,8 +12,8 @@ import {
 } from '@/components/ui/card';
 
 export const metadata: Metadata = {
-  title: 'Dashboard | Grace Encounters',
-  description: 'Your Grace Encounters dashboard.',
+  title: 'Dashboard | Light and Salt',
+  description: 'Your Light and Salt dashboard.',
 };
 
 const quickActions = [

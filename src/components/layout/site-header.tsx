@@ -30,7 +30,7 @@ export function SiteHeader() {
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <MobileDrawer />
-          <Link href="/" aria-label="Grace Encounters home" className="flex items-center">
+          <Link href="/" aria-label="Light and Salt home" className="flex items-center">
             <Wordmark size="md" />
           </Link>
         </div>

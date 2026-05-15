@@ -15,7 +15,7 @@ import {
 } from '@/lib/prayer/actions';
 
 export const metadata: Metadata = {
-  title: 'Moderate Prayer Requests | Admin | Grace Encounters',
+  title: 'Moderate Prayer Requests | Admin | Light and Salt',
   description: 'Review and moderate submitted prayer requests.',
 };
 
