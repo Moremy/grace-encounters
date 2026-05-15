@@ -8,8 +8,9 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardContent,
 } from '@/components/ui/card';
+import { ScriptureRecommendations } from '@/components/ai/scripture-recommendations';
+import { ContentRecommendations } from '@/components/ai/content-recommendations';
 
 export const metadata: Metadata = {
   title: 'Dashboard | Light and Salt',
@@ -61,6 +62,12 @@ export default function DashboardPage() {
             </Card>
           </Link>
         ))}
+      </div>
+
+      {/* AI-Powered Widgets */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <ScriptureRecommendations />
+        <ContentRecommendations userId="anonymous" />
       </div>
     </div>
   );

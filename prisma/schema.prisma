@@ -197,6 +197,9 @@ model Profile {
   // Push notification relations
   pushSubscriptions     PushSubscription[]
 
+  // AI recommendation relations
+  aiRecommendations     AIRecommendation[]
+
   @@index([role])
   @@map("profiles")
 }
@@ -792,4 +795,28 @@ model PushSubscription {
   @@index([userId])
   @@unique([userId, endpoint])
   @@map("push_subscriptions")
+}
+
+// ---------------------------------------------------------------------------
+// AI Recommendation models
+// ---------------------------------------------------------------------------
+
+enum AIRecommendationType {
+  SCRIPTURE
+  DEVOTIONAL
+  CONTENT
+}
+
+model AIRecommendation {
+  id        String               @id @default(cuid())
+  userId    String               @db.Uuid
+  type      AIRecommendationType
+  content   Json
+  createdAt DateTime             @default(now())
+
+  user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@map("ai_recommendations")
 }
