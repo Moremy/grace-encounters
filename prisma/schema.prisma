@@ -45,6 +45,7 @@ model Profile {
   testimonies Testimony[]
   prayerRequests    PrayerRequest[]      @relation("ProfilePrayerRequests")
   prayerIntercessions PrayerIntercession[] @relation("ProfilePrayerIntercessions")
+  devotionals Devotional[]
 
   @@index([role])
   @@map("profiles")
@@ -130,12 +131,44 @@ model PrayerIntercession {
 }
 
 // ---------------------------------------------------------------------------
+// Devotional models
+// ---------------------------------------------------------------------------
+
+enum DevotionalStatus {
+  DRAFT
+  PUBLISHED
+  SCHEDULED
+}
+
+model Devotional {
+  id                 String           @id @default(cuid())
+  slug               String           @unique
+  title              String
+  content            String
+  scripture          String           // The actual Bible verse text
+  scriptureReference String           // e.g. "Psalm 46:10"
+  excerpt            String
+  authorId           String           @db.Uuid
+  status             DevotionalStatus @default(DRAFT)
+  featured           Boolean          @default(false)
+  publishDate        DateTime?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  author Profile @relation(fields: [authorId], references: [id])
+
+  @@index([status])
+  @@index([authorId])
+  @@index([publishDate])
+  @@map("devotionals")
+}
+
+// ---------------------------------------------------------------------------
 // TODO: Phase 3+ — reserved model names. Do NOT define these yet; they are
 // listed here so naming stays consistent as features land.
 // ---------------------------------------------------------------------------
 // TODO: Phase 3+ TestimonyReaction    — lightweight reactions (amen/pray/etc.) on a Testimony.
 // TODO: Phase 3+ Comment              — threaded comments on testimonies and devotionals.
-// TODO: Phase 3+ Devotional           — a single devotional reading entry.
 // TODO: Phase 3+ DevotionalSeries     — an ordered collection of Devotional entries.
 // TODO: Phase 3+ AgendaEntry          — scheduled items on the editorial/publishing agenda.
 // TODO: Phase 3+ Notification         — per-user notifications (mentions, replies, prayers).
