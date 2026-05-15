@@ -27,7 +27,7 @@ const samplePrayers: { id: string; body: string }[] = [
 ];
 
 export async function PrayerWallPreview() {
-  const prayers = await getApprovedPrayerRequests();
+  const prayers = await getApprovedPrayerRequests(3);
 
   return (
     <section className="bg-navy text-ivory py-24">
@@ -41,7 +41,7 @@ export async function PrayerWallPreview() {
 
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
           {prayers.length > 0
-            ? prayers.slice(0, 3).map((prayer) => (
+            ? prayers.map((prayer) => (
                 <Card
                   key={prayer.id}
                   className="bg-navy/40 border-ivory/20 text-ivory"

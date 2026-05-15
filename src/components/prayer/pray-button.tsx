@@ -27,7 +27,12 @@ export function PrayButton({
     setPrayed(true);
 
     startTransition(async () => {
-      await prayForRequest(prayerRequestId);
+      try {
+        await prayForRequest(prayerRequestId);
+      } catch {
+        setCount((prev) => prev - 1);
+        setPrayed(false);
+      }
     });
   }
 

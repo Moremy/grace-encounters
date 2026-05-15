@@ -48,7 +48,7 @@ export async function createPrayerRequest(formData: FormData) {
         content,
         authorId: user.id,
         visibility: validation.data.visibility,
-        status: 'PENDING',
+        status: validation.data.visibility === 'PRIVATE' ? 'APPROVED' : 'PENDING',
       },
     });
   } catch {
@@ -59,7 +59,7 @@ export async function createPrayerRequest(formData: FormData) {
   redirect('/prayer-wall/mine');
 }
 
-export async function getApprovedPrayerRequests() {
+export async function getApprovedPrayerRequests(limit?: number) {
   return prisma.prayerRequest.findMany({
     where: {
       status: { in: ['APPROVED', 'ANSWERED'] },
@@ -69,6 +69,7 @@ export async function getApprovedPrayerRequests() {
       author: { select: { displayName: true } },
     },
     orderBy: { createdAt: 'desc' },
+    take: limit ?? 50,
   });
 }
 
