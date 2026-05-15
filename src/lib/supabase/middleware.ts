@@ -28,11 +28,56 @@ export async function updateSession(request: NextRequest) {
       },
     );
 
-    // Refreshes the session cookie if expired. Required for Server Components.
-    await supabase.auth.getUser();
+    // Refresh session
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const pathname = request.nextUrl.pathname;
+
+    // Protected app routes: /dashboard and everything under (app) group
+    // If no user, redirect to sign-in
+    if (pathname.startsWith('/dashboard') && !user) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/sign-in';
+      return NextResponse.redirect(url);
+    }
+
+    // Protected admin routes: /admin/*
+    // If no user, redirect to sign-in
+    // If user but not admin/moderator, redirect to dashboard
+    if (pathname.startsWith('/admin')) {
+      if (!user) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/sign-in';
+        return NextResponse.redirect(url);
+      }
+
+      // Query the profile role from the profiles table
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      const role = profile?.role?.toLowerCase() as 'user' | 'moderator' | 'admin' | undefined;
+
+      // Only moderator and admin roles can access /admin
+      if (!role || (role !== 'moderator' && role !== 'admin')) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/dashboard';
+        return NextResponse.redirect(url);
+      }
+    }
+
+    // Auth pages: redirect authenticated users away to dashboard
+    const authPages = ['/sign-in', '/sign-up', '/magic-link', '/forgot-password'];
+    if (user && authPages.includes(pathname)) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/dashboard';
+      return NextResponse.redirect(url);
+    }
   } catch {
-    // If session refresh fails (e.g. network issue, invalid config), allow
-    // the request through rather than blocking all routes.
+    // If session refresh or protection logic fails (e.g. network issue, invalid config),
+    // allow the request through rather than blocking all routes.
   }
 
   return response;
