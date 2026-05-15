@@ -45,7 +45,7 @@ export function MissionSection() {
           A quiet place for sacred work.
         </h2>
         <p className="mt-4 max-w-2xl text-muted-foreground">
-          Grace Encounters gathers testimonies, prayer, and devotion into one reverent
+          Light and Salt gathers testimonies, prayer, and devotion into one reverent
           space. Built slowly, kept gently, and held in the hands of the One who began it.
         </p>
 

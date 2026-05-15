@@ -18,16 +18,16 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Grace Encounters — Real encounters with Jesus.',
-  description: 'A reverent space for testimonies, prayer, and daily devotion.',
+  title: 'Light and Salt — Be the Light. Preserve the Truth.',
+  description: 'A Christ-centered community for testimonies, prayer, truth, and spiritual growth.',
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
   ),
   openGraph: {
-    title: 'Grace Encounters — Real encounters with Jesus.',
-    description: 'A reverent space for testimonies, prayer, and daily devotion.',
+    title: 'Light and Salt — Be the Light. Preserve the Truth.',
+    description: 'A Christ-centered community for testimonies, prayer, truth, and spiritual growth.',
     type: 'website',
-    siteName: 'Grace Encounters',
+    siteName: 'Light and Salt',
   },
   twitter: {
     card: 'summary_large_image',

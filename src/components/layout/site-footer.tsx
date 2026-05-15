@@ -79,7 +79,7 @@ export function SiteFooter() {
             Submitted testimonies are reviewed before publishing.
           </p>
           <p className="text-sm text-muted-foreground">
-            © <CurrentYear /> Grace Encounters.
+            © <CurrentYear /> Light and Salt.
           </p>
         </div>
       </div>
