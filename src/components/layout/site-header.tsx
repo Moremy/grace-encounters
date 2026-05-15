@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Wordmark } from '@/components/brand/wordmark';
 import { ScrollAwareShell } from '@/components/layout/scroll-aware-shell';
+import { MobileDrawer } from '@/components/layout/mobile-drawer';
 
 const navLinks: { label: string; href: string }[] = [
   { label: 'Books', href: '/books' },
@@ -27,9 +28,12 @@ export function SiteHeader() {
       scrolledClassName="backdrop-blur-md bg-ivory/70 border-b border-border/50"
     >
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" aria-label="Grace Encounters home" className="flex items-center">
-          <Wordmark size="md" />
-        </Link>
+        <div className="flex items-center gap-2">
+          <MobileDrawer />
+          <Link href="/" aria-label="Grace Encounters home" className="flex items-center">
+            <Wordmark size="md" />
+          </Link>
+        </div>
         <nav aria-label="Primary" className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
             <Link
@@ -41,7 +45,7 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <Button variant="sacred" asChild>
+        <Button variant="sacred" asChild className="hidden md:inline-flex">
           <Link href="#share">Share Your Story</Link>
         </Button>
       </div>
