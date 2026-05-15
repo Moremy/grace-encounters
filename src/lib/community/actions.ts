@@ -62,6 +62,7 @@ const createReplySchema = z.object({
 export async function getPublishedGroups() {
   return prisma.communityGroup.findMany({
     orderBy: { memberCount: 'desc' },
+    take: 50,
     include: {
       _count: { select: { members: true } },
     },
@@ -199,8 +200,8 @@ export async function leaveGroup(groupId: string) {
       },
     });
 
-    await tx.communityGroup.update({
-      where: { id: groupId },
+    await tx.communityGroup.updateMany({
+      where: { id: groupId, memberCount: { gt: 0 } },
       data: { memberCount: { decrement: 1 } },
     });
   });
@@ -248,6 +249,20 @@ export async function createDiscussion(formData: FormData) {
     redirect('/community');
   }
 
+  // Verify user is a member of the group
+  const membership = await prisma.communityGroupMember.findUnique({
+    where: {
+      groupId_userId: {
+        groupId,
+        userId: user.id,
+      },
+    },
+  });
+
+  if (!membership) {
+    redirect(`/community/${group.slug}`);
+  }
+
   try {
     await prisma.groupDiscussion.create({
       data: {
@@ -292,6 +307,29 @@ export async function createDiscussionReply(formData: FormData) {
     redirect(`/community?error=${message}`);
   }
 
+  // Verify the discussion exists and user is a member of its group
+  const discussion = await prisma.groupDiscussion.findUnique({
+    where: { id: discussionId },
+    select: { groupId: true, group: { select: { slug: true } } },
+  });
+
+  if (!discussion) {
+    redirect('/community');
+  }
+
+  const membership = await prisma.communityGroupMember.findUnique({
+    where: {
+      groupId_userId: {
+        groupId: discussion.groupId,
+        userId: user.id,
+      },
+    },
+  });
+
+  if (!membership) {
+    redirect(`/community/${discussion.group.slug}`);
+  }
+
   try {
     await prisma.groupDiscussionReply.create({
       data: {
@@ -306,7 +344,7 @@ export async function createDiscussionReply(formData: FormData) {
 
   // Notify the discussion author (if not self)
   try {
-    const discussion = await prisma.groupDiscussion.findUnique({
+    const discussionForNotify = await prisma.groupDiscussion.findUnique({
       where: { id: discussionId },
       select: {
         authorId: true,
@@ -314,13 +352,13 @@ export async function createDiscussionReply(formData: FormData) {
       },
     });
 
-    if (discussion && discussion.authorId !== user.id) {
+    if (discussionForNotify && discussionForNotify.authorId !== user.id) {
       await createNotification(
-        discussion.authorId,
+        discussionForNotify.authorId,
         'GENERAL',
         'New reply on your discussion',
         'Someone replied to your discussion in the community.',
-        `/community/${discussion.group.slug}`,
+        `/community/${discussionForNotify.group.slug}`,
       );
     }
   } catch {

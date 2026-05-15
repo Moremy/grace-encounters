@@ -9,5 +9,5 @@ export function slugify(text: string): string {
     .replace(/[\s_]+/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '')
-    .concat('-', Date.now().toString(36));
+    .concat('-', Math.random().toString(36).slice(2, 8));
 }

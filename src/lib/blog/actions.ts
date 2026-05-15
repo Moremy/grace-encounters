@@ -54,6 +54,7 @@ export async function getPublishedArticles(category?: string) {
       author: { select: { displayName: true } },
     },
     orderBy: { publishDate: 'desc' },
+    take: 50,
   });
 }
 

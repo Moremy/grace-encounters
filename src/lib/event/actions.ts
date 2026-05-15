@@ -42,6 +42,7 @@ export async function getUpcomingEvents() {
       createdBy: { select: { displayName: true } },
     },
     orderBy: { date: 'asc' },
+    take: 50,
   });
 }
 

@@ -96,6 +96,7 @@ export default async function GroupDetailPage({ params, searchParams }: Props) {
                 <DiscussionList discussions={group.discussions} />
 
                 {/* New Discussion Form */}
+                {isMember && (
                 <Card className="mt-8">
                   <CardHeader>
                     <CardTitle>Start a Discussion</CardTitle>
@@ -146,6 +147,7 @@ export default async function GroupDetailPage({ params, searchParams }: Props) {
                     </form>
                   </CardContent>
                 </Card>
+                )}
               </div>
 
               {/* Sidebar */}
