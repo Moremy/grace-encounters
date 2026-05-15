@@ -3,8 +3,9 @@
 --          quoted-camelCase columns matching prisma/schema.prisma, full-text
 --          search index, the shared updatedAt trigger, a status-transition
 --          guard trigger, and RLS policies covering public read (approved+
---          published only), author read/write of their own drafts, and
---          moderator/admin read+write across all rows.
+--          published only), author read/write of their own drafts, author
+--          delete gated to pre-review statuses, and moderator/admin read+
+--          write across all rows.
 -- Idempotent: safe to re-run.
 
 -- ---------------------------------------------------------------------------
@@ -125,8 +126,9 @@ alter table public.testimonies enable row level security;
 -- 6. RLS policies
 -- ---------------------------------------------------------------------------
 -- Every CREATE POLICY is wrapped in a pg_policies guard so re-running this
--- file does not error on duplicate. No delete policy: admins delete via the
--- service role.
+-- file does not error on duplicate. Author delete is gated to pre-review
+-- statuses; admin/moderator delete still happens via the service role /
+-- postgres connection.
 
 do $$
 begin
@@ -209,6 +211,7 @@ begin
           and "reviewedById" is null
           and "reviewedAt" is null
           and "publishedAt" is null
+          and slug is null
         )
     $sql$;
   end if;
@@ -261,6 +264,32 @@ begin
         to authenticated
         using (public.is_moderator(auth.uid()))
         with check (public.is_moderator(auth.uid()))
+    $sql$;
+  end if;
+end
+$$;
+
+-- Author delete: own row, pre-review statuses only. Mirrors the same status
+-- guard withdrawTestimony enforces in TypeScript so the action stays correct
+-- once Prisma migrates off the postgres role onto an RLS-respecting
+-- connection.
+do $$
+begin
+  if not exists (
+    select 1 from pg_policies
+     where schemaname = 'public'
+       and tablename = 'testimonies'
+       and policyname = 'testimonies_author_delete_own'
+  ) then
+    execute $sql$
+      create policy testimonies_author_delete_own
+        on public.testimonies
+        for delete
+        to authenticated
+        using (
+          auth.uid() = "authorId"
+          and status in ('submitted','in_review','needs_revision')
+        )
     $sql$;
   end if;
 end

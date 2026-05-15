@@ -89,5 +89,9 @@ and the SQL files remain authoritative for the database.
   string for explicit intent, or move read-only paths onto an
   `authenticator`/RLS-respecting connection. Recorded here so the next
   engineer does not have to rediscover the trade-off.
+- Author withdraw is now covered by an RLS delete policy
+  (`testimonies_author_delete_own`, gated to `submitted`/`in_review`/
+  `needs_revision`), so the testimony domain no longer assumes the
+  postgres-role bypass for any author-facing action.
 
 _See [docs/PRODUCT_PLAN.md](../docs/PRODUCT_PLAN.md) for module roadmap and phase prioritization._

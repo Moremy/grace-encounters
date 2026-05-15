@@ -7,26 +7,15 @@ import { slugifyTitle } from './slug';
 
 type ActionResult<T = unknown> = { ok: true; data?: T } | { ok: false; error: string };
 
-// Prisma's Json field is typed as `Prisma.InputJsonValue` which is awkward to
-// satisfy from a `Record<string, unknown>`. The `as never` cast below is
-// intentional and documented; the value is always JSON-serializable.
-async function writeAudit(actorId: string, action: string, targetId: string, metadata: Record<string, unknown> = {}): Promise<void> {
-  await prisma.auditLog.create({
-    data: {
-      actorId,
-      action,
-      targetType: 'testimony',
-      targetId,
-      metadata: metadata as never,
-    },
-  });
-}
-
 async function uniqueSlugFor(title: string, excludeId?: string): Promise<string> {
-  const base = slugifyTitle(title) || 'testimony';
+  // slugifyTitle already clamps to 80 chars; clamp defensively in case that ever changes.
+  const base = (slugifyTitle(title) || 'testimony').slice(0, 80);
   let candidate = base;
   let suffix = 2;
   // Linear-probe slug collisions; in practice approve-volume is moderator-paced so this is fine.
+  // Budget the suffix length BEFORE slicing the base, otherwise an 80-char base
+  // produces a candidate identical to the base after `.slice(0, 80)` and the
+  // loop never terminates.
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const clash = await prisma.testimony.findFirst({
@@ -34,7 +23,8 @@ async function uniqueSlugFor(title: string, excludeId?: string): Promise<string>
       select: { id: true },
     });
     if (!clash) return candidate;
-    candidate = `${base}-${suffix++}`.slice(0, 80);
+    const suffixStr = `-${suffix++}`;
+    candidate = `${base.slice(0, 80 - suffixStr.length)}${suffixStr}`;
   }
 }
 
@@ -42,6 +32,10 @@ export async function approveTestimony(id: string, opts: { feature?: boolean } =
   const moderator = await requireRole('moderator');
   const existing = await prisma.testimony.findUnique({ where: { id } });
   if (!existing) return { ok: false, error: 'Testimony not found.' };
+  if (existing.status === 'rejected') {
+    return { ok: false, error: 'Rejected testimonies cannot be re-approved directly. Ask the author to resubmit.' };
+  }
+  // NOTE: slug uniqueness is racy under concurrent approve. Two moderators approving same-titled testimonies simultaneously will collide on the second update; the rare retry is acceptable for moderator-paced volume.
   const slug = existing.slug ?? (await uniqueSlugFor(existing.title, existing.id));
   await prisma.$transaction([
     prisma.testimony.update({
@@ -62,7 +56,7 @@ export async function approveTestimony(id: string, opts: { feature?: boolean } =
         action: 'testimony.approve',
         targetType: 'testimony',
         targetId: id,
-        // Prisma Json input: see writeAudit note. JSON-serializable record cast to `never`.
+        // Prisma Json input: cast to `never` to satisfy `Prisma.InputJsonValue`. JSON-serializable.
         metadata: { feature: opts.feature ?? false } as never,
       },
     }),
@@ -81,7 +75,7 @@ export async function requestRevision(id: string, note: string): Promise<ActionR
       data: { status: 'needs_revision', reviewNote: note, reviewedById: moderator.id, reviewedAt: new Date() },
     }),
     prisma.auditLog.create({
-      // Prisma Json input: see writeAudit note. JSON-serializable record cast to `never`.
+      // Prisma Json input: cast to `never` to satisfy `Prisma.InputJsonValue`. JSON-serializable.
       data: { actorId: moderator.id, action: 'testimony.request_revision', targetType: 'testimony', targetId: id, metadata: { note } as never },
     }),
   ]);
@@ -98,7 +92,7 @@ export async function rejectTestimony(id: string, reason: string): Promise<Actio
       data: { status: 'rejected', isPublished: false, reviewNote: reason, reviewedById: moderator.id, reviewedAt: new Date() },
     }),
     prisma.auditLog.create({
-      // Prisma Json input: see writeAudit note. JSON-serializable record cast to `never`.
+      // Prisma Json input: cast to `never` to satisfy `Prisma.InputJsonValue`. JSON-serializable.
       data: { actorId: moderator.id, action: 'testimony.reject', targetType: 'testimony', targetId: id, metadata: { reason } as never },
     }),
   ]);
@@ -116,7 +110,7 @@ export async function featureTestimony(id: string, on: boolean): Promise<ActionR
   await prisma.$transaction([
     prisma.testimony.update({ where: { id }, data: { isFeatured: on } }),
     prisma.auditLog.create({
-      // Prisma Json input: see writeAudit note. JSON-serializable record cast to `never`.
+      // Prisma Json input: cast to `never` to satisfy `Prisma.InputJsonValue`. JSON-serializable.
       data: { actorId: moderator.id, action: on ? 'testimony.feature' : 'testimony.unfeature', targetType: 'testimony', targetId: id, metadata: {} as never },
     }),
   ]);

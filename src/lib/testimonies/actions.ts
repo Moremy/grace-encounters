@@ -1,5 +1,7 @@
 'use server';
 
+// NOTE: Phase 1 charter scopes audit_log to moderator actions; author submit/withdraw/resubmit are not audited.
+
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { requireUser } from '@/lib/auth/require-role';
