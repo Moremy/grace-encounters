@@ -32,13 +32,26 @@ pnpm install
 cp .env.example .env.local
 # fill in Supabase + database values
 pnpm prisma generate
-pnpm prisma migrate dev
+# Database setup (SQL Editor): paste each supabase/migrations/000X_*.sql into
+# the Supabase SQL Editor in numerical order and run. See supabase/README.md
+# for the full procedure. pnpm prisma migrate dev is currently optional and
+# may hang on the Supabase pooler from some networks; use the SQL Editor flow
+# until pooler connectivity is reliable.
 # Optional: seed a launch admin. Requires SEED_ADMIN_EMAIL + SEED_ADMIN_ID.
 # Create the launch admin in the Supabase Auth dashboard first, then copy
-# that user's UUID into SEED_ADMIN_ID before running the seed script.
+# that user's UUID into SEED_ADMIN_ID before running the seed script. If the
+# pooler is hanging, run supabase/migrations/0004_seed_admin.sql instead.
 pnpm db:seed
 pnpm dev
 ```
+
+### Database setup (SQL Editor)
+
+While the Supabase pooler / direct-URL is unreliable from local networks, the
+supported flow is to paste the numbered SQL files in `supabase/migrations/`
+into the Supabase SQL Editor in order. The files are idempotent. See
+[supabase/README.md](./supabase/README.md) for the full procedure and the
+admin-promotion one-liner.
 
 ## Project structure
 
@@ -98,6 +111,8 @@ This repository is Phase 0: the scaffolding pass. Subsequent phases build on top
 - Phase 4: Prayer wall and intercession
 - Phase 5: Devotionals and series
 - Phase 6: Admin tooling and audit log
+
+For the full module roadmap and phase prioritization, see [docs/PRODUCT_PLAN.md](./docs/PRODUCT_PLAN.md).
 
 > Note on Phase 0 commits: two of the eleven scaffolding commits carry slightly
 > off subjects relative to their diffs (the design tokens shipped with the

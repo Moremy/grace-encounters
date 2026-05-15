@@ -1,0 +1,1 @@
+Reserved for Phase 1.5: testimony moderation UI (queue, detail, approve / request-revision / reject / feature actions). Phase 1 ships only the data layer (see src/lib/testimonies/moderation-actions.ts).
