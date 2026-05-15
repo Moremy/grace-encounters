@@ -42,15 +42,45 @@ model Profile {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  testimonies Testimony[]
+
   @@index([role])
   @@map("profiles")
+}
+
+enum TestimonyStatus {
+  PENDING
+  APPROVED
+  NEEDS_REVISION
+  REJECTED
+  FEATURED
+}
+
+model Testimony {
+  id           String          @id @default(cuid())
+  slug         String          @unique
+  title        String
+  content      String
+  excerpt      String
+  authorId     String          @db.Uuid
+  status       TestimonyStatus @default(PENDING)
+  featured     Boolean         @default(false)
+  revisionNote String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  publishedAt  DateTime?
+
+  author Profile @relation(fields: [authorId], references: [id])
+
+  @@index([status])
+  @@index([authorId])
+  @@map("testimonies")
 }
 
 // ---------------------------------------------------------------------------
 // TODO: Phase 3+ — reserved model names. Do NOT define these yet; they are
 // listed here so naming stays consistent as features land.
 // ---------------------------------------------------------------------------
-// TODO: Phase 3+ Testimony            — user-submitted stories of encounters with Jesus.
 // TODO: Phase 3+ TestimonyReaction    — lightweight reactions (amen/pray/etc.) on a Testimony.
 // TODO: Phase 3+ Comment              — threaded comments on testimonies and devotionals.
 // TODO: Phase 3+ PrayerRequest        — prayer requests submitted by users (public or private).

@@ -48,6 +48,18 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Protected testimony routes: /testimonies/new and /testimonies/mine
+  // If no user, redirect to sign-in
+  if (
+    (pathname.startsWith('/testimonies/new') ||
+      pathname.startsWith('/testimonies/mine')) &&
+    !user
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/sign-in';
+    return NextResponse.redirect(url);
+  }
+
   // Protected admin routes: /admin/*
   // If no user, redirect to sign-in
   // If user but not admin/moderator, redirect to dashboard
