@@ -1,12 +1,12 @@
-# Grace Encounters
+# Light and Salt
 
-Real encounters with Jesus. Shared in reverence. Held in prayer.
+Be the Light. Preserve the Truth.
 
 > Then they overcame him by the blood of the Lamb and by the word of their testimony. - Revelation 12:11
 
 ## About
 
-Grace Encounters is a Christ-centered platform for testimonies, prayer requests, and devotionals. Every submission is reviewed before publication, so the space stays reverent in tone, language, and intent. The design is quiet and premium, written to feel more like a sanctuary than a feed.
+Light and Salt is a Christ-centered platform for testimonies, prayer requests, and devotionals. Every submission is reviewed before publication, so the space stays reverent in tone, language, and intent. The design is quiet and premium, written to feel more like a sanctuary than a feed.
 
 ## Tech stack
 

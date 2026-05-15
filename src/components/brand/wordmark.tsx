@@ -30,7 +30,7 @@ export function Wordmark({ className, variant = 'default', size = 'md', ...props
   const fill = variant === 'mono' ? 'currentColor' : '#C9A96E';
   const stroke = variant === 'mono' ? 'currentColor' : variant === 'inverted' ? '#FAF7F2' : '#0E2A47';
   return (
-    <span className={wrapper} aria-label="Grace Encounters" {...props}>
+    <span className={wrapper} aria-label="Light and Salt" {...props}>
       <svg
         width={glyph}
         height={glyph}
@@ -48,7 +48,7 @@ export function Wordmark({ className, variant = 'default', size = 'md', ...props
         <path d="M21 8 C 18 16, 10 20, 4 18" />
         <path d="M4 18 L 9 12" />
       </svg>
-      <span>Grace Encounters</span>
+      <span>Light and Salt</span>
     </span>
   );
 }
