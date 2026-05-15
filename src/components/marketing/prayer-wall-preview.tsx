@@ -27,7 +27,12 @@ const samplePrayers: { id: string; body: string }[] = [
 ];
 
 export async function PrayerWallPreview() {
-  const prayers = await getApprovedPrayerRequests(3);
+  let prayers: Awaited<ReturnType<typeof getApprovedPrayerRequests>> = [];
+  try {
+    prayers = await getApprovedPrayerRequests(3);
+  } catch (error) {
+    console.error('[PrayerWallPreview] Failed to fetch prayer requests:', error);
+  }
 
   return (
     <section className="bg-navy text-ivory py-24">
