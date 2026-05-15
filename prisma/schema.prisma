@@ -658,6 +658,7 @@ model BibleStudyProgress {
   plan BibleStudyPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
   user Profile        @relation(fields: [userId], references: [id])
 
+  @@unique([planId, userId, dayNumber])
   @@index([planId])
   @@index([userId])
   @@map("bible_study_progress")

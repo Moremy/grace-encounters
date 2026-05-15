@@ -27,6 +27,7 @@ export function DonationForm({ campaigns = [], defaultCampaignId }: DonationForm
   const [campaignId, setCampaignId] = React.useState(defaultCampaignId || '');
   const [phone, setPhone] = React.useState('');
   const [submitting, setSubmitting] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   const effectiveAmount = isCustom ? Number(customAmount) || 0 : amount;
 
@@ -50,6 +51,7 @@ export function DonationForm({ campaigns = [], defaultCampaignId }: DonationForm
     }
 
     try {
+      setError(null);
       const res = await fetch(`/api/donations/${providerRoute}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -58,11 +60,16 @@ export function DonationForm({ campaigns = [], defaultCampaignId }: DonationForm
 
       const data = await res.json();
 
+      if (!res.ok) {
+        setError(data.error || 'Something went wrong. Please try again.');
+        return;
+      }
+
       if (data.checkoutUrl || data.approvalUrl) {
         window.location.href = data.checkoutUrl || data.approvalUrl;
       }
     } catch {
-      // Error handling would go here
+      setError('Network error. Please check your connection and try again.');
     } finally {
       setSubmitting(false);
     }
@@ -230,6 +237,12 @@ export function DonationForm({ campaigns = [], defaultCampaignId }: DonationForm
               </option>
             ))}
           </select>
+        </div>
+      )}
+
+      {error && (
+        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
         </div>
       )}
 

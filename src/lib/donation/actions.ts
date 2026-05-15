@@ -147,9 +147,20 @@ export async function updateDonationStatus(
   status: string,
   providerTransactionId?: string,
 ) {
+  await requireAdmin();
+
   const validStatuses = ['PENDING', 'COMPLETED', 'FAILED', 'REFUNDED'];
   if (!validStatuses.includes(status)) {
     throw new Error('Invalid status');
+  }
+
+  // Fetch current donation to check previous status
+  const existing = await prisma.donation.findUnique({
+    where: { id: donationId },
+  });
+
+  if (!existing) {
+    throw new Error('Donation not found');
   }
 
   const donation = await prisma.donation.update({
@@ -160,8 +171,12 @@ export async function updateDonationStatus(
     },
   });
 
-  // If completed and linked to a campaign, increment currentAmount
-  if (status === 'COMPLETED' && donation.campaignId) {
+  // Only increment campaign amount when transitioning from non-COMPLETED to COMPLETED
+  if (
+    status === 'COMPLETED' &&
+    existing.status !== 'COMPLETED' &&
+    donation.campaignId
+  ) {
     await prisma.donationCampaign.update({
       where: { id: donation.campaignId },
       data: {

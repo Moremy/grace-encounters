@@ -2,14 +2,20 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function POST(request: Request) {
-  // TODO: Validate webhook signature based on provider
-  // For Stripe: stripe.webhooks.constructEvent(body, sig, webhookSecret)
-  // For M-Pesa: Validate the callback using Daraja API credentials
-  // For PayPal: Verify webhook notification via PayPal API
+  // Validate webhook signature via shared secret header
+  const webhookSecret = process.env.WEBHOOK_SECRET;
+  const signature = request.headers.get('x-webhook-secret');
+
+  if (!webhookSecret || signature !== webhookSecret) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401 },
+    );
+  }
 
   const body = await request.json();
 
-  const { donationId, status, providerTransactionId, provider } = body as {
+  const { donationId, status, providerTransactionId } = body as {
     donationId?: string;
     status?: string;
     providerTransactionId?: string;
@@ -43,26 +49,33 @@ export async function POST(request: Request) {
     );
   }
 
-  // Update donation status
-  await prisma.donation.update({
-    where: { id: donationId },
-    data: {
-      status: status as 'COMPLETED' | 'FAILED' | 'REFUNDED',
-      providerTransactionId: providerTransactionId || undefined,
-    },
-  });
-
-  // If completed and linked to a campaign, increment currentAmount
-  if (status === 'COMPLETED' && donation.campaignId) {
-    await prisma.donationCampaign.update({
-      where: { id: donation.campaignId },
+  // Wrap status update and campaign increment in a transaction for atomicity
+  await prisma.$transaction(async (tx) => {
+    // Update donation status
+    await tx.donation.update({
+      where: { id: donationId },
       data: {
-        currentAmount: {
-          increment: donation.amount,
-        },
+        status: status as 'COMPLETED' | 'FAILED' | 'REFUNDED',
+        providerTransactionId: providerTransactionId || undefined,
       },
     });
-  }
+
+    // Only increment campaign amount when transitioning from non-COMPLETED to COMPLETED
+    if (
+      status === 'COMPLETED' &&
+      donation.status !== 'COMPLETED' &&
+      donation.campaignId
+    ) {
+      await tx.donationCampaign.update({
+        where: { id: donation.campaignId },
+        data: {
+          currentAmount: {
+            increment: donation.amount,
+          },
+        },
+      });
+    }
+  });
 
   return NextResponse.json({ success: true }, { status: 200 });
 }

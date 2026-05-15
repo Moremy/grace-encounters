@@ -11,6 +11,7 @@ const serverSchema = z.object({
   NEXT_PUBLIC_SITE_URL: z.string().url().default('http://localhost:3000'),
   SEED_ADMIN_EMAIL: z.string().email().optional(),
   SEED_ADMIN_ID: z.string().uuid().optional(),
+  WEBHOOK_SECRET: z.string().min(1).optional(),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
 });
 
