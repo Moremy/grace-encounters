@@ -1,14 +1,17 @@
-import { type NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
 
-// Importing `@/lib/env` at the top of the middleware module guarantees the
-// zod-validated server schema runs as Next.js boots middleware (the very first
-// edge of the request lifecycle). A missing or malformed env file therefore
-// fails fast with the loader's labeled error rather than silently producing a
-// Supabase client constructed with "undefined".
-import '@/lib/env';
-
 export async function middleware(request: NextRequest) {
+  // If Supabase environment variables are not configured, skip session
+  // management and let the request pass through. This prevents the app from
+  // returning 404/500 on every route when running without a Supabase backend.
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  ) {
+    return NextResponse.next();
+  }
+
   return updateSession(request);
 }
 

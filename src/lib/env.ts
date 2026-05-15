@@ -23,7 +23,7 @@ const publicSchema = serverSchema.pick({
 type ServerEnv = z.infer<typeof serverSchema>;
 type PublicEnv = z.infer<typeof publicSchema>;
 
-function parseEnv(): ServerEnv | PublicEnv {
+function parseEnv(): ServerEnv | PublicEnv | null {
   const isServer = typeof window === 'undefined';
   const schema = isServer ? serverSchema : publicSchema;
   const source = isServer
@@ -35,11 +35,13 @@ function parseEnv(): ServerEnv | PublicEnv {
       };
   const parsed = schema.safeParse(source);
   if (!parsed.success) {
-    console.error(
-      '[env] Invalid environment variables:',
+    console.warn(
+      '[env] Missing or invalid environment variables:',
       parsed.error.flatten().fieldErrors,
     );
-    throw new Error('Invalid environment variables. See .env.example.');
+    // Return null instead of throwing so the app can still render pages that
+    // do not depend on Supabase (auth UI shells, marketing pages, etc.)
+    return null;
   }
   return parsed.data;
 }
