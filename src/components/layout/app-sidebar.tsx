@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 
 const navItems = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'My Testimonies', href: '/testimonies', icon: BookHeart },
+  { label: 'My Testimonies', href: '/testimonies/mine', icon: BookHeart },
   { label: 'Prayer Wall', href: '/prayer-wall', icon: HandHeart },
   { label: 'Devotionals', href: '/devotionals', icon: Sun },
   { label: 'Profile', href: '/profile', icon: User },
