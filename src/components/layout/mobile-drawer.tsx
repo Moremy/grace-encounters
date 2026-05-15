@@ -10,7 +10,7 @@ import { Wordmark } from '@/components/brand/wordmark';
 import { createClient } from '@/lib/supabase/client';
 import { signOut } from '@/lib/auth/actions';
 
-const drawerLinks: { label: string; href: string }[] = [
+const publicLinks: { label: string; href: string }[] = [
   { label: 'Home', href: '/' },
   { label: 'Testimonies', href: '/testimonies' },
   { label: 'Books', href: '/books' },
@@ -19,7 +19,6 @@ const drawerLinks: { label: string; href: string }[] = [
   { label: 'Events / Crusades', href: '/events' },
   { label: 'Media', href: '/media' },
   { label: 'Community', href: '/community' },
-  { label: 'Dashboard', href: '/dashboard' },
 ];
 
 export function MobileDrawer() {
@@ -115,19 +114,29 @@ export function MobileDrawer() {
         {/* Navigation links */}
         <nav aria-label="Mobile navigation" className="flex-1 overflow-y-auto px-6 py-4">
           <ul className="space-y-0">
-            {drawerLinks.map((link, index) => (
+            {publicLinks.map((link, index) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
                   className={cn(
                     'block py-3 font-serif text-navy transition-colors hover:text-gold',
-                    index < drawerLinks.length - 1 && 'border-b border-gold/10',
+                    (index < publicLinks.length - 1 || isAuthenticated) && 'border-b border-gold/10',
                   )}
                 >
                   {link.label}
                 </Link>
               </li>
             ))}
+            {isAuthenticated && (
+              <li>
+                <Link
+                  href="/dashboard"
+                  className="block py-3 font-serif text-navy transition-colors hover:text-gold"
+                >
+                  Dashboard
+                </Link>
+              </li>
+            )}
           </ul>
         </nav>
 
