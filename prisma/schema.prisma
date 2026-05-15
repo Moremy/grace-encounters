@@ -194,6 +194,9 @@ model Profile {
   messages              Message[]
   conversationParticipants ConversationParticipant[]
 
+  // Push notification relations
+  pushSubscriptions     PushSubscription[]
+
   @@index([role])
   @@map("profiles")
 }
@@ -770,4 +773,23 @@ model Message {
   @@index([conversationId])
   @@index([senderId])
   @@map("messages")
+}
+
+// ---------------------------------------------------------------------------
+// Push Subscription models
+// ---------------------------------------------------------------------------
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String   @db.Uuid
+  endpoint  String
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@unique([userId, endpoint])
+  @@map("push_subscriptions")
 }
