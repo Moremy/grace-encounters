@@ -200,6 +200,10 @@ model Profile {
   // AI recommendation relations
   aiRecommendations     AIRecommendation[]
 
+  // Live Streaming relations
+  liveStreams            LiveStream[]         @relation("ProfileLiveStreams")
+  liveStreamChats       LiveStreamChat[]     @relation("ProfileLiveStreamChats")
+
   @@index([role])
   @@map("profiles")
 }
@@ -801,6 +805,23 @@ model PushSubscription {
 // AI Recommendation models
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Live Streaming enums
+// ---------------------------------------------------------------------------
+
+enum LiveStreamStatus {
+  SCHEDULED
+  LIVE
+  ENDED
+}
+
+enum LiveStreamType {
+  WORSHIP
+  SERMON
+  EVENT
+  SPECIAL
+}
+
 enum AIRecommendationType {
   SCRIPTURE
   DEVOTIONAL
@@ -819,4 +840,63 @@ model AIRecommendation {
   @@index([userId])
   @@index([type])
   @@map("ai_recommendations")
+}
+
+// ---------------------------------------------------------------------------
+// Live Streaming models
+// ---------------------------------------------------------------------------
+
+model LiveStream {
+  id           String           @id @default(cuid())
+  slug         String           @unique
+  title        String
+  description  String
+  streamUrl    String?
+  thumbnailUrl String?
+  status       LiveStreamStatus @default(SCHEDULED)
+  streamType   LiveStreamType
+  scheduledAt  DateTime?
+  startedAt    DateTime?
+  endedAt      DateTime?
+  viewerCount  Int              @default(0)
+  createdById  String           @db.Uuid
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  createdBy Profile           @relation("ProfileLiveStreams", fields: [createdById], references: [id])
+  chatMessages LiveStreamChat[]
+  replay       LiveStreamReplay?
+
+  @@index([status])
+  @@index([streamType])
+  @@index([scheduledAt])
+  @@index([createdById])
+  @@map("live_streams")
+}
+
+model LiveStreamChat {
+  id        String   @id @default(cuid())
+  streamId  String
+  authorId  String   @db.Uuid
+  content   String
+  createdAt DateTime @default(now())
+
+  stream LiveStream @relation(fields: [streamId], references: [id], onDelete: Cascade)
+  author Profile    @relation("ProfileLiveStreamChats", fields: [authorId], references: [id])
+
+  @@index([streamId])
+  @@index([authorId])
+  @@map("live_stream_chats")
+}
+
+model LiveStreamReplay {
+  id        String   @id @default(cuid())
+  streamId  String   @unique
+  replayUrl String
+  duration  Int?
+  createdAt DateTime @default(now())
+
+  stream LiveStream @relation(fields: [streamId], references: [id], onDelete: Cascade)
+
+  @@map("live_stream_replays")
 }
