@@ -19,7 +19,7 @@ const VALID_STATUSES = [
 const createTestimonySchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters').max(200, 'Title must be at most 200 characters'),
   excerpt: z.string().min(10, 'Excerpt must be at least 10 characters').max(200, 'Excerpt must be at most 200 characters'),
-  content: z.string().min(50, 'Content must be at least 50 characters'),
+  content: z.string().min(50, 'Content must be at least 50 characters').max(10000, 'Content must be at most 10000 characters'),
 });
 
 export async function createTestimony(formData: FormData) {
@@ -118,15 +118,31 @@ export async function updateTestimonyStatus(
   const publishedAt =
     newStatus === 'APPROVED' || newStatus === 'FEATURED' ? new Date() : null;
 
-  await prisma.testimony.update({
-    where: { id: testimonyId },
-    data: {
-      status: newStatus as typeof VALID_STATUSES[number],
-      revisionNote: revisionNote ?? null,
-      publishedAt,
-      featured: newStatus === 'FEATURED',
-    },
-  });
+  try {
+    await prisma.testimony.update({
+      where: { id: testimonyId },
+      data: {
+        status: newStatus as typeof VALID_STATUSES[number],
+        revisionNote: revisionNote ?? null,
+        publishedAt,
+        featured: newStatus === 'FEATURED',
+      },
+    });
+  } catch (err: unknown) {
+    if (
+      err &&
+      typeof err === 'object' &&
+      'code' in err &&
+      (err as { code: string }).code === 'P2025'
+    ) {
+      // Record not found - testimony may have been deleted
+      revalidatePath('/admin/reviews');
+      return;
+    }
+    // Other errors - revalidate and return gracefully
+    revalidatePath('/admin/reviews');
+    return;
+  }
 
   revalidatePath('/admin/reviews');
   revalidatePath('/testimonies');

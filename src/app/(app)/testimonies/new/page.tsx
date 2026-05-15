@@ -12,7 +12,16 @@ export const metadata: Metadata = {
   description: 'Share your testimony of how God has moved in your life.',
 };
 
-export default function NewTestimonyPage() {
+export default function NewTestimonyPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  const errorMessage =
+    typeof searchParams.error === 'string'
+      ? decodeURIComponent(searchParams.error)
+      : undefined;
+
   return (
     <div className="space-y-8">
       <div>
@@ -24,6 +33,12 @@ export default function NewTestimonyPage() {
           someone today.
         </p>
       </div>
+
+      {errorMessage && (
+        <div className="bg-red-50 border border-red-200 text-red-800 rounded-md p-4 text-sm">
+          {errorMessage}
+        </div>
+      )}
 
       <div className="flex items-start gap-3 rounded-md bg-muted p-4">
         <Info className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
