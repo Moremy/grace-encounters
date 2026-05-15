@@ -43,6 +43,8 @@ model Profile {
   updatedAt   DateTime @updatedAt
 
   testimonies Testimony[]
+  prayerRequests    PrayerRequest[]      @relation("ProfilePrayerRequests")
+  prayerIntercessions PrayerIntercession[] @relation("ProfilePrayerIntercessions")
 
   @@index([role])
   @@map("profiles")
@@ -78,13 +80,61 @@ model Testimony {
 }
 
 // ---------------------------------------------------------------------------
+// Prayer Wall models
+// ---------------------------------------------------------------------------
+
+enum PrayerRequestStatus {
+  PENDING
+  APPROVED
+  ANSWERED
+  REJECTED
+}
+
+enum PrayerVisibility {
+  PUBLIC
+  ANONYMOUS
+  PRIVATE
+}
+
+model PrayerRequest {
+  id          String              @id @default(cuid())
+  title       String
+  content     String
+  authorId    String              @db.Uuid
+  status      PrayerRequestStatus @default(PENDING)
+  visibility  PrayerVisibility    @default(PUBLIC)
+  prayerCount Int                 @default(0)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  answeredAt  DateTime?
+
+  author       Profile              @relation("ProfilePrayerRequests", fields: [authorId], references: [id])
+  intercessions PrayerIntercession[]
+
+  @@index([status])
+  @@index([authorId])
+  @@map("prayer_requests")
+}
+
+model PrayerIntercession {
+  id              String   @id @default(cuid())
+  prayerRequestId String
+  userId          String   @db.Uuid
+  createdAt       DateTime @default(now())
+
+  prayerRequest PrayerRequest @relation(fields: [prayerRequestId], references: [id], onDelete: Cascade)
+  user          Profile       @relation("ProfilePrayerIntercessions", fields: [userId], references: [id])
+
+  @@unique([prayerRequestId, userId])
+  @@map("prayer_intercessions")
+}
+
+// ---------------------------------------------------------------------------
 // TODO: Phase 3+ — reserved model names. Do NOT define these yet; they are
 // listed here so naming stays consistent as features land.
 // ---------------------------------------------------------------------------
 // TODO: Phase 3+ TestimonyReaction    — lightweight reactions (amen/pray/etc.) on a Testimony.
 // TODO: Phase 3+ Comment              — threaded comments on testimonies and devotionals.
-// TODO: Phase 3+ PrayerRequest        — prayer requests submitted by users (public or private).
-// TODO: Phase 3+ PrayerIntercession   — record of a user interceding/praying for a request.
 // TODO: Phase 3+ Devotional           — a single devotional reading entry.
 // TODO: Phase 3+ DevotionalSeries     — an ordered collection of Devotional entries.
 // TODO: Phase 3+ AgendaEntry          — scheduled items on the editorial/publishing agenda.
