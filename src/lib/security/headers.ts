@@ -1,7 +1,12 @@
 /**
  * Security headers configuration for Next.js.
  * These are merged into the next.config.mjs headers() function.
+ *
+ * In development, script-src and connect-src are relaxed to allow
+ * Next.js dev runtime (React Refresh, HMR, webpack eval).
  */
+
+const isDev = process.env.NODE_ENV !== 'production';
 
 export const securityHeaders = [
   {
@@ -24,11 +29,15 @@ export const securityHeaders = [
     key: 'Content-Security-Policy',
     value: [
       "default-src 'self'",
-      "script-src 'self'",
+      isDev
+        ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
+        : "script-src 'self'",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://*.supabase.co https://res.cloudinary.com",
       "font-src 'self' data:",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+      isDev
+        ? "connect-src 'self' https://*.supabase.co wss://*.supabase.co http://localhost:* ws://localhost:*"
+        : "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
       "media-src 'self' https://*.supabase.co",
       "frame-ancestors 'none'",
     ].join('; '),
