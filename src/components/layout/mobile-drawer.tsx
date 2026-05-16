@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
@@ -24,7 +25,13 @@ const publicLinks: { label: string; href: string }[] = [
 export function MobileDrawer() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
   const pathname = usePathname();
+
+  // Track mount state for SSR safety (createPortal needs document.body)
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Close drawer on route change
   React.useEffect(() => {
@@ -77,93 +84,101 @@ export function MobileDrawer() {
         <Menu className="h-6 w-6" />
       </button>
 
-      {/* Backdrop overlay */}
-      <div
-        className={cn(
-          'fixed inset-0 z-50 bg-black/40 transition-opacity duration-300',
-          isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none',
-        )}
-        aria-hidden="true"
-        onClick={() => setIsOpen(false)}
-      />
+      {/* Portal: render backdrop and drawer on document.body to escape header stacking context */}
+      {mounted &&
+        createPortal(
+          <>
+            {/* Backdrop overlay */}
+            <div
+              className={cn(
+                'fixed inset-0 z-[9999] bg-black/40 transition-opacity duration-300',
+                isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none',
+              )}
+              aria-hidden="true"
+              onClick={() => setIsOpen(false)}
+            />
 
-      {/* Drawer panel */}
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="Navigation menu"
-        className={cn(
-          'fixed top-0 left-0 z-50 h-full w-72 bg-ivory shadow-xl',
-          'transform transition-transform duration-300 ease-in-out',
-          isOpen ? 'translate-x-0' : '-translate-x-full',
-        )}
-      >
-        {/* Header: Wordmark + close button */}
-        <div className="flex items-center justify-between px-6 h-16 border-b border-gold/30">
-          <Wordmark size="md" />
-          <button
-            type="button"
-            aria-label="Close navigation menu"
-            className="inline-flex items-center justify-center rounded-md p-2 text-navy hover:text-gold transition-colors"
-            onClick={() => setIsOpen(false)}
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        {/* Navigation links */}
-        <nav aria-label="Navigation" className="flex-1 overflow-y-auto px-6 py-4">
-          <ul className="space-y-0">
-            {publicLinks.map((link, index) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className={cn(
-                    'block py-3 font-serif text-navy transition-colors hover:text-gold',
-                    (index < publicLinks.length - 1 || isAuthenticated) && 'border-b border-gold/10',
-                  )}
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-            {isAuthenticated && (
-              <li>
-                <Link
-                  href="/dashboard"
-                  className="block py-3 font-serif text-navy transition-colors hover:text-gold"
-                >
-                  Dashboard
-                </Link>
-              </li>
-            )}
-          </ul>
-        </nav>
-
-        {/* Divider */}
-        <div className="border-t border-gold/30 mx-6" />
-
-        {/* Auth section */}
-        <div className="px-6 py-4">
-          {isAuthenticated ? (
-            <form action={signOut}>
-              <button
-                type="submit"
-                className="w-full text-left font-serif text-navy py-3 transition-colors hover:text-gold"
-              >
-                Sign Out
-              </button>
-            </form>
-          ) : (
-            <Link
-              href="/sign-in"
-              className="block font-serif text-navy py-3 transition-colors hover:text-gold"
+            {/* Drawer panel */}
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-label="Navigation menu"
+              className={cn(
+                'fixed top-0 left-0 z-[9999] h-full w-72 bg-ivory shadow-xl',
+                'transform transition-transform duration-300 ease-in-out',
+                isOpen ? 'translate-x-0' : '-translate-x-full',
+              )}
             >
-              Sign In
-            </Link>
-          )}
-        </div>
-      </div>
+              {/* Header: Wordmark + close button */}
+              <div className="flex items-center justify-between px-6 h-16 border-b border-gold/30">
+                <Wordmark size="md" />
+                <button
+                  type="button"
+                  aria-label="Close navigation menu"
+                  className="inline-flex items-center justify-center rounded-md p-2 text-navy hover:text-gold transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Navigation links */}
+              <nav aria-label="Navigation" className="flex-1 overflow-y-auto px-6 py-4">
+                <ul className="space-y-0">
+                  {publicLinks.map((link, index) => (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        className={cn(
+                          'block py-3 font-serif text-navy transition-colors hover:text-gold',
+                          (index < publicLinks.length - 1 || isAuthenticated) &&
+                            'border-b border-gold/10',
+                        )}
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                  {isAuthenticated && (
+                    <li>
+                      <Link
+                        href="/dashboard"
+                        className="block py-3 font-serif text-navy transition-colors hover:text-gold"
+                      >
+                        Dashboard
+                      </Link>
+                    </li>
+                  )}
+                </ul>
+              </nav>
+
+              {/* Divider */}
+              <div className="border-t border-gold/30 mx-6" />
+
+              {/* Auth section */}
+              <div className="px-6 py-4">
+                {isAuthenticated ? (
+                  <form action={signOut}>
+                    <button
+                      type="submit"
+                      className="w-full text-left font-serif text-navy py-3 transition-colors hover:text-gold"
+                    >
+                      Sign Out
+                    </button>
+                  </form>
+                ) : (
+                  <Link
+                    href="/sign-in"
+                    className="block font-serif text-navy py-3 transition-colors hover:text-gold"
+                  >
+                    Sign In
+                  </Link>
+                )}
+              </div>
+            </div>
+          </>,
+          document.body,
+        )}
     </>
   );
 }
