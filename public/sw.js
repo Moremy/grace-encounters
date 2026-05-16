@@ -38,6 +38,14 @@ self.addEventListener('fetch', (event) => {
   // Skip chrome-extension and other non-http(s) schemes
   if (!url.protocol.startsWith('http')) return;
 
+  // Never cache-intercept /_next/static/ on localhost (development)
+  if (
+    url.hostname === 'localhost' &&
+    url.pathname.startsWith('/_next/static/')
+  ) {
+    return;
+  }
+
   // Network-first for API routes and server actions
   if (
     url.pathname.startsWith('/api/') ||
