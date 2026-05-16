@@ -15,6 +15,8 @@ import {
   Radio,
   Heart,
   Video,
+  BarChart3,
+  Shield,
 } from 'lucide-react';
 
 import { Wordmark } from '@/components/brand/wordmark';
@@ -23,6 +25,8 @@ import { cn } from '@/lib/utils';
 
 const adminNavItems = [
   { label: 'Overview', href: '/admin', icon: LayoutDashboard },
+  { label: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
+  { label: 'Moderation', href: '/admin/moderation', icon: Shield },
   { label: 'Pending Reviews', href: '/admin/reviews', icon: ClipboardCheck },
   { label: 'Testimonies', href: '/admin/testimonies', icon: BookHeart },
   { label: 'Prayer Requests', href: '/admin/prayers', icon: HandHeart },
