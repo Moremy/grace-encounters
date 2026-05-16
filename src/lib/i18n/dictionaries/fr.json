@@ -1,0 +1,59 @@
+{
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "testimonies": "Mes Temoignages",
+    "prayerWall": "Mur de Priere",
+    "prayerRooms": "Salles de Priere",
+    "bibleStudy": "Etude Biblique",
+    "devotionals": "Devotionnels",
+    "media": "Medias",
+    "sermons": "Sermons",
+    "messages": "Messages",
+    "giving": "Offrandes",
+    "profile": "Profil",
+    "books": "Livres",
+    "blog": "Blog",
+    "events": "Evenements",
+    "community": "Communaute",
+    "donate": "Donner"
+  },
+  "common": {
+    "submit": "Soumettre",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "close": "Fermer",
+    "loading": "Chargement...",
+    "search": "Rechercher",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Precedent",
+    "signIn": "Se connecter",
+    "signUp": "S'inscrire",
+    "signOut": "Se deconnecter",
+    "shareStory": "Partagez Votre Histoire",
+    "language": "Langue"
+  },
+  "pages": {
+    "home": {
+      "title": "Rencontres reelles avec Jesus.",
+      "subtitle": "Un espace sacre pour les temoignages, la priere et la devotion quotidienne."
+    },
+    "dashboard": {
+      "welcome": "Bienvenue",
+      "recentActivity": "Activite Recente"
+    }
+  },
+  "errors": {
+    "generic": "Une erreur est survenue. Veuillez reessayer.",
+    "notFound": "Page non trouvee",
+    "unauthorized": "Vous devez etre connecte pour acceder a cette page.",
+    "forbidden": "Vous n'avez pas la permission d'acceder a cette page."
+  },
+  "footer": {
+    "copyright": "Tous droits reserves.",
+    "privacy": "Politique de Confidentialite",
+    "terms": "Conditions d'Utilisation"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "nav": {
+    "dashboard": "Panel",
+    "testimonies": "Mis Testimonios",
+    "prayerWall": "Muro de Oracion",
+    "prayerRooms": "Salas de Oracion",
+    "bibleStudy": "Estudio Biblico",
+    "devotionals": "Devocionales",
+    "media": "Medios",
+    "sermons": "Sermones",
+    "messages": "Mensajes",
+    "giving": "Ofrendas",
+    "profile": "Perfil",
+    "books": "Libros",
+    "blog": "Blog",
+    "events": "Eventos",
+    "community": "Comunidad",
+    "donate": "Donar"
+  },
+  "common": {
+    "submit": "Enviar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "close": "Cerrar",
+    "loading": "Cargando...",
+    "search": "Buscar",
+    "back": "Atras",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "signIn": "Iniciar Sesion",
+    "signUp": "Registrarse",
+    "signOut": "Cerrar Sesion",
+    "shareStory": "Comparte Tu Historia",
+    "language": "Idioma"
+  },
+  "pages": {
+    "home": {
+      "title": "Encuentros reales con Jesus.",
+      "subtitle": "Un espacio reverente para testimonios, oracion y devocion diaria."
+    },
+    "dashboard": {
+      "welcome": "Bienvenido de vuelta",
+      "recentActivity": "Actividad Reciente"
+    }
+  },
+  "errors": {
+    "generic": "Algo salio mal. Por favor, intentalo de nuevo.",
+    "notFound": "Pagina no encontrada",
+    "unauthorized": "Debes iniciar sesion para acceder a esta pagina.",
+    "forbidden": "No tienes permiso para acceder a esta pagina."
+  },
+  "footer": {
+    "copyright": "Todos los derechos reservados.",
+    "privacy": "Politica de Privacidad",
+    "terms": "Terminos de Servicio"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "nav": {
+    "dashboard": "Dashibodi",
+    "testimonies": "Ushuhuda Wangu",
+    "prayerWall": "Ukuta wa Maombi",
+    "prayerRooms": "Vyumba vya Maombi",
+    "bibleStudy": "Somo la Biblia",
+    "devotionals": "Ibada",
+    "media": "Vyombo vya Habari",
+    "sermons": "Mahubiri",
+    "messages": "Ujumbe",
+    "giving": "Michango",
+    "profile": "Wasifu",
+    "books": "Vitabu",
+    "blog": "Blogu",
+    "events": "Matukio",
+    "community": "Jumuiya",
+    "donate": "Changia"
+  },
+  "common": {
+    "submit": "Wasilisha",
+    "cancel": "Ghairi",
+    "save": "Hifadhi",
+    "delete": "Futa",
+    "edit": "Hariri",
+    "close": "Funga",
+    "loading": "Inapakia...",
+    "search": "Tafuta",
+    "back": "Rudi",
+    "next": "Ifuatayo",
+    "previous": "Iliyotangulia",
+    "signIn": "Ingia",
+    "signUp": "Jisajili",
+    "signOut": "Ondoka",
+    "shareStory": "Shiriki Hadithi Yako",
+    "language": "Lugha"
+  },
+  "pages": {
+    "home": {
+      "title": "Mikutano ya kweli na Yesu.",
+      "subtitle": "Nafasi takatifu kwa ushuhuda, maombi, na ibada ya kila siku."
+    },
+    "dashboard": {
+      "welcome": "Karibu tena",
+      "recentActivity": "Shughuli za Hivi Karibuni"
+    }
+  },
+  "errors": {
+    "generic": "Kuna kitu kimekwenda vibaya. Tafadhali jaribu tena.",
+    "notFound": "Ukurasa haujapatikana",
+    "unauthorized": "Lazima uwe umeingia ili kufikia ukurasa huu.",
+    "forbidden": "Huna ruhusa ya kufikia ukurasa huu."
+  },
+  "footer": {
+    "copyright": "Haki zote zimehifadhiwa.",
+    "privacy": "Sera ya Faragha",
+    "terms": "Masharti ya Huduma"
+  }
+}

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Wordmark } from '@/components/brand/wordmark';
 import { ScrollAwareShell } from '@/components/layout/scroll-aware-shell';
 import { MobileDrawer } from '@/components/layout/mobile-drawer';
+import { LanguageSwitcher } from '@/components/i18n/language-switcher';
 
 const navLinks: { label: string; href: string }[] = [
   { label: 'Books', href: '/books' },
@@ -48,6 +49,7 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
+          <LanguageSwitcher />
           <Button variant="ghost" size="icon" asChild className="hidden sm:inline-flex">
             <Link href="/search" aria-label="Search">
               <Search className="h-4 w-4" />

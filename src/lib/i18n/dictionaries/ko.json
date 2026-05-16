@@ -1,0 +1,59 @@
+{
+  "nav": {
+    "dashboard": "대시보드",
+    "testimonies": "내 간증",
+    "prayerWall": "기도 벽",
+    "prayerRooms": "기도실",
+    "bibleStudy": "성경 공부",
+    "devotionals": "묵상",
+    "media": "미디어",
+    "sermons": "설교",
+    "messages": "메시지",
+    "giving": "헌금",
+    "profile": "프로필",
+    "books": "도서",
+    "blog": "블로그",
+    "events": "행사",
+    "community": "커뮤니티",
+    "donate": "기부"
+  },
+  "common": {
+    "submit": "제출",
+    "cancel": "취소",
+    "save": "저장",
+    "delete": "삭제",
+    "edit": "편집",
+    "close": "닫기",
+    "loading": "로딩 중...",
+    "search": "검색",
+    "back": "뒤로",
+    "next": "다음",
+    "previous": "이전",
+    "signIn": "로그인",
+    "signUp": "회원가입",
+    "signOut": "로그아웃",
+    "shareStory": "이야기 나누기",
+    "language": "언어"
+  },
+  "pages": {
+    "home": {
+      "title": "예수님과의 진정한 만남.",
+      "subtitle": "간증, 기도, 매일 묵상을 위한 경건한 공간입니다."
+    },
+    "dashboard": {
+      "welcome": "다시 오신 것을 환영합니다",
+      "recentActivity": "최근 활동"
+    }
+  },
+  "errors": {
+    "generic": "문제가 발생했습니다. 다시 시도해 주세요.",
+    "notFound": "페이지를 찾을 수 없습니다",
+    "unauthorized": "이 페이지에 접근하려면 로그인해야 합니다.",
+    "forbidden": "이 페이지에 접근할 권한이 없습니다."
+  },
+  "footer": {
+    "copyright": "모든 권리 보유.",
+    "privacy": "개인정보 처리방침",
+    "terms": "이용약관"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "testimonies": "My Testimonies",
+    "prayerWall": "Prayer Wall",
+    "prayerRooms": "Prayer Rooms",
+    "bibleStudy": "Bible Study",
+    "devotionals": "Devotionals",
+    "media": "Media",
+    "sermons": "Sermons",
+    "messages": "Messages",
+    "giving": "Giving",
+    "profile": "Profile",
+    "books": "Books",
+    "blog": "Blog",
+    "events": "Events",
+    "community": "Community",
+    "donate": "Donate"
+  },
+  "common": {
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "loading": "Loading...",
+    "search": "Search",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "shareStory": "Share Your Story",
+    "language": "Language"
+  },
+  "pages": {
+    "home": {
+      "title": "Real encounters with Jesus.",
+      "subtitle": "A reverent space for testimonies, prayer, and daily devotion."
+    },
+    "dashboard": {
+      "welcome": "Welcome back",
+      "recentActivity": "Recent Activity"
+    }
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "notFound": "Page not found",
+    "unauthorized": "You must be signed in to access this page.",
+    "forbidden": "You do not have permission to access this page."
+  },
+  "footer": {
+    "copyright": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  }
+}
