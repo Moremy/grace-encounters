@@ -149,6 +149,17 @@ enum ConversationType {
   GROUP
 }
 
+// ---------------------------------------------------------------------------
+// Background Job enums
+// ---------------------------------------------------------------------------
+
+enum JobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
 model Profile {
   // The Profile.id is the same UUID as Supabase auth.users.id. We mirror
   // Supabase's auth user into this row so app data can FK to a stable id
@@ -208,6 +219,9 @@ model Profile {
   emailLogs             EmailLog[]
   newsletterSubscription NewsletterSubscription?
   notificationPreference NotificationPreference?
+
+  // Audit log relations
+  auditLogs             AuditLog[]
 
   @@index([role])
   @@map("profiles")
@@ -977,4 +991,50 @@ model NotificationPreference {
   user Profile @relation(fields: [userId], references: [id])
 
   @@map("notification_preferences")
+}
+
+// ---------------------------------------------------------------------------
+// Audit Log model
+// ---------------------------------------------------------------------------
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?  @db.Uuid
+  action     String
+  resource   String
+  resourceId String?
+  metadata   Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  user Profile? @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ---------------------------------------------------------------------------
+// Background Job model
+// ---------------------------------------------------------------------------
+
+model BackgroundJob {
+  id          String    @id @default(cuid())
+  type        String
+  payload     Json
+  status      JobStatus @default(PENDING)
+  attempts    Int       @default(0)
+  maxAttempts Int       @default(3)
+  scheduledFor DateTime
+  startedAt   DateTime?
+  completedAt DateTime?
+  error       String?
+  createdAt   DateTime  @default(now())
+
+  @@index([status])
+  @@index([scheduledFor])
+  @@index([type])
+  @@map("background_jobs")
 }

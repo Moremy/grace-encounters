@@ -17,6 +17,7 @@ import {
   Video,
   BarChart3,
   Shield,
+  ScrollText,
 } from 'lucide-react';
 
 import { Wordmark } from '@/components/brand/wordmark';
@@ -40,6 +41,7 @@ const adminNavItems = [
   { label: 'Donations', href: '/admin/donations', icon: Heart },
   { label: 'Events', href: '/admin/events', icon: Calendar },
   { label: 'Blog', href: '/admin/blog', icon: PenLine },
+  { label: 'Audit Log', href: '/admin/audit-log', icon: ScrollText },
   { label: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 

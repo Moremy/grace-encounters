@@ -2,8 +2,13 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/lib/prisma';
 import { donationSchema } from '@/lib/donation/schemas';
+import { applySensitiveRateLimit } from '@/lib/middleware/rate-limit-middleware';
 
 export async function POST(request: Request) {
+  // Rate limit check
+  const rateLimitResponse = applySensitiveRateLimit(request);
+  if (rateLimitResponse) return rateLimitResponse;
+
   const supabase = await createClient();
   const {
     data: { user },

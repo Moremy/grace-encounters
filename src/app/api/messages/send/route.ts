@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/lib/prisma';
+import { applyRateLimit } from '@/lib/middleware/rate-limit-middleware';
 
 export async function POST(request: NextRequest) {
+  // Rate limit check
+  const rateLimitResponse = applyRateLimit(request);
+  if (rateLimitResponse) return rateLimitResponse;
+
   const supabase = await createClient();
   const {
     data: { user },

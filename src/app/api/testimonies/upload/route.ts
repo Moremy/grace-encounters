@@ -1,9 +1,14 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { uploadValidationSchema } from '@/lib/testimony/schemas';
+import { applySensitiveRateLimit } from '@/lib/middleware/rate-limit-middleware';
 
 export async function POST(request: Request) {
   try {
+    // Rate limit check
+    const rateLimitResponse = applySensitiveRateLimit(request);
+    if (rateLimitResponse) return rateLimitResponse;
+
     const supabase = await createClient();
     const {
       data: { user },
