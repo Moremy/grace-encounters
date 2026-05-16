@@ -874,6 +874,7 @@ model LiveStream {
   thumbnailUrl String?
   status       LiveStreamStatus @default(SCHEDULED)
   streamType   LiveStreamType
+  isPublic     Boolean          @default(true)
   scheduledAt  DateTime?
   startedAt    DateTime?
   endedAt      DateTime?

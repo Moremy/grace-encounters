@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { applySensitiveRateLimit } from '@/lib/middleware/rate-limit-middleware';
 
 /**
  * POST /api/email/newsletter/subscribe
@@ -7,6 +8,10 @@ import { prisma } from '@/lib/prisma';
  * Supports JSON and form-encoded POST requests.
  */
 export async function POST(request: Request) {
+  // Rate limit to prevent subscription-bomb attacks
+  const rateLimitResponse = applySensitiveRateLimit(request);
+  if (rateLimitResponse) return rateLimitResponse;
+
   try {
     let email: string | null = null;
 

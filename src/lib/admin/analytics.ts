@@ -120,22 +120,26 @@ export async function getUserGrowthMetrics(
   const days = daysMap[period];
   const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
 
-  const users = await prisma.profile.findMany({
-    where: { createdAt: { gte: startDate } },
-    select: { createdAt: true },
-    orderBy: { createdAt: 'asc' },
-  });
+  // Use raw SQL with DATE_TRUNC for database-level aggregation instead of
+  // loading all rows into memory
+  const grouped = await prisma.$queryRaw<Array<{ date: Date; count: bigint }>>`
+    SELECT DATE_TRUNC('day', "createdAt") as date, COUNT(*) as count
+    FROM "Profile"
+    WHERE "createdAt" >= ${startDate}
+    GROUP BY DATE_TRUNC('day', "createdAt")
+    ORDER BY date ASC
+  `;
 
-  // Group by date
+  // Build a complete date range map with zeroes for missing days
   const dateMap = new Map<string, number>();
   for (let i = 0; i < days; i++) {
     const date = new Date(startDate.getTime() + i * 24 * 60 * 60 * 1000);
-    dateMap.set(date.toISOString().split('T')[0], 0);
+    dateMap.set(date.toISOString().split('T')[0]!, 0);
   }
 
-  for (const user of users) {
-    const dateKey = user.createdAt.toISOString().split('T')[0];
-    dateMap.set(dateKey, (dateMap.get(dateKey) ?? 0) + 1);
+  for (const row of grouped) {
+    const dateKey = new Date(row.date).toISOString().split('T')[0]!;
+    dateMap.set(dateKey, Number(row.count));
   }
 
   return Array.from(dateMap.entries()).map(([date, count]) => ({
@@ -229,19 +233,32 @@ export async function getDonationAnalytics(
   const days = daysMap[period];
   const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
 
-  const donations = await prisma.donation.findMany({
-    where: { status: 'COMPLETED', createdAt: { gte: startDate } },
-    select: { amount: true, recurring: true, createdAt: true },
-  });
+  // Use database-level aggregation instead of loading all rows into memory
+  const [aggregates, recurringCount, oneTimeCount, dailyRaw] = await Promise.all([
+    prisma.donation.aggregate({
+      _sum: { amount: true },
+      _avg: { amount: true },
+      _count: true,
+      where: { status: 'COMPLETED', createdAt: { gte: startDate } },
+    }),
+    prisma.donation.count({
+      where: { status: 'COMPLETED', createdAt: { gte: startDate }, recurring: true },
+    }),
+    prisma.donation.count({
+      where: { status: 'COMPLETED', createdAt: { gte: startDate }, recurring: false },
+    }),
+    prisma.$queryRaw<Array<{ date: Date; total: unknown }>>`
+      SELECT DATE_TRUNC('day', "createdAt") as date, SUM("amount") as total
+      FROM "Donation"
+      WHERE "status" = 'COMPLETED' AND "createdAt" >= ${startDate}
+      GROUP BY DATE_TRUNC('day', "createdAt")
+      ORDER BY date ASC
+    `,
+  ]);
 
-  const totalRaised = donations.reduce(
-    (sum, d) => sum + Number(d.amount),
-    0,
-  );
-  const averageDonation =
-    donations.length > 0 ? totalRaised / donations.length : 0;
-  const recurringCount = donations.filter((d) => d.recurring).length;
-  const oneTimeCount = donations.filter((d) => !d.recurring).length;
+  const totalRaised = Number(aggregates._sum.amount ?? 0);
+  const averageDonation = Number(aggregates._avg.amount ?? 0);
+  const totalDonations = aggregates._count;
 
   // Top campaigns
   const topCampaigns = await prisma.donationCampaign.findMany({
@@ -250,16 +267,16 @@ export async function getDonationAnalytics(
     select: { title: true, goalAmount: true, currentAmount: true },
   });
 
-  // Daily donation totals
+  // Build complete date range with zeroes for missing days
   const dateMap = new Map<string, number>();
   for (let i = 0; i < days; i++) {
     const date = new Date(startDate.getTime() + i * 24 * 60 * 60 * 1000);
-    dateMap.set(date.toISOString().split('T')[0], 0);
+    dateMap.set(date.toISOString().split('T')[0]!, 0);
   }
 
-  for (const donation of donations) {
-    const dateKey = donation.createdAt.toISOString().split('T')[0];
-    dateMap.set(dateKey, (dateMap.get(dateKey) ?? 0) + Number(donation.amount));
+  for (const row of dailyRaw) {
+    const dateKey = new Date(row.date).toISOString().split('T')[0]!;
+    dateMap.set(dateKey, Number(row.total));
   }
 
   const dailyTotals = Array.from(dateMap.entries()).map(([date, amount]) => ({
@@ -270,7 +287,7 @@ export async function getDonationAnalytics(
   return {
     totalRaised,
     averageDonation,
-    totalDonations: donations.length,
+    totalDonations,
     recurringCount,
     oneTimeCount,
     topCampaigns: topCampaigns.map((c) => ({

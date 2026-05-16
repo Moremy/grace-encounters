@@ -1,20 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { createClient } from '@/lib/supabase/server';
+import { applyRateLimit } from '@/lib/middleware/rate-limit-middleware';
 import { isAIEnabled, AI_CONFIG } from '@/lib/ai/config';
 import { CONTENT_RECOMMENDATION_PROMPT } from '@/lib/ai/prompts';
 
 export async function POST(request: NextRequest) {
+  // Rate limit AI requests
+  const rateLimitResponse = applyRateLimit(request);
+  if (rateLimitResponse) return rateLimitResponse;
+
+  // Require authentication to prevent unauthorized API token consumption
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
-    const body = await request.json();
-    const { userId } = body;
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'userId is required' },
-        { status: 400 },
-      );
-    }
-
     if (!isAIEnabled()) {
       return NextResponse.json({
         recommendations: [
@@ -51,7 +58,7 @@ export async function POST(request: NextRequest) {
           { role: 'system', content: CONTENT_RECOMMENDATION_PROMPT },
           {
             role: 'user',
-            content: `Generate personalized content recommendations for user ${userId}. Suggest a mix of testimonies, devotionals, and sermons.`,
+            content: `Generate personalized content recommendations for user ${user.id}. Suggest a mix of testimonies, devotionals, and sermons.`,
           },
         ],
         max_tokens: AI_CONFIG.maxTokens,

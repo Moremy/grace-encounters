@@ -1,12 +1,12 @@
-'use client';
-
 import * as React from 'react';
 import Link from 'next/link';
+import { cookies } from 'next/headers';
 import { LayoutDashboard, BookHeart, HandHeart, Sun, User, Play, Headphones, Radio, BookOpen, Heart, MessageSquare } from 'lucide-react';
 
 import { Wordmark } from '@/components/brand/wordmark';
 import { cn } from '@/lib/utils';
-import { useTranslation } from '@/lib/i18n/use-translation';
+import { getDictionary } from '@/lib/i18n/get-dictionary';
+import { defaultLocale, LOCALE_COOKIE, isValidLocale } from '@/lib/i18n/config';
 
 /** Translation keys mapped to nav items. Labels are used as fallbacks. */
 const navItems = [
@@ -23,8 +23,23 @@ const navItems = [
   { label: 'Profile', translationKey: 'nav.profile', href: '/profile', icon: User },
 ];
 
-export function AppSidebar({ className }: { className?: string }) {
-  const { t } = useTranslation();
+function resolveKey(dictionary: Record<string, Record<string, string>>, key: string): string {
+  const parts = key.split('.');
+  if (parts.length === 2) {
+    const [namespace, field] = parts;
+    const section = dictionary[namespace!];
+    if (section && field! in section) {
+      return section[field!];
+    }
+  }
+  return key;
+}
+
+export async function AppSidebar({ className }: { className?: string }) {
+  const cookieStore = await cookies();
+  const localeCookie = cookieStore.get(LOCALE_COOKIE)?.value;
+  const locale = localeCookie && isValidLocale(localeCookie) ? localeCookie : defaultLocale;
+  const dictionary = await getDictionary(locale);
 
   return (
     <aside
@@ -41,7 +56,7 @@ export function AppSidebar({ className }: { className?: string }) {
       <nav aria-label="Member navigation" className="flex-1 px-3 py-4">
         <ul className="flex flex-col gap-1">
           {navItems.map((item) => {
-            const translated = t(item.translationKey);
+            const translated = resolveKey(dictionary, item.translationKey);
             const displayLabel = translated === item.translationKey ? item.label : translated;
             return (
               <li key={item.href}>

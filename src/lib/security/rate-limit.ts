@@ -3,6 +3,13 @@
  *
  * Uses a Map with TTL-based cleanup. Suitable for single-instance deployments.
  * For multi-instance deployments, replace with Redis-backed implementation.
+ *
+ * LIMITATION (serverless): This in-memory store resets on each cold start and is
+ * not shared across concurrent serverless function instances. This is acceptable
+ * for an MVP deployment but will not provide accurate rate limiting under
+ * high-concurrency serverless conditions (e.g., Vercel). The path to production
+ * hardening is to swap this Map-based store for a Redis-backed implementation
+ * (e.g., @upstash/ratelimit) that shares state across all instances.
  */
 
 interface RateLimitOptions {

@@ -1,8 +1,13 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/lib/prisma';
+import { applyRateLimit, applySensitiveRateLimit } from '@/lib/middleware/rate-limit-middleware';
 
 export async function GET(request: Request) {
+  // Issue #8: Rate limit GET to prevent polling abuse
+  const rateLimitResponse = applyRateLimit(request);
+  if (rateLimitResponse) return rateLimitResponse;
+
   const { searchParams } = new URL(request.url);
   const streamId = searchParams.get('streamId');
   const after = searchParams.get('after');
@@ -12,6 +17,31 @@ export async function GET(request: Request) {
       { error: 'streamId is required' },
       { status: 400 },
     );
+  }
+
+  // Issue #1: Verify user is authenticated or stream is public
+  const stream = await prisma.liveStream.findUnique({
+    where: { id: streamId },
+    select: { id: true, isPublic: true },
+  });
+
+  if (!stream) {
+    return NextResponse.json(
+      { error: 'Stream not found' },
+      { status: 404 },
+    );
+  }
+
+  if (!stream.isPublic) {
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+
+    if (error || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
   }
 
   const where: Record<string, unknown> = { streamId };
@@ -33,6 +63,10 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  // Issue #6: Rate limit chat POST to prevent spam
+  const rateLimitResponse = applySensitiveRateLimit(request);
+  if (rateLimitResponse) return rateLimitResponse;
+
   const supabase = await createClient();
   const {
     data: { user },
