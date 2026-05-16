@@ -124,7 +124,7 @@ export async function getUserGrowthMetrics(
   // loading all rows into memory
   const grouped = await prisma.$queryRaw<Array<{ date: Date; count: bigint }>>`
     SELECT DATE_TRUNC('day', "createdAt") as date, COUNT(*) as count
-    FROM "Profile"
+    FROM "profiles"
     WHERE "createdAt" >= ${startDate}
     GROUP BY DATE_TRUNC('day', "createdAt")
     ORDER BY date ASC
@@ -249,7 +249,7 @@ export async function getDonationAnalytics(
     }),
     prisma.$queryRaw<Array<{ date: Date; total: unknown }>>`
       SELECT DATE_TRUNC('day', "createdAt") as date, SUM("amount") as total
-      FROM "Donation"
+      FROM "donations"
       WHERE "status" = 'COMPLETED' AND "createdAt" >= ${startDate}
       GROUP BY DATE_TRUNC('day', "createdAt")
       ORDER BY date ASC
