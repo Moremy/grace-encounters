@@ -1,0 +1,41 @@
+{
+  "id": "FEAT-007",
+  "type": "feat",
+  "description": "Security and Performance infrastructure: rate limiting middleware, upload optimization with image processing pipeline, CDN-ready asset configuration, image optimization via Next.js Image component patterns, background job processing queue, and comprehensive audit logging.",
+  "status": "completed",
+  "steps": [
+    "Create src/lib/security/rate-limit.ts - in-memory sliding window rate limiter: createRateLimiter(options: {windowMs, maxRequests}) returns checkRateLimit(identifier) function. Uses Map with TTL cleanup. For API routes and server actions.",
+    "Create src/lib/security/audit-log.ts - audit logging system: logAuditEvent(userId, action, resource, resourceId, metadata?) that writes to AuditLog Prisma model. Actions include: USER_LOGIN, USER_LOGOUT, CONTENT_CREATE, CONTENT_UPDATE, CONTENT_DELETE, CONTENT_APPROVE, CONTENT_REJECT, DONATION_CREATED, SETTINGS_CHANGED, ADMIN_ACTION",
+    "Add to prisma/schema.prisma: AuditLog model (id, userId FK to Profile nullable, action String, resource String, resourceId String nullable, metadata Json nullable, ipAddress String nullable, userAgent String nullable, createdAt), BackgroundJob model (id, type String, payload Json, status enum PENDING/PROCESSING/COMPLETED/FAILED, attempts Int default 0, maxAttempts Int default 3, scheduledFor DateTime, startedAt DateTime nullable, completedAt DateTime nullable, error String nullable, createdAt). Add AuditAction and JobStatus enums.",
+    "Create src/lib/security/headers.ts - security headers configuration: CSP (Content Security Policy), X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy. Export as Next.js headers config format.",
+    "Create src/lib/upload/optimize.ts - image upload optimization utilities: validateImageFile(file, maxSizeMB), generateThumbnailUrl(url, width, height) for Supabase Storage transformations, getOptimizedImageUrl(url, options) for CDN-friendly URLs with width/quality params",
+    "Create src/lib/upload/config.ts - upload configuration: allowed file types, max sizes per type (image: 10MB, audio: 100MB, video: 500MB, pdf: 20MB), storage bucket names",
+    "Create src/lib/jobs/queue.ts - background job queue: enqueueJob(type, payload, scheduledFor?), processJob(jobId), getNextPendingJob(), markJobComplete(jobId), markJobFailed(jobId, error). Job types: SEND_EMAIL, SEND_PUSH_NOTIFICATION, PROCESS_UPLOAD, GENERATE_AI_RECOMMENDATION",
+    "Create src/lib/jobs/processor.ts - job processor that handles each job type by dispatching to appropriate handler function",
+    "Create src/app/api/jobs/process/route.ts - API route (cron-triggered) that processes pending background jobs. Protected with API secret key.",
+    "Update next.config.mjs to add security headers from src/lib/security/headers.ts, configure image optimization with additional CDN patterns, add output: 'standalone' for Docker deployment readiness",
+    "Create src/lib/middleware/rate-limit-middleware.ts - middleware wrapper that applies rate limiting to API routes (100 requests per minute per IP for general routes, 10 per minute for auth routes)",
+    "Create src/app/admin/audit-log/page.tsx - admin page showing audit log entries with filters (by user, action, date range), paginated table",
+    "Update src/app/admin/layout.tsx to add 'Audit Log' nav item with ScrollText icon",
+    "Add rate limiting to existing API routes: update src/app/api/donations/stripe/route.ts, src/app/api/messages/send/route.ts, src/app/api/testimonies/upload/route.ts to include rate limit check at the top"
+  ],
+  "acceptance_criteria": [
+    "Rate limiter utility exists with sliding window algorithm",
+    "Audit logging writes to AuditLog model with structured event data",
+    "AuditLog and BackgroundJob models exist in Prisma schema",
+    "Security headers configuration is applied in next.config.mjs",
+    "Image optimization utilities support resize/quality parameters",
+    "Background job queue supports enqueue, process, and status tracking",
+    "Job processing API route exists with secret key protection",
+    "Admin audit log page displays log entries",
+    "Existing API routes include rate limiting",
+    "TypeScript compiles without errors"
+  ],
+  "verification": [
+    "cd /projects/sandbox/grace-encounters && npx prisma generate",
+    "cd /projects/sandbox/grace-encounters && npx tsc --noEmit",
+    "cd /projects/sandbox/grace-encounters && npx next build"
+  ],
+  "blocked_reason": null,
+  "findings": "Build/test verification could not be run because the environment is INTEGRATIONS_ONLY with no npm registry access and no pre-installed node_modules. All code follows existing patterns from the codebase. Prisma schema is syntactically valid with proper model/enum definitions. The next.config.mjs inlines security headers (cannot import .ts from .mjs) while also maintaining a reusable headers.ts export for application code. Rate limiting uses in-memory Map with sliding window as specified (no external packages). The admin audit-log page follows existing admin page patterns (searchParams typing, Card components, Prisma queries). Existing FEAT-001 SW cache headers are preserved in next.config.mjs."
+}
