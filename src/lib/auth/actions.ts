@@ -2,6 +2,8 @@
 
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { prisma } from '@/lib/prisma';
+import { canAdmin, fromPrismaRole } from '@/lib/auth/roles';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
@@ -10,10 +12,31 @@ export async function signIn(formData: FormData) {
   const password = formData.get('password') as string;
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
   if (error) {
     redirect(`/sign-in?error=${encodeURIComponent(error.message)}`);
+  }
+
+  const userId = data.user?.id;
+
+  if (!userId) {
+    redirect('/sign-in?error=Unable%20to%20verify%20user');
+  }
+
+  const profile = await prisma.profile.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+
+  const role = fromPrismaRole(profile?.role ?? null);
+
+  if (canAdmin(role)) {
+    redirect('/admin');
   }
 
   redirect('/dashboard');
