@@ -25,7 +25,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const adminNavItems = [
-  { label: 'Overview', href: '/admin', icon: LayoutDashboard },
+  { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
   { label: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
   { label: 'Moderation', href: '/admin/moderation', icon: Shield },
   { label: 'Pending Reviews', href: '/admin/reviews', icon: ClipboardCheck },
@@ -39,6 +39,7 @@ const adminNavItems = [
   { label: 'Live Streams', href: '/admin/livestreams', icon: Video },
   { label: 'Prayer Rooms', href: '/admin/prayer-rooms', icon: Radio },
   { label: 'Donations', href: '/admin/donations', icon: Heart },
+  { label: 'Fundraisers', href: '/admin/fundraisers', icon: HandHeart },
   { label: 'Events', href: '/admin/events', icon: Calendar },
   { label: 'Blog', href: '/admin/blog', icon: PenLine },
   { label: 'Audit Log', href: '/admin/audit-log', icon: ScrollText },
@@ -102,7 +103,7 @@ function AdminHeader() {
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen overflow-hidden">
-      <AdminSidebar className="hidden md:flex" />
+      <AdminSidebar className="flex" />
       <div className="flex flex-1 flex-col overflow-y-auto">
         <AdminHeader />
         <main className="flex-1 p-6">{children}</main>
