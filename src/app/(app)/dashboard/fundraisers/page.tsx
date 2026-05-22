@@ -24,7 +24,10 @@ function formatStatus(status: string) {
 export default async function MyFundraisersPage({
   searchParams,
 }: {
-  searchParams?: { submitted?: string };
+  searchParams?: {
+    submitted?: string;
+    resubmitted?: string;
+  };
 }) {
   const supabase = await createClient();
 
@@ -65,12 +68,9 @@ export default async function MyFundraisersPage({
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="font-serif text-3xl font-bold text-navy">
-            My Fundraisers
-          </h1>
+          <h1 className="font-serif text-3xl font-bold text-navy">My Fundraisers</h1>
           <p className="mt-2 text-muted-foreground">
-            View your submitted fundraisers, review status, and requested
-            corrections.
+            View your submitted fundraisers, review status, and requested corrections.
           </p>
         </div>
 
@@ -85,6 +85,12 @@ export default async function MyFundraisersPage({
       {searchParams?.submitted ? (
         <div className="rounded-2xl border border-green-200 bg-green-50 p-4 text-sm text-green-700">
           Your fundraiser was submitted successfully and is awaiting review.
+        </div>
+      ) : null}
+
+      {searchParams?.resubmitted ? (
+        <div className="rounded-2xl border border-green-200 bg-green-50 p-4 text-sm text-green-700">
+          Your fundraiser was updated and resubmitted successfully.
         </div>
       ) : null}
 
@@ -105,12 +111,12 @@ export default async function MyFundraisersPage({
                 ? Math.min(
                     100,
                     Math.round(
-                      (Number(fundraiser.amountRaised) /
-                        Number(fundraiser.targetAmount)) *
-                        100,
+                      (Number(fundraiser.amountRaised) / Number(fundraiser.targetAmount)) * 100,
                     ),
                   )
                 : 0;
+
+            const canEditAndResubmit = fundraiser.status === 'MORE_INFO_REQUIRED';
 
             return (
               <article
@@ -148,25 +154,28 @@ export default async function MyFundraisersPage({
                         Correction requested: {fundraiser.moreInfoMessage}
                       </div>
                     ) : null}
+
+                    {canEditAndResubmit ? (
+                      <div className="pt-3">
+                        <Link
+                          href={`/dashboard/fundraisers/${fundraiser.id}/edit`}
+                          className="inline-flex rounded-lg bg-amber-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-800"
+                        >
+                          Edit / Resubmit
+                        </Link>
+                      </div>
+                    ) : null}
                   </div>
 
                   <div className="min-w-[220px] rounded-xl bg-ivory p-4">
                     <p className="text-sm text-muted-foreground">Target</p>
                     <p className="mt-1 text-xl font-bold text-navy">
-                      {formatCurrency(
-                        fundraiser.targetAmount,
-                        fundraiser.currency,
-                      )}
+                      {formatCurrency(fundraiser.targetAmount, fundraiser.currency)}
                     </p>
 
-                    <p className="mt-3 text-sm text-muted-foreground">
-                      Raised
-                    </p>
+                    <p className="mt-3 text-sm text-muted-foreground">Raised</p>
                     <p className="mt-1 text-lg font-semibold text-navy">
-                      {formatCurrency(
-                        fundraiser.amountRaised,
-                        fundraiser.currency,
-                      )}
+                      {formatCurrency(fundraiser.amountRaised, fundraiser.currency)}
                     </p>
                   </div>
                 </div>
@@ -178,9 +187,7 @@ export default async function MyFundraisersPage({
                       style={{ width: `${progress}%` }}
                     />
                   </div>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {progress}% funded
-                  </p>
+                  <p className="mt-2 text-sm text-muted-foreground">{progress}% funded</p>
                 </div>
               </article>
             );
