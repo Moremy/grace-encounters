@@ -2,7 +2,16 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { prisma } from '@/lib/prisma';
-
+import {
+  approveFundraiser,
+  approvePaymentChannel,
+  closeFundraiser,
+  markFundraiserUnderReview,
+  publishFundraiser,
+  rejectFundraiser,
+  sendFundraiserToTreasury,
+  suspendFundraiser,
+} from '@/lib/fundraisers/admin-actions';
 function formatCurrency(amount: unknown, currency: string) {
   const numericAmount = Number(amount || 0);
 
@@ -29,11 +38,7 @@ function formatDate(date: Date | null) {
   }).format(date);
 }
 
-export default async function AdminFundraiserDetailPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function AdminFundraiserDetailPage({ params }: { params: { id: string } }) {
   const fundraiser = await prisma.fundraiser.findUnique({
     where: {
       id: params.id,
@@ -68,11 +73,7 @@ export default async function AdminFundraiserDetailPage({
     Number(fundraiser.targetAmount) > 0
       ? Math.min(
           100,
-          Math.round(
-            (Number(fundraiser.amountRaised) /
-              Number(fundraiser.targetAmount)) *
-              100,
-          ),
+          Math.round((Number(fundraiser.amountRaised) / Number(fundraiser.targetAmount)) * 100),
         )
       : 0;
 
@@ -84,13 +85,11 @@ export default async function AdminFundraiserDetailPage({
             Fundraiser Review
           </p>
 
-          <h1 className="mt-2 font-serif text-3xl font-bold text-navy">
-            {fundraiser.title}
-          </h1>
+          <h1 className="mt-2 font-serif text-3xl font-bold text-navy">{fundraiser.title}</h1>
 
           <p className="mt-2 text-muted-foreground">
-            Review fundraiser details, beneficiary information, payment channels,
-            and verification status.
+            Review fundraiser details, beneficiary information, payment channels, and verification
+            status.
           </p>
         </div>
 
@@ -105,9 +104,7 @@ export default async function AdminFundraiserDetailPage({
       <div className="grid gap-4 md:grid-cols-4">
         <div className="rounded-2xl border border-gold/20 bg-white p-5 shadow-sm">
           <p className="text-sm text-muted-foreground">Status</p>
-          <p className="mt-2 text-xl font-bold text-navy">
-            {formatStatus(fundraiser.status)}
-          </p>
+          <p className="mt-2 text-xl font-bold text-navy">{formatStatus(fundraiser.status)}</p>
         </div>
 
         <div className="rounded-2xl border border-gold/20 bg-white p-5 shadow-sm">
@@ -133,28 +130,19 @@ export default async function AdminFundraiserDetailPage({
       </div>
 
       <section className="rounded-2xl border border-gold/20 bg-white p-6 shadow-sm">
-        <h2 className="font-serif text-2xl font-semibold text-navy">
-          Fundraising Progress
-        </h2>
+        <h2 className="font-serif text-2xl font-semibold text-navy">Fundraising Progress</h2>
 
         <div className="mt-5">
           <div className="h-3 overflow-hidden rounded-full bg-navy/10">
-            <div
-              className="h-full rounded-full bg-gold"
-              style={{ width: `${progress}%` }}
-            />
+            <div className="h-full rounded-full bg-gold" style={{ width: `${progress}%` }} />
           </div>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {progress}% funded
-          </p>
+          <p className="mt-2 text-sm text-muted-foreground">{progress}% funded</p>
         </div>
       </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="rounded-2xl border border-gold/20 bg-white p-6 shadow-sm">
-          <h2 className="font-serif text-2xl font-semibold text-navy">
-            Fundraiser Story
-          </h2>
+          <h2 className="font-serif text-2xl font-semibold text-navy">Fundraiser Story</h2>
 
           <p className="mt-4 whitespace-pre-line leading-7 text-muted-foreground">
             {fundraiser.description}
@@ -162,23 +150,17 @@ export default async function AdminFundraiserDetailPage({
         </section>
 
         <section className="rounded-2xl border border-gold/20 bg-white p-6 shadow-sm">
-          <h2 className="font-serif text-2xl font-semibold text-navy">
-            Review Status
-          </h2>
+          <h2 className="font-serif text-2xl font-semibold text-navy">Review Status</h2>
 
           <div className="mt-4 space-y-3 text-sm">
             <div className="flex justify-between gap-4 border-b border-border/60 pb-3">
               <span className="text-muted-foreground">Type</span>
-              <span className="font-medium text-navy">
-                {formatStatus(fundraiser.type)}
-              </span>
+              <span className="font-medium text-navy">{formatStatus(fundraiser.type)}</span>
             </div>
 
             <div className="flex justify-between gap-4 border-b border-border/60 pb-3">
               <span className="text-muted-foreground">Published</span>
-              <span className="font-medium text-navy">
-                {fundraiser.published ? 'Yes' : 'No'}
-              </span>
+              <span className="font-medium text-navy">{fundraiser.published ? 'Yes' : 'No'}</span>
             </div>
 
             <div className="flex justify-between gap-4 border-b border-border/60 pb-3">
@@ -190,16 +172,12 @@ export default async function AdminFundraiserDetailPage({
 
             <div className="flex justify-between gap-4 border-b border-border/60 pb-3">
               <span className="text-muted-foreground">Deadline</span>
-              <span className="font-medium text-navy">
-                {formatDate(fundraiser.deadline)}
-              </span>
+              <span className="font-medium text-navy">{formatDate(fundraiser.deadline)}</span>
             </div>
 
             <div className="flex justify-between gap-4">
               <span className="text-muted-foreground">Submitted</span>
-              <span className="font-medium text-navy">
-                {formatDate(fundraiser.submittedAt)}
-              </span>
+              <span className="font-medium text-navy">{formatDate(fundraiser.submittedAt)}</span>
             </div>
           </div>
         </section>
@@ -207,9 +185,7 @@ export default async function AdminFundraiserDetailPage({
 
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="rounded-2xl border border-gold/20 bg-white p-6 shadow-sm">
-          <h2 className="font-serif text-2xl font-semibold text-navy">
-            Requester Information
-          </h2>
+          <h2 className="font-serif text-2xl font-semibold text-navy">Requester Information</h2>
 
           <div className="mt-4 space-y-3 text-sm">
             <div>
@@ -219,71 +195,67 @@ export default async function AdminFundraiserDetailPage({
 
             <div>
               <p className="text-muted-foreground">Requester Contact</p>
-              <p className="font-medium text-navy">
-                {fundraiser.requesterContact}
-              </p>
+              <p className="font-medium text-navy">{fundraiser.requesterContact}</p>
             </div>
           </div>
         </section>
 
         <section className="rounded-2xl border border-gold/20 bg-white p-6 shadow-sm">
-          <h2 className="font-serif text-2xl font-semibold text-navy">
-            Beneficiary Information
-          </h2>
+          <h2 className="font-serif text-2xl font-semibold text-navy">Beneficiary Information</h2>
 
           <div className="mt-4 space-y-3 text-sm">
             <div>
               <p className="text-muted-foreground">Beneficiary Name</p>
-              <p className="font-medium text-navy">
-                {fundraiser.beneficiaryName}
-              </p>
+              <p className="font-medium text-navy">{fundraiser.beneficiaryName}</p>
             </div>
 
             <div>
               <p className="text-muted-foreground">Relationship to Requester</p>
-              <p className="font-medium text-navy">
-                {fundraiser.beneficiaryRelationship}
-              </p>
+              <p className="font-medium text-navy">{fundraiser.beneficiaryRelationship}</p>
             </div>
           </div>
         </section>
       </div>
 
       <section className="rounded-2xl border border-gold/20 bg-white p-6 shadow-sm">
-        <h2 className="font-serif text-2xl font-semibold text-navy">
-          Payment Channels
-        </h2>
+        <h2 className="font-serif text-2xl font-semibold text-navy">Payment Channels</h2>
 
         {fundraiser.paymentChannels.length === 0 ? (
-          <p className="mt-4 text-muted-foreground">
-            No payment channels were submitted.
-          </p>
+          <p className="mt-4 text-muted-foreground">No payment channels were submitted.</p>
         ) : (
           <div className="mt-4 grid gap-4">
             {fundraiser.paymentChannels.map((channel) => (
-              <div
-                key={channel.id}
-                className="rounded-xl border border-border/60 bg-ivory p-4"
-              >
+              <div key={channel.id} className="rounded-xl border border-border/60 bg-ivory p-4">
                 <div className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
                   <div>
-                    <p className="font-semibold text-navy">
-                      {formatStatus(channel.channelType)}
-                    </p>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {channel.channelDetails}
-                    </p>
+                    <p className="font-semibold text-navy">{formatStatus(channel.channelType)}</p>
+                    <p className="mt-1 text-sm text-muted-foreground">{channel.channelDetails}</p>
                   </div>
 
-                  <span
-                    className={
-                      channel.isApproved
-                        ? 'w-fit rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700'
-                        : 'w-fit rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700'
-                    }
-                  >
-                    {channel.isApproved ? 'Approved' : 'Pending Review'}
-                  </span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span
+                      className={
+                        channel.isApproved
+                          ? 'w-fit rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700'
+                          : 'w-fit rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700'
+                      }
+                    >
+                      {channel.isApproved ? 'Approved' : 'Pending Review'}
+                    </span>
+
+                    {!channel.isApproved ? (
+                      <form action={approvePaymentChannel}>
+                        <input type="hidden" name="channelId" value={channel.id} />
+                        <input type="hidden" name="fundraiserId" value={fundraiser.id} />
+                        <button
+                          type="submit"
+                          className="rounded-lg bg-navy px-4 py-2 text-xs font-semibold text-ivory transition hover:bg-navy/90"
+                        >
+                          Approve Channel
+                        </button>
+                      </form>
+                    ) : null}
+                  </div>
                 </div>
               </div>
             ))}
@@ -292,15 +264,88 @@ export default async function AdminFundraiserDetailPage({
       </section>
 
       <section className="rounded-2xl border border-gold/20 bg-white p-6 shadow-sm">
-        <h2 className="font-serif text-2xl font-semibold text-navy">
-          Admin Actions Coming Next
-        </h2>
+        <h2 className="font-serif text-2xl font-semibold text-navy">Admin Actions</h2>
 
         <p className="mt-3 text-muted-foreground">
-          In the next phase, this page will support approving, sending to
-          treasury review, requesting more information, rejecting, suspending,
-          publishing, closing, and updating amount raised.
+          Move this fundraiser through the verification workflow. Fundraisers do not appear publicly
+          until they are published.
         </p>
+
+        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <form action={markFundraiserUnderReview}>
+            <input type="hidden" name="fundraiserId" value={fundraiser.id} />
+            <button
+              type="submit"
+              className="w-full rounded-lg border border-navy/20 px-4 py-3 text-sm font-semibold text-navy transition hover:bg-navy/5"
+            >
+              Mark Under Review
+            </button>
+          </form>
+
+          <form action={sendFundraiserToTreasury}>
+            <input type="hidden" name="fundraiserId" value={fundraiser.id} />
+            <button
+              type="submit"
+              className="w-full rounded-lg border border-gold/40 px-4 py-3 text-sm font-semibold text-navy transition hover:bg-gold/10"
+            >
+              Send to Treasury
+            </button>
+          </form>
+
+          <form action={approveFundraiser}>
+            <input type="hidden" name="fundraiserId" value={fundraiser.id} />
+            <button
+              type="submit"
+              className="w-full rounded-lg bg-green-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-green-800"
+            >
+              Approve
+            </button>
+          </form>
+
+          <form action={publishFundraiser}>
+            <input type="hidden" name="fundraiserId" value={fundraiser.id} />
+            <button
+              type="submit"
+              className="w-full rounded-lg bg-navy px-4 py-3 text-sm font-semibold text-ivory transition hover:bg-navy/90"
+            >
+              Publish
+            </button>
+          </form>
+
+          <form action={rejectFundraiser}>
+            <input type="hidden" name="fundraiserId" value={fundraiser.id} />
+            <button
+              type="submit"
+              className="w-full rounded-lg border border-red-200 px-4 py-3 text-sm font-semibold text-red-700 transition hover:bg-red-50"
+            >
+              Reject
+            </button>
+          </form>
+
+          <form action={suspendFundraiser}>
+            <input type="hidden" name="fundraiserId" value={fundraiser.id} />
+            <button
+              type="submit"
+              className="w-full rounded-lg border border-amber-200 px-4 py-3 text-sm font-semibold text-amber-700 transition hover:bg-amber-50"
+            >
+              Suspend
+            </button>
+          </form>
+
+          <form action={closeFundraiser}>
+            <input type="hidden" name="fundraiserId" value={fundraiser.id} />
+            <button
+              type="submit"
+              className="w-full rounded-lg border border-navy/20 px-4 py-3 text-sm font-semibold text-navy transition hover:bg-navy/5"
+            >
+              Close
+            </button>
+          </form>
+        </div>
+
+        <div className="mt-5 rounded-xl border border-gold/30 bg-gold/10 p-4 text-sm text-navy">
+          Payment channels should be approved before publishing the fundraiser.
+        </div>
       </section>
     </div>
   );
