@@ -20,6 +20,7 @@ const publicLinks: { label: string; href: string }[] = [
   { label: 'Events / Crusades', href: '/events' },
   { label: 'Media', href: '/media' },
   { label: 'Community', href: '/community' },
+  { label: 'Fundraisers', href: '/fundraisers' },
 ];
 
 export function MobileDrawer() {
@@ -77,7 +78,7 @@ export function MobileDrawer() {
         aria-label="Open navigation menu"
         className={cn(
           'inline-flex items-center justify-center rounded-md p-2',
-          'text-navy hover:text-gold transition-colors',
+          'text-navy transition-colors hover:text-gold',
         )}
         onClick={() => setIsOpen(true)}
       >
@@ -92,7 +93,7 @@ export function MobileDrawer() {
             <div
               className={cn(
                 'fixed inset-0 z-[9999] bg-black/40 transition-opacity duration-300',
-                isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none',
+                isOpen ? 'opacity-100' : 'pointer-events-none opacity-0',
               )}
               aria-hidden="true"
               onClick={() => setIsOpen(false)}
@@ -104,18 +105,18 @@ export function MobileDrawer() {
               aria-modal="true"
               aria-label="Navigation menu"
               className={cn(
-                'fixed top-0 left-0 z-[9999] h-full w-72 bg-ivory shadow-xl',
+                'fixed left-0 top-0 z-[9999] h-full w-72 bg-ivory shadow-xl',
                 'transform transition-transform duration-300 ease-in-out',
                 isOpen ? 'translate-x-0' : '-translate-x-full',
               )}
             >
               {/* Header: Wordmark + close button */}
-              <div className="flex items-center justify-between px-6 h-16 border-b border-gold/30">
+              <div className="flex h-16 items-center justify-between border-b border-gold/30 px-6">
                 <Wordmark size="md" />
                 <button
                   type="button"
                   aria-label="Close navigation menu"
-                  className="inline-flex items-center justify-center rounded-md p-2 text-navy hover:text-gold transition-colors"
+                  className="inline-flex items-center justify-center rounded-md p-2 text-navy transition-colors hover:text-gold"
                   onClick={() => setIsOpen(false)}
                 >
                   <X className="h-5 w-5" />
@@ -153,7 +154,7 @@ export function MobileDrawer() {
               </nav>
 
               {/* Divider */}
-              <div className="border-t border-gold/30 mx-6" />
+              <div className="mx-6 border-t border-gold/30" />
 
               {/* Auth section */}
               <div className="px-6 py-4">
@@ -161,7 +162,7 @@ export function MobileDrawer() {
                   <form action={signOut}>
                     <button
                       type="submit"
-                      className="w-full text-left font-serif text-navy py-3 transition-colors hover:text-gold"
+                      className="w-full py-3 text-left font-serif text-navy transition-colors hover:text-gold"
                     >
                       Sign Out
                     </button>
@@ -169,7 +170,7 @@ export function MobileDrawer() {
                 ) : (
                   <Link
                     href="/sign-in"
-                    className="block font-serif text-navy py-3 transition-colors hover:text-gold"
+                    className="block py-3 font-serif text-navy transition-colors hover:text-gold"
                   >
                     Sign In
                   </Link>
