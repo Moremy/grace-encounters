@@ -19,8 +19,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
@@ -173,55 +173,61 @@ model Profile {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  testimonies Testimony[]
-  prayerRequests    PrayerRequest[]      @relation("ProfilePrayerRequests")
-  prayerIntercessions PrayerIntercession[] @relation("ProfilePrayerIntercessions")
-  devotionals Devotional[]
-  communityGroupMembers CommunityGroupMember[]
-  groupDiscussions      GroupDiscussion[]
+  testimonies            Testimony[]
+  prayerRequests         PrayerRequest[]        @relation("ProfilePrayerRequests")
+  prayerIntercessions    PrayerIntercession[]   @relation("ProfilePrayerIntercessions")
+  devotionals            Devotional[]
+  communityGroupMembers  CommunityGroupMember[]
+  groupDiscussions       GroupDiscussion[]
   groupDiscussionReplies GroupDiscussionReply[]
-  events                Event[]
-  blogArticles          BlogArticle[]
-  notifications         Notification[]
+  events                 Event[]
+  blogArticles           BlogArticle[]
+  notifications          Notification[]
 
   // Media & Sermon relations
-  mediaItems            MediaItem[]          @relation("ProfileMediaItems")
-  sermons               Sermon[]             @relation("ProfileSermons")
+  mediaItems MediaItem[] @relation("ProfileMediaItems")
+  sermons    Sermon[]    @relation("ProfileSermons")
 
   // Prayer Room relations
-  createdPrayerRooms    PrayerRoom[]         @relation("ProfileCreatedPrayerRooms")
+  createdPrayerRooms     PrayerRoom[]            @relation("ProfileCreatedPrayerRooms")
   prayerRoomParticipants PrayerRoomParticipant[]
-  prayerRoomMessages    PrayerRoomMessage[]
+  prayerRoomMessages     PrayerRoomMessage[]
 
   // Bible Study relations
   createdBibleStudyPlans BibleStudyPlan[]
-  bibleStudyProgress    BibleStudyProgress[]
-  scriptureBookmarks    ScriptureBookmark[]
+  bibleStudyProgress     BibleStudyProgress[]
+  scriptureBookmarks     ScriptureBookmark[]
 
   // Donation relations
-  donations             Donation[]
-
+  donations                   Donation[]
+  // Fundraiser relations
+  fundraisers                 Fundraiser[]                     @relation("ProfileFundraisers")
+  fundraiserPaymentReviews    FundraiserPaymentChannel[]       @relation("FundraiserPaymentReviewer")
+  fundraiserDocumentsUploaded FundraiserDocument[]             @relation("FundraiserDocumentUploader")
+  fundraiserUpdatesCreated    FundraiserUpdate[]               @relation("FundraiserUpdateCreator")
+  fundraiserReportsCreated    FundraiserAccountabilityReport[] @relation("FundraiserReportCreator")
+  fundraiserAuditLogs         FundraiserAuditLog[]             @relation("FundraiserAuditActor")
   // Messaging relations
-  messages              Message[]
-  conversationParticipants ConversationParticipant[]
+  messages                    Message[]
+  conversationParticipants    ConversationParticipant[]
 
   // Push notification relations
-  pushSubscriptions     PushSubscription[]
+  pushSubscriptions PushSubscription[]
 
   // AI recommendation relations
-  aiRecommendations     AIRecommendation[]
+  aiRecommendations AIRecommendation[]
 
   // Live Streaming relations
-  liveStreams            LiveStream[]         @relation("ProfileLiveStreams")
-  liveStreamChats       LiveStreamChat[]     @relation("ProfileLiveStreamChats")
+  liveStreams     LiveStream[]     @relation("ProfileLiveStreams")
+  liveStreamChats LiveStreamChat[] @relation("ProfileLiveStreamChats")
 
   // Email & Notification relations
-  emailLogs             EmailLog[]
+  emailLogs              EmailLog[]
   newsletterSubscription NewsletterSubscription?
   notificationPreference NotificationPreference?
 
   // Audit log relations
-  auditLogs             AuditLog[]
+  auditLogs AuditLog[]
 
   @@index([role])
   @@map("profiles")
@@ -236,17 +242,17 @@ enum TestimonyStatus {
 }
 
 model Testimony {
-  id           String            @id @default(cuid())
-  slug         String            @unique
+  id           String          @id @default(cuid())
+  slug         String          @unique
   title        String
   content      String
   excerpt      String
-  authorId     String            @db.Uuid
-  status       TestimonyStatus   @default(PENDING)
-  featured     Boolean           @default(false)
+  authorId     String          @db.Uuid
+  status       TestimonyStatus @default(PENDING)
+  featured     Boolean         @default(false)
   revisionNote String?
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
   publishedAt  DateTime?
 
   // Media & categorization extensions
@@ -295,7 +301,7 @@ model PrayerRequest {
   updatedAt   DateTime            @updatedAt
   answeredAt  DateTime?
 
-  author       Profile              @relation("ProfilePrayerRequests", fields: [authorId], references: [id])
+  author        Profile              @relation("ProfilePrayerRequests", fields: [authorId], references: [id])
   intercessions PrayerIntercession[]
 
   @@index([status])
@@ -331,8 +337,8 @@ model Devotional {
   slug               String           @unique
   title              String
   content            String
-  scripture          String           // The actual Bible verse text
-  scriptureReference String           // e.g. "Psalm 46:10"
+  scripture          String // The actual Bible verse text
+  scriptureReference String // e.g. "Psalm 46:10"
   excerpt            String
   authorId           String           @db.Uuid
   status             DevotionalStatus @default(DRAFT)
@@ -393,8 +399,8 @@ model GroupDiscussion {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  group   CommunityGroup       @relation(fields: [groupId], references: [id])
-  author  Profile              @relation(fields: [authorId], references: [id])
+  group   CommunityGroup         @relation(fields: [groupId], references: [id])
+  author  Profile                @relation(fields: [authorId], references: [id])
   replies GroupDiscussionReply[]
 
   @@map("group_discussions")
@@ -599,7 +605,7 @@ model PrayerRoom {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  createdBy    Profile                @relation("ProfileCreatedPrayerRooms", fields: [createdById], references: [id])
+  createdBy    Profile                 @relation("ProfileCreatedPrayerRooms", fields: [createdById], references: [id])
   participants PrayerRoomParticipant[]
   messages     PrayerRoomMessage[]
 
@@ -651,7 +657,7 @@ model BibleStudyPlan {
   createdById   String   @db.Uuid
   createdAt     DateTime @default(now())
 
-  createdBy Profile            @relation(fields: [createdById], references: [id])
+  createdBy Profile              @relation(fields: [createdById], references: [id])
   days      BibleStudyDay[]
   progress  BibleStudyProgress[]
 
@@ -712,17 +718,17 @@ model ScriptureBookmark {
 // ---------------------------------------------------------------------------
 
 model DonationCampaign {
-  id            String   @id @default(cuid())
-  slug          String   @unique
+  id            String    @id @default(cuid())
+  slug          String    @unique
   title         String
   description   String
   goalAmount    Decimal
-  currentAmount Decimal  @default(0)
+  currentAmount Decimal   @default(0)
   imageUrl      String?
-  active        Boolean  @default(true)
+  active        Boolean   @default(true)
   startDate     DateTime
   endDate       DateTime?
-  createdAt     DateTime @default(now())
+  createdAt     DateTime  @default(now())
 
   donations Donation[]
 
@@ -731,17 +737,17 @@ model DonationCampaign {
 }
 
 model Donation {
-  id                    String         @id @default(cuid())
-  donorId               String         @db.Uuid
+  id                    String          @id @default(cuid())
+  donorId               String          @db.Uuid
   amount                Decimal
-  currency              String         @default("USD")
+  currency              String          @default("USD")
   provider              PaymentProvider
   providerTransactionId String?
   campaignId            String?
-  status                DonationStatus @default(PENDING)
-  recurring             Boolean        @default(false)
+  status                DonationStatus  @default(PENDING)
+  recurring             Boolean         @default(false)
   recurringInterval     String?
-  createdAt             DateTime       @default(now())
+  createdAt             DateTime        @default(now())
 
   donor    Profile           @relation(fields: [donorId], references: [id])
   campaign DonationCampaign? @relation(fields: [campaignId], references: [id])
@@ -750,6 +756,233 @@ model Donation {
   @@index([campaignId])
   @@index([status])
   @@map("donations")
+}
+
+// ---------------------------------------------------------------------------
+// Fundraisers enums
+// ---------------------------------------------------------------------------
+
+enum FundraiserStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  TREASURY_REVIEW
+  MORE_INFO_REQUIRED
+  APPROVED
+  PUBLISHED
+  REJECTED
+  SUSPENDED
+  CLOSED
+}
+
+enum FundraiserType {
+  MEDICAL
+  FUNERAL
+  EDUCATION
+  CHURCH_PROJECT
+  MISSION_TRIP
+  EMERGENCY_RELIEF
+  COMMUNITY_AID
+  OTHER
+}
+
+enum FundraiserPaymentChannelType {
+  MPESA_PHONE
+  MPESA_TILL
+  PAYBILL
+  PAYPAL
+  BANK_ACCOUNT
+  STRIPE
+  OTHER
+}
+
+enum FundraiserMediaType {
+  IMAGE
+  VIDEO_APPEAL
+}
+
+enum FundraiserDocumentType {
+  MEDICAL_DOCUMENT
+  FUNERAL_DOCUMENT
+  EDUCATION_DOCUMENT
+  CHURCH_PROJECT_DOCUMENT
+  MISSION_DOCUMENT
+  EMERGENCY_DOCUMENT
+  IDENTITY_DOCUMENT
+  OTHER
+}
+
+// ---------------------------------------------------------------------------
+// Verified Fundraisers models
+// ---------------------------------------------------------------------------
+
+model Fundraiser {
+  id           String         @id @default(cuid())
+  slug         String         @unique
+  title        String
+  description  String
+  type         FundraiserType
+  targetAmount Decimal
+  amountRaised Decimal        @default(0)
+  currency     String         @default("KES")
+  deadline     DateTime?
+
+  beneficiaryName         String
+  beneficiaryRelationship String
+  requesterId             String @db.Uuid
+  requesterName           String
+  requesterContact        String
+
+  status         FundraiserStatus @default(DRAFT)
+  verified       Boolean          @default(false)
+  published      Boolean          @default(false)
+  suspiciousFlag Boolean          @default(false)
+
+  adminNotes      String?
+  treasuryNotes   String?
+  moreInfoMessage String?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  submittedAt DateTime?
+  approvedAt  DateTime?
+  publishedAt DateTime?
+  rejectedAt  DateTime?
+  suspendedAt DateTime?
+  closedAt    DateTime?
+
+  requester       Profile                          @relation("ProfileFundraisers", fields: [requesterId], references: [id])
+  paymentChannels FundraiserPaymentChannel[]
+  media           FundraiserMedia[]
+  documents       FundraiserDocument[]
+  updates         FundraiserUpdate[]
+  reports         FundraiserAccountabilityReport[]
+  auditLogs       FundraiserAuditLog[]
+
+  @@index([requesterId])
+  @@index([status])
+  @@index([type])
+  @@index([published])
+  @@index([verified])
+  @@index([deadline])
+  @@map("fundraisers")
+}
+
+model FundraiserPaymentChannel {
+  id             String                       @id @default(cuid())
+  fundraiserId   String
+  channelType    FundraiserPaymentChannelType
+  channelLabel   String
+  channelDetails String
+  isApproved     Boolean                      @default(false)
+  reviewedById   String?                      @db.Uuid
+  reviewedAt     DateTime?
+  createdAt      DateTime                     @default(now())
+  updatedAt      DateTime                     @updatedAt
+
+  fundraiser Fundraiser @relation(fields: [fundraiserId], references: [id], onDelete: Cascade)
+  reviewedBy Profile?   @relation("FundraiserPaymentReviewer", fields: [reviewedById], references: [id])
+
+  @@index([fundraiserId])
+  @@index([channelType])
+  @@index([isApproved])
+  @@index([reviewedById])
+  @@map("fundraiser_payment_channels")
+}
+
+model FundraiserMedia {
+  id           String              @id @default(cuid())
+  fundraiserId String
+  mediaType    FundraiserMediaType
+  fileUrl      String
+  fileName     String?
+  caption      String?
+  createdAt    DateTime            @default(now())
+
+  fundraiser Fundraiser @relation(fields: [fundraiserId], references: [id], onDelete: Cascade)
+
+  @@index([fundraiserId])
+  @@index([mediaType])
+  @@map("fundraiser_media")
+}
+
+model FundraiserDocument {
+  id           String                 @id @default(cuid())
+  fundraiserId String
+  fileUrl      String
+  fileName     String
+  documentType FundraiserDocumentType @default(OTHER)
+  uploadedById String?                @db.Uuid
+  createdAt    DateTime               @default(now())
+
+  fundraiser Fundraiser @relation(fields: [fundraiserId], references: [id], onDelete: Cascade)
+  uploadedBy Profile?   @relation("FundraiserDocumentUploader", fields: [uploadedById], references: [id])
+
+  @@index([fundraiserId])
+  @@index([uploadedById])
+  @@index([documentType])
+  @@map("fundraiser_documents")
+}
+
+model FundraiserUpdate {
+  id           String   @id @default(cuid())
+  fundraiserId String
+  title        String
+  body         String
+  createdById  String?  @db.Uuid
+  isPublic     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  fundraiser Fundraiser @relation(fields: [fundraiserId], references: [id], onDelete: Cascade)
+  createdBy  Profile?   @relation("FundraiserUpdateCreator", fields: [createdById], references: [id])
+
+  @@index([fundraiserId])
+  @@index([createdById])
+  @@index([isPublic])
+  @@map("fundraiser_updates")
+}
+
+model FundraiserAccountabilityReport {
+  id                 String   @id @default(cuid())
+  fundraiserId       String
+  title              String
+  reportBody         String
+  amountAccountedFor Decimal?
+  supportingFileUrl  String?
+  createdById        String?  @db.Uuid
+  isPublic           Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  fundraiser Fundraiser @relation(fields: [fundraiserId], references: [id], onDelete: Cascade)
+  createdBy  Profile?   @relation("FundraiserReportCreator", fields: [createdById], references: [id])
+
+  @@index([fundraiserId])
+  @@index([createdById])
+  @@index([isPublic])
+  @@map("fundraiser_accountability_reports")
+}
+
+model FundraiserAuditLog {
+  id           String            @id @default(cuid())
+  fundraiserId String
+  actorId      String?           @db.Uuid
+  action       String
+  oldStatus    FundraiserStatus?
+  newStatus    FundraiserStatus?
+  notes        String?
+  metadata     Json?
+  createdAt    DateTime          @default(now())
+
+  fundraiser Fundraiser @relation(fields: [fundraiserId], references: [id], onDelete: Cascade)
+  actor      Profile?   @relation("FundraiserAuditActor", fields: [actorId], references: [id])
+
+  @@index([fundraiserId])
+  @@index([actorId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("fundraiser_audit_logs")
 }
 
 // ---------------------------------------------------------------------------
@@ -784,14 +1017,14 @@ model ConversationParticipant {
 }
 
 model Message {
-  id             String           @id @default(cuid())
+  id             String            @id @default(cuid())
   conversationId String
-  senderId       String           @db.Uuid
+  senderId       String            @db.Uuid
   content        String
   mediaUrl       String?
   mediaType      MessageMediaType?
-  read           Boolean          @default(false)
-  createdAt      DateTime         @default(now())
+  read           Boolean           @default(false)
+  createdAt      DateTime          @default(now())
 
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender       Profile      @relation(fields: [senderId], references: [id])
@@ -815,8 +1048,8 @@ model PushSubscription {
 
   user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId])
   @@unique([userId, endpoint])
+  @@index([userId])
   @@map("push_subscriptions")
 }
 
@@ -883,7 +1116,7 @@ model LiveStream {
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
 
-  createdBy Profile           @relation("ProfileLiveStreams", fields: [createdById], references: [id])
+  createdBy    Profile           @relation("ProfileLiveStreams", fields: [createdById], references: [id])
   chatMessages LiveStreamChat[]
   replay       LiveStreamReplay?
 
@@ -978,16 +1211,16 @@ model NewsletterSubscription {
 }
 
 model NotificationPreference {
-  id                       String   @id @default(cuid())
-  userId                   String   @unique @db.Uuid
-  emailNewsletter          Boolean  @default(true)
-  prayerReminders          Boolean  @default(true)
-  devotionalNotifications  Boolean  @default(true)
-  eventReminders           Boolean  @default(true)
-  donationReceipts         Boolean  @default(true)
-  pushEnabled              Boolean  @default(true)
-  createdAt                DateTime @default(now())
-  updatedAt                DateTime @updatedAt
+  id                      String   @id @default(cuid())
+  userId                  String   @unique @db.Uuid
+  emailNewsletter         Boolean  @default(true)
+  prayerReminders         Boolean  @default(true)
+  devotionalNotifications Boolean  @default(true)
+  eventReminders          Boolean  @default(true)
+  donationReceipts        Boolean  @default(true)
+  pushEnabled             Boolean  @default(true)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
 
   user Profile @relation(fields: [userId], references: [id])
 
@@ -1022,17 +1255,17 @@ model AuditLog {
 // ---------------------------------------------------------------------------
 
 model BackgroundJob {
-  id          String    @id @default(cuid())
-  type        String
-  payload     Json
-  status      JobStatus @default(PENDING)
-  attempts    Int       @default(0)
-  maxAttempts Int       @default(3)
+  id           String    @id @default(cuid())
+  type         String
+  payload      Json
+  status       JobStatus @default(PENDING)
+  attempts     Int       @default(0)
+  maxAttempts  Int       @default(3)
   scheduledFor DateTime
-  startedAt   DateTime?
-  completedAt DateTime?
-  error       String?
-  createdAt   DateTime  @default(now())
+  startedAt    DateTime?
+  completedAt  DateTime?
+  error        String?
+  createdAt    DateTime  @default(now())
 
   @@index([status])
   @@index([scheduledFor])
