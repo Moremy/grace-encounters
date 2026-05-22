@@ -48,8 +48,16 @@ export default async function AdminFundraiserDetailPage({ params }: { params: { 
     },
     include: {
       paymentChannels: true,
-      media: true,
-      documents: true,
+      media: {
+        orderBy: {
+          createdAt: 'desc',
+        },
+      },
+      documents: {
+        orderBy: {
+          createdAt: 'desc',
+        },
+      },
       updates: {
         orderBy: {
           createdAt: 'desc',
@@ -91,8 +99,8 @@ export default async function AdminFundraiserDetailPage({ params }: { params: { 
           <h1 className="mt-2 font-serif text-3xl font-bold text-navy">{fundraiser.title}</h1>
 
           <p className="mt-2 text-muted-foreground">
-            Review fundraiser details, beneficiary information, payment channels, and verification
-            status.
+            Review fundraiser details, beneficiary information, payment channels, supporting files,
+            and verification status.
           </p>
         </div>
 
@@ -230,6 +238,93 @@ export default async function AdminFundraiserDetailPage({ params }: { params: { 
           </div>
         </section>
       </div>
+
+      <section className="rounded-2xl border border-gold/20 bg-white p-6 shadow-sm">
+        <h2 className="font-serif text-2xl font-semibold text-navy">
+          Supporting Documents & Images
+        </h2>
+
+        <p className="mt-2 text-sm text-muted-foreground">
+          Review documents and images uploaded by the requester before approving or publishing this
+          fundraiser.
+        </p>
+
+        {fundraiser.documents.length === 0 && fundraiser.media.length === 0 ? (
+          <div className="mt-5 rounded-xl border border-dashed border-gold/40 bg-ivory p-5 text-sm text-muted-foreground">
+            No supporting documents or images have been uploaded yet.
+          </div>
+        ) : (
+          <div className="mt-5 grid gap-5 lg:grid-cols-2">
+            <div className="rounded-xl border border-border/60 bg-ivory p-5">
+              <h3 className="font-semibold text-navy">Documents</h3>
+
+              {fundraiser.documents.length === 0 ? (
+                <p className="mt-3 text-sm text-muted-foreground">No documents uploaded.</p>
+              ) : (
+                <ul className="mt-4 space-y-3">
+                  {fundraiser.documents.map((doc) => (
+                    <li key={doc.id} className="rounded-lg border border-border/60 bg-white p-4">
+                      <p className="text-sm font-semibold text-navy">{doc.fileName}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Type: {formatStatus(doc.documentType)}
+                      </p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Uploaded: {formatDate(doc.createdAt)}
+                      </p>
+
+                      <a
+                        href={doc.fileUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-3 inline-flex rounded-lg bg-navy px-4 py-2 text-xs font-semibold text-ivory transition hover:bg-navy/90"
+                      >
+                        Open Document
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="rounded-xl border border-border/60 bg-ivory p-5">
+              <h3 className="font-semibold text-navy">Images</h3>
+
+              {fundraiser.media.length === 0 ? (
+                <p className="mt-3 text-sm text-muted-foreground">No images uploaded.</p>
+              ) : (
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  {fundraiser.media.map((media) => (
+                    <div key={media.id} className="rounded-lg border border-border/60 bg-white p-3">
+                      <img
+                        src={media.fileUrl}
+                        alt={media.fileName || 'Fundraiser supporting image'}
+                        className="h-40 w-full rounded-lg object-cover"
+                      />
+
+                      <p className="mt-3 truncate text-sm font-semibold text-navy">
+                        {media.fileName || 'Supporting image'}
+                      </p>
+
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Uploaded: {formatDate(media.createdAt)}
+                      </p>
+
+                      <a
+                        href={media.fileUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-3 inline-flex rounded-lg border border-navy/20 px-4 py-2 text-xs font-semibold text-navy transition hover:bg-navy/5"
+                      >
+                        Open Image
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </section>
 
       <section className="rounded-2xl border border-gold/20 bg-white p-6 shadow-sm">
         <h2 className="font-serif text-2xl font-semibold text-navy">Payment Channels</h2>
