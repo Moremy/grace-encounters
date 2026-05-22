@@ -254,3 +254,54 @@ export async function updateFundraiserAmountRaised(formData: FormData) {
 
   redirect(`/admin/fundraisers/${fundraiserId}`);
 }
+
+export async function requestMoreInfoForFundraiser(formData: FormData) {
+  const admin = await requireAdmin();
+
+  const fundraiserId = String(formData.get('fundraiserId') || '');
+  const message = String(formData.get('moreInfoMessage') || '').trim();
+
+  if (!fundraiserId) {
+    redirect('/admin/fundraisers');
+  }
+
+  if (!message) {
+    redirect(`/admin/fundraisers/${fundraiserId}`);
+  }
+
+  const currentFundraiser = await prisma.fundraiser.findUnique({
+    where: { id: fundraiserId },
+    select: { status: true },
+  });
+
+  if (!currentFundraiser) {
+    redirect('/admin/fundraisers');
+  }
+
+  await prisma.fundraiser.update({
+    where: { id: fundraiserId },
+    data: {
+      status: 'MORE_INFO_REQUIRED',
+      verified: false,
+      published: false,
+      suspiciousFlag: false,
+      moreInfoMessage: message,
+      auditLogs: {
+        create: {
+          actorId: admin.id,
+          action: 'MORE_INFO_REQUIRED',
+          oldStatus: currentFundraiser.status,
+          newStatus: 'MORE_INFO_REQUIRED',
+          notes: message,
+        },
+      },
+    },
+  });
+
+  revalidatePath('/admin/fundraisers');
+  revalidatePath(`/admin/fundraisers/${fundraiserId}`);
+  revalidatePath('/dashboard/fundraisers');
+  revalidatePath('/fundraisers');
+
+  redirect(`/admin/fundraisers/${fundraiserId}`);
+}

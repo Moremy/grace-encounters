@@ -9,6 +9,7 @@ import {
   markFundraiserUnderReview,
   publishFundraiser,
   rejectFundraiser,
+  requestMoreInfoForFundraiser,
   sendFundraiserToTreasury,
   suspendFundraiser,
   updateFundraiserAmountRaised,
@@ -185,6 +186,17 @@ export default async function AdminFundraiserDetailPage({ params }: { params: { 
         </section>
       </div>
 
+      {fundraiser.moreInfoMessage ? (
+        <section className="rounded-2xl border border-amber-200 bg-amber-50 p-6 shadow-sm">
+          <h2 className="font-serif text-2xl font-semibold text-amber-900">
+            Current More Info Request
+          </h2>
+          <p className="mt-3 whitespace-pre-line text-sm leading-6 text-amber-800">
+            {fundraiser.moreInfoMessage}
+          </p>
+        </section>
+      ) : null}
+
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="rounded-2xl border border-gold/20 bg-white p-6 shadow-sm">
           <h2 className="font-serif text-2xl font-semibold text-navy">Requester Information</h2>
@@ -272,6 +284,33 @@ export default async function AdminFundraiserDetailPage({ params }: { params: { 
           Move this fundraiser through the verification workflow. Fundraisers do not appear publicly
           until they are published.
         </p>
+
+        <form
+          action={requestMoreInfoForFundraiser}
+          className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4"
+        >
+          <input type="hidden" name="fundraiserId" value={fundraiser.id} />
+
+          <label htmlFor="moreInfoMessage" className="text-sm font-semibold text-amber-900">
+            Request More Information / Corrections
+          </label>
+
+          <textarea
+            id="moreInfoMessage"
+            name="moreInfoMessage"
+            rows={4}
+            placeholder="Example: Please upload a school fee structure, official letter, or clearer payment proof."
+            defaultValue={fundraiser.moreInfoMessage ?? ''}
+            className="mt-3 w-full rounded-lg border border-amber-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20"
+          />
+
+          <button
+            type="submit"
+            className="mt-3 rounded-lg bg-amber-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-amber-800"
+          >
+            Send Request
+          </button>
+        </form>
 
         <form
           action={updateFundraiserAmountRaised}
