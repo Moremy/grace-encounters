@@ -42,6 +42,16 @@ export default async function EditFundraiserPage({ params }: { params: { id: str
         },
         take: 1,
       },
+      documents: {
+        orderBy: {
+          createdAt: 'desc',
+        },
+      },
+      media: {
+        orderBy: {
+          createdAt: 'desc',
+        },
+      },
     },
   });
 
@@ -249,6 +259,103 @@ export default async function EditFundraiserPage({ params }: { params: { id: str
               />
             </div>
           </div>
+        </section>
+
+        <section className="rounded-2xl border border-gold/20 bg-white p-6 shadow-sm">
+          <h2 className="font-serif text-2xl font-semibold text-navy">
+            Supporting Documents & Images
+          </h2>
+
+          <p className="mt-2 text-sm text-muted-foreground">
+            Upload requested documents such as school fee structures, letters, receipts, proof
+            documents, or supporting images.
+          </p>
+
+          <div className="mt-6 grid gap-5 lg:grid-cols-2">
+            <div>
+              <label htmlFor="supportingDocuments" className="text-sm font-semibold text-navy">
+                Supporting Documents
+              </label>
+              <input
+                id="supportingDocuments"
+                name="supportingDocuments"
+                type="file"
+                multiple
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp"
+                className="mt-2 w-full rounded-lg border border-dashed border-gold/40 bg-ivory px-4 py-3 text-sm"
+              />
+              <p className="mt-2 text-xs text-muted-foreground">
+                Accepted: PDF, Word, JPG, PNG, WebP. Maximum 10MB per document.
+              </p>
+            </div>
+
+            <div>
+              <label htmlFor="images" className="text-sm font-semibold text-navy">
+                Supporting Images
+              </label>
+              <input
+                id="images"
+                name="images"
+                type="file"
+                multiple
+                accept="image/jpeg,image/png,image/webp"
+                className="mt-2 w-full rounded-lg border border-dashed border-gold/40 bg-ivory px-4 py-3 text-sm"
+              />
+              <p className="mt-2 text-xs text-muted-foreground">
+                Accepted: JPG, PNG, WebP. Maximum 5MB per image.
+              </p>
+            </div>
+          </div>
+
+          {fundraiser.documents.length > 0 || fundraiser.media.length > 0 ? (
+            <div className="mt-6 grid gap-4 lg:grid-cols-2">
+              <div className="rounded-xl border border-border/60 bg-ivory p-4">
+                <h3 className="font-semibold text-navy">Uploaded Documents</h3>
+
+                {fundraiser.documents.length === 0 ? (
+                  <p className="mt-2 text-sm text-muted-foreground">No documents uploaded yet.</p>
+                ) : (
+                  <ul className="mt-3 space-y-2 text-sm">
+                    {fundraiser.documents.map((document) => (
+                      <li key={document.id}>
+                        <a
+                          href={document.fileUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-medium text-navy underline"
+                        >
+                          {document.fileName}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <div className="rounded-xl border border-border/60 bg-ivory p-4">
+                <h3 className="font-semibold text-navy">Uploaded Images</h3>
+
+                {fundraiser.media.length === 0 ? (
+                  <p className="mt-2 text-sm text-muted-foreground">No images uploaded yet.</p>
+                ) : (
+                  <ul className="mt-3 space-y-2 text-sm">
+                    {fundraiser.media.map((media) => (
+                      <li key={media.id}>
+                        <a
+                          href={media.fileUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-medium text-navy underline"
+                        >
+                          {media.fileName || 'View image'}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          ) : null}
         </section>
 
         <section className="rounded-2xl border border-gold/20 bg-white p-6 shadow-sm">

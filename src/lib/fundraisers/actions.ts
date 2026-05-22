@@ -2,10 +2,17 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { FundraiserPaymentChannelType, FundraiserType } from '@prisma/client';
+import {
+  FundraiserDocumentType,
+  FundraiserMediaType,
+  FundraiserPaymentChannelType,
+  FundraiserType,
+} from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
 import { createClient } from '@/lib/supabase/server';
+
+const FUNDRAISER_BUCKET = 'fundraisers';
 
 function slugify(value: string) {
   return value
@@ -95,6 +102,134 @@ function validateFundraiserForm(data: ReturnType<typeof readFundraiserForm>, red
   return targetAmount;
 }
 
+function getFileExtension(fileName: string) {
+  return fileName.split('.').pop()?.toLowerCase() || 'bin';
+}
+
+function isRealFile(value: FormDataEntryValue): value is File {
+  return value instanceof File && value.size > 0 && value.name.length > 0;
+}
+
+function validateDocumentFile(file: File) {
+  const allowedTypes = [
+    'application/pdf',
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ];
+
+  const maxSize = 10 * 1024 * 1024;
+
+  return allowedTypes.includes(file.type) && file.size <= maxSize;
+}
+
+function validateImageFile(file: File) {
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+  const maxSize = 5 * 1024 * 1024;
+
+  return allowedTypes.includes(file.type) && file.size <= maxSize;
+}
+
+async function uploadFileToSupabaseStorage({
+  userId,
+  fundraiserId,
+  file,
+  folder,
+}: {
+  userId: string;
+  fundraiserId: string;
+  file: File;
+  folder: 'documents' | 'images';
+}) {
+  const supabase = await createClient();
+
+  const ext = getFileExtension(file.name);
+  const safeName = file.name
+    .replace(/\.[^/.]+$/, '')
+    .replace(/[^a-zA-Z0-9-_]+/g, '-')
+    .slice(0, 60);
+
+  const storagePath = `${userId}/${fundraiserId}/${folder}/${Date.now()}-${Math.random()
+    .toString(36)
+    .substring(2, 8)}-${safeName}.${ext}`;
+
+  const { data, error } = await supabase.storage.from(FUNDRAISER_BUCKET).upload(storagePath, file, {
+    contentType: file.type,
+    upsert: false,
+  });
+
+  if (error) {
+    throw new Error('Fundraiser file upload failed.');
+  }
+
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from(FUNDRAISER_BUCKET).getPublicUrl(data.path);
+
+  return publicUrl;
+}
+
+async function uploadFundraiserFiles({
+  userId,
+  fundraiserId,
+  formData,
+}: {
+  userId: string;
+  fundraiserId: string;
+  formData: FormData;
+}) {
+  const supportingDocuments = formData.getAll('supportingDocuments').filter(isRealFile);
+
+  const images = formData.getAll('images').filter(isRealFile);
+
+  for (const file of supportingDocuments) {
+    if (!validateDocumentFile(file)) {
+      continue;
+    }
+
+    const fileUrl = await uploadFileToSupabaseStorage({
+      userId,
+      fundraiserId,
+      file,
+      folder: 'documents',
+    });
+
+    await prisma.fundraiserDocument.create({
+      data: {
+        fundraiserId,
+        fileUrl,
+        fileName: file.name,
+        documentType: 'OTHER' as FundraiserDocumentType,
+        uploadedById: userId,
+      },
+    });
+  }
+
+  for (const file of images) {
+    if (!validateImageFile(file)) {
+      continue;
+    }
+
+    const fileUrl = await uploadFileToSupabaseStorage({
+      userId,
+      fundraiserId,
+      file,
+      folder: 'images',
+    });
+
+    await prisma.fundraiserMedia.create({
+      data: {
+        fundraiserId,
+        fileUrl,
+        fileName: file.name,
+        mediaType: 'IMAGE' as FundraiserMediaType,
+      },
+    });
+  }
+}
+
 export async function createFundraiser(formData: FormData) {
   const profile = await requireUserProfile();
   const data = readFundraiserForm(formData);
@@ -141,6 +276,12 @@ export async function createFundraiser(formData: FormData) {
         },
       },
     },
+  });
+
+  await uploadFundraiserFiles({
+    userId: profile.id,
+    fundraiserId: fundraiser.id,
+    formData,
   });
 
   revalidatePath('/dashboard/fundraisers');
@@ -250,6 +391,12 @@ export async function resubmitFundraiser(formData: FormData) {
       });
     }
   }
+
+  await uploadFundraiserFiles({
+    userId: profile.id,
+    fundraiserId,
+    formData,
+  });
 
   revalidatePath('/dashboard/fundraisers');
   revalidatePath(`/dashboard/fundraisers/${fundraiserId}/edit`);
