@@ -1,25 +1,31 @@
-﻿const fundraiserTypes = [
-  'Medical support',
-  'Funeral support',
-  'Education support',
-  'Church project',
-  'Mission trip',
-  'Emergency relief',
-  'Community aid',
-  'Other',
+﻿import { createFundraiser } from '@/lib/fundraisers/actions';
+
+const fundraiserTypes = [
+  { label: 'Medical support', value: 'MEDICAL' },
+  { label: 'Funeral support', value: 'FUNERAL' },
+  { label: 'Education support', value: 'EDUCATION' },
+  { label: 'Church project', value: 'CHURCH_PROJECT' },
+  { label: 'Mission trip', value: 'MISSION_TRIP' },
+  { label: 'Emergency relief', value: 'EMERGENCY_RELIEF' },
+  { label: 'Community aid', value: 'COMMUNITY_AID' },
+  { label: 'Other', value: 'OTHER' },
 ];
 
 const paymentChannels = [
-  'M-Pesa phone number',
-  'M-Pesa till number',
-  'Paybill/account number',
-  'PayPal',
-  'Bank account details',
-  'Stripe/payment link',
-  'Other verified channel',
+  { label: 'M-Pesa phone number', value: 'MPESA_PHONE' },
+  { label: 'M-Pesa till number', value: 'MPESA_TILL' },
+  { label: 'Paybill/account number', value: 'PAYBILL' },
+  { label: 'PayPal', value: 'PAYPAL' },
+  { label: 'Bank account details', value: 'BANK_ACCOUNT' },
+  { label: 'Stripe/payment link', value: 'STRIPE' },
+  { label: 'Other verified channel', value: 'OTHER' },
 ];
 
-export default function NewFundraiserPage() {
+export default function NewFundraiserPage({
+  searchParams,
+}: {
+  searchParams?: { error?: string };
+}) {
   return (
     <div className="space-y-8">
       <div>
@@ -36,12 +42,18 @@ export default function NewFundraiserPage() {
         </p>
       </div>
 
+      {searchParams?.error ? (
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          {searchParams.error}
+        </div>
+      ) : null}
+
       <div className="rounded-2xl border border-gold/30 bg-gold/10 p-4 text-sm text-navy">
         Only verified fundraisers will be published. Payment channels will be
         reviewed before they appear publicly.
       </div>
 
-      <form className="space-y-8">
+      <form action={createFundraiser} className="space-y-8">
         <section className="rounded-2xl border border-gold/20 bg-white p-6 shadow-sm">
           <h2 className="font-serif text-xl font-semibold text-navy">
             Fundraiser Details
@@ -56,6 +68,7 @@ export default function NewFundraiserPage() {
                 id="title"
                 name="title"
                 type="text"
+                required
                 placeholder="Example: Medical support for..."
                 className="w-full rounded-lg border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20"
               />
@@ -68,12 +81,13 @@ export default function NewFundraiserPage() {
               <select
                 id="type"
                 name="type"
+                required
                 className="w-full rounded-lg border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20"
               >
                 <option value="">Select type</option>
                 {fundraiserTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
+                  <option key={type.value} value={type.value}>
+                    {type.label}
                   </option>
                 ))}
               </select>
@@ -90,7 +104,8 @@ export default function NewFundraiserPage() {
                 id="targetAmount"
                 name="targetAmount"
                 type="number"
-                min="0"
+                min="1"
+                required
                 placeholder="Example: 50000"
                 className="w-full rounded-lg border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20"
               />
@@ -136,6 +151,7 @@ export default function NewFundraiserPage() {
                 id="description"
                 name="description"
                 rows={6}
+                required
                 placeholder="Explain the need, background, and how the support will be used."
                 className="w-full rounded-lg border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20"
               />
@@ -160,6 +176,7 @@ export default function NewFundraiserPage() {
                 id="beneficiaryName"
                 name="beneficiaryName"
                 type="text"
+                required
                 className="w-full rounded-lg border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20"
               />
             </div>
@@ -175,6 +192,7 @@ export default function NewFundraiserPage() {
                 id="beneficiaryRelationship"
                 name="beneficiaryRelationship"
                 type="text"
+                required
                 placeholder="Example: Self, parent, church member, student"
                 className="w-full rounded-lg border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20"
               />
@@ -191,6 +209,7 @@ export default function NewFundraiserPage() {
                 id="requesterName"
                 name="requesterName"
                 type="text"
+                required
                 className="w-full rounded-lg border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20"
               />
             </div>
@@ -206,6 +225,7 @@ export default function NewFundraiserPage() {
                 id="requesterContact"
                 name="requesterContact"
                 type="text"
+                required
                 placeholder="Phone number or email"
                 className="w-full rounded-lg border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20"
               />
@@ -215,70 +235,12 @@ export default function NewFundraiserPage() {
 
         <section className="rounded-2xl border border-gold/20 bg-white p-6 shadow-sm">
           <h2 className="font-serif text-xl font-semibold text-navy">
-            Supporting Media & Documents
-          </h2>
-
-          <div className="mt-6 grid gap-5 md:grid-cols-2">
-            <div className="space-y-2">
-              <label
-                htmlFor="supportingDocuments"
-                className="text-sm font-medium text-navy"
-              >
-                Supporting Documents
-              </label>
-              <input
-                id="supportingDocuments"
-                name="supportingDocuments"
-                type="file"
-                multiple
-                className="w-full rounded-lg border border-dashed border-gold/40 bg-ivory px-4 py-3 text-sm text-navy"
-              />
-              <p className="text-xs text-muted-foreground">
-                Medical letters, school documents, project documents, or other
-                proof.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="images" className="text-sm font-medium text-navy">
-                Images
-              </label>
-              <input
-                id="images"
-                name="images"
-                type="file"
-                accept="image/*"
-                multiple
-                className="w-full rounded-lg border border-dashed border-gold/40 bg-ivory px-4 py-3 text-sm text-navy"
-              />
-            </div>
-
-            <div className="space-y-2 md:col-span-2">
-              <label
-                htmlFor="videoAppeal"
-                className="text-sm font-medium text-navy"
-              >
-                Video Appeal Link
-              </label>
-              <input
-                id="videoAppeal"
-                name="videoAppeal"
-                type="url"
-                placeholder="YouTube, Vimeo, Google Drive, or other video link"
-                className="w-full rounded-lg border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20"
-              />
-            </div>
-          </div>
-        </section>
-
-        <section className="rounded-2xl border border-gold/20 bg-white p-6 shadow-sm">
-          <h2 className="font-serif text-xl font-semibold text-navy">
-            Payment Channels for Review
+            Payment Channel for Review
           </h2>
 
           <p className="mt-2 text-sm text-muted-foreground">
-            Add the payment channels you want reviewed. They will not appear
-            publicly until approved.
+            Add one payment channel for now. More channels will be supported in
+            the next phase.
           </p>
 
           <div className="mt-6 grid gap-5 md:grid-cols-2">
@@ -296,8 +258,8 @@ export default function NewFundraiserPage() {
               >
                 <option value="">Select payment channel</option>
                 {paymentChannels.map((channel) => (
-                  <option key={channel} value={channel}>
-                    {channel}
+                  <option key={channel.value} value={channel.value}>
+                    {channel.label}
                   </option>
                 ))}
               </select>
@@ -333,26 +295,17 @@ export default function NewFundraiserPage() {
               information, and payment channels before publication.
             </p>
             <p>
-              This form is currently a user-interface preview. Database
-              submission will be connected in the next phase.
+              Supporting documents and media upload will be connected in the next
+              storage phase.
             </p>
           </div>
 
           <div className="mt-6 flex flex-wrap gap-3">
             <button
-              type="button"
-              disabled
-              className="rounded-lg bg-navy px-5 py-3 text-sm font-semibold text-ivory opacity-60"
+              type="submit"
+              className="rounded-lg bg-navy px-5 py-3 text-sm font-semibold text-ivory transition hover:bg-navy/90"
             >
-              Submit for Review Coming Soon
-            </button>
-
-            <button
-              type="button"
-              disabled
-              className="rounded-lg border border-navy/20 px-5 py-3 text-sm font-semibold text-navy opacity-60"
-            >
-              Save Draft Coming Soon
+              Submit for Review
             </button>
           </div>
         </section>
