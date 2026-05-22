@@ -140,36 +140,43 @@ async function updateFundraiserStatus(
 
 export async function markFundraiserUnderReview(formData: FormData) {
   const fundraiserId = String(formData.get('fundraiserId') || '');
+
   await updateFundraiserStatus(fundraiserId, 'UNDER_REVIEW', 'MARKED_UNDER_REVIEW');
 }
 
 export async function sendFundraiserToTreasury(formData: FormData) {
   const fundraiserId = String(formData.get('fundraiserId') || '');
+
   await updateFundraiserStatus(fundraiserId, 'TREASURY_REVIEW', 'SENT_TO_TREASURY_REVIEW');
 }
 
 export async function approveFundraiser(formData: FormData) {
   const fundraiserId = String(formData.get('fundraiserId') || '');
+
   await updateFundraiserStatus(fundraiserId, 'APPROVED', 'APPROVED');
 }
 
 export async function publishFundraiser(formData: FormData) {
   const fundraiserId = String(formData.get('fundraiserId') || '');
+
   await updateFundraiserStatus(fundraiserId, 'PUBLISHED', 'PUBLISHED');
 }
 
 export async function rejectFundraiser(formData: FormData) {
   const fundraiserId = String(formData.get('fundraiserId') || '');
+
   await updateFundraiserStatus(fundraiserId, 'REJECTED', 'REJECTED');
 }
 
 export async function suspendFundraiser(formData: FormData) {
   const fundraiserId = String(formData.get('fundraiserId') || '');
+
   await updateFundraiserStatus(fundraiserId, 'SUSPENDED', 'SUSPENDED');
 }
 
 export async function closeFundraiser(formData: FormData) {
   const fundraiserId = String(formData.get('fundraiserId') || '');
+
   await updateFundraiserStatus(fundraiserId, 'CLOSED', 'CLOSED');
 }
 
@@ -203,6 +210,47 @@ export async function approvePaymentChannel(formData: FormData) {
 
   revalidatePath('/admin/fundraisers');
   revalidatePath(`/admin/fundraisers/${fundraiserId}`);
+
+  redirect(`/admin/fundraisers/${fundraiserId}`);
+}
+
+export async function updateFundraiserAmountRaised(formData: FormData) {
+  const admin = await requireAdmin();
+
+  const fundraiserId = String(formData.get('fundraiserId') || '');
+  const amountRaisedValue = String(formData.get('amountRaised') || '').trim();
+
+  if (!fundraiserId) {
+    redirect('/admin/fundraisers');
+  }
+
+  const amountRaised = Number(amountRaisedValue);
+
+  if (Number.isNaN(amountRaised) || amountRaised < 0) {
+    redirect(`/admin/fundraisers/${fundraiserId}`);
+  }
+
+  await prisma.fundraiser.update({
+    where: { id: fundraiserId },
+    data: {
+      amountRaised,
+      auditLogs: {
+        create: {
+          actorId: admin.id,
+          action: 'AMOUNT_RAISED_UPDATED',
+          notes: `Amount raised updated to ${amountRaised}.`,
+          metadata: {
+            amountRaised,
+          },
+        },
+      },
+    },
+  });
+
+  revalidatePath('/admin/fundraisers');
+  revalidatePath(`/admin/fundraisers/${fundraiserId}`);
+  revalidatePath('/dashboard/fundraisers');
+  revalidatePath('/fundraisers');
 
   redirect(`/admin/fundraisers/${fundraiserId}`);
 }

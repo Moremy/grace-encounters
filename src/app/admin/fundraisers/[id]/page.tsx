@@ -11,7 +11,9 @@ import {
   rejectFundraiser,
   sendFundraiserToTreasury,
   suspendFundraiser,
+  updateFundraiserAmountRaised,
 } from '@/lib/fundraisers/admin-actions';
+
 function formatCurrency(amount: unknown, currency: string) {
   const numericAmount = Number(amount || 0);
 
@@ -270,6 +272,36 @@ export default async function AdminFundraiserDetailPage({ params }: { params: { 
           Move this fundraiser through the verification workflow. Fundraisers do not appear publicly
           until they are published.
         </p>
+
+        <form
+          action={updateFundraiserAmountRaised}
+          className="mt-6 rounded-xl border border-gold/20 bg-ivory p-4"
+        >
+          <input type="hidden" name="fundraiserId" value={fundraiser.id} />
+
+          <label htmlFor="amountRaised" className="text-sm font-semibold text-navy">
+            Update Amount Raised
+          </label>
+
+          <div className="mt-3 flex flex-col gap-3 sm:flex-row">
+            <input
+              id="amountRaised"
+              name="amountRaised"
+              type="number"
+              min="0"
+              step="1"
+              defaultValue={Number(fundraiser.amountRaised)}
+              className="w-full rounded-lg border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20"
+            />
+
+            <button
+              type="submit"
+              className="rounded-lg bg-navy px-5 py-3 text-sm font-semibold text-ivory transition hover:bg-navy/90"
+            >
+              Update Raised
+            </button>
+          </div>
+        </form>
 
         <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <form action={markFundraiserUnderReview}>
