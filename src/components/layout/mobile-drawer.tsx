@@ -23,35 +23,38 @@ const publicLinks: { label: string; href: string }[] = [
   { label: 'Fundraisers', href: '/fundraisers' },
 ];
 
+const authenticatedLinks: { label: string; href: string }[] = [
+  { label: 'Dashboard', href: '/dashboard' },
+  { label: 'My Fundraisers', href: '/dashboard/fundraisers' },
+  { label: 'Counselling', href: '/dashboard/counselling' },
+];
+
 export function MobileDrawer() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const pathname = usePathname();
 
-  // Track mount state for SSR safety (createPortal needs document.body)
   React.useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Close drawer on route change
   React.useEffect(() => {
     setIsOpen(false);
   }, [pathname]);
 
-  // Lock body scroll when drawer is open
   React.useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
+
     return () => {
       document.body.style.overflow = '';
     };
   }, [isOpen]);
 
-  // Check auth state on mount and listen for changes
   React.useEffect(() => {
     const supabase = createClient();
 
@@ -72,7 +75,6 @@ export function MobileDrawer() {
 
   return (
     <>
-      {/* Hamburger button - visible only on mobile */}
       <button
         type="button"
         aria-label="Open navigation menu"
@@ -85,11 +87,9 @@ export function MobileDrawer() {
         <Menu className="h-6 w-6" />
       </button>
 
-      {/* Portal: render backdrop and drawer on document.body to escape header stacking context */}
       {mounted &&
         createPortal(
           <>
-            {/* Backdrop overlay */}
             <div
               className={cn(
                 'fixed inset-0 z-[9999] bg-black/40 transition-opacity duration-300',
@@ -99,7 +99,6 @@ export function MobileDrawer() {
               onClick={() => setIsOpen(false)}
             />
 
-            {/* Drawer panel */}
             <div
               role="dialog"
               aria-modal="true"
@@ -110,7 +109,6 @@ export function MobileDrawer() {
                 isOpen ? 'translate-x-0' : '-translate-x-full',
               )}
             >
-              {/* Header: Wordmark + close button */}
               <div className="flex h-16 items-center justify-between border-b border-gold/30 px-6">
                 <Wordmark size="md" />
                 <button
@@ -123,40 +121,39 @@ export function MobileDrawer() {
                 </button>
               </div>
 
-              {/* Navigation links */}
               <nav aria-label="Navigation" className="flex-1 overflow-y-auto px-6 py-4">
                 <ul className="space-y-0">
-                  {publicLinks.map((link, index) => (
+                  {publicLinks.map((link) => (
                     <li key={link.href}>
                       <Link
                         href={link.href}
-                        className={cn(
-                          'block py-3 font-serif text-navy transition-colors hover:text-gold',
-                          (index < publicLinks.length - 1 || isAuthenticated) &&
-                            'border-b border-gold/10',
-                        )}
+                        className="block border-b border-gold/10 py-3 font-serif text-navy transition-colors hover:text-gold"
                       >
                         {link.label}
                       </Link>
                     </li>
                   ))}
-                  {isAuthenticated && (
-                    <li>
-                      <Link
-                        href="/dashboard"
-                        className="block py-3 font-serif text-navy transition-colors hover:text-gold"
-                      >
-                        Dashboard
-                      </Link>
-                    </li>
-                  )}
+
+                  {isAuthenticated
+                    ? authenticatedLinks.map((link, index) => (
+                        <li key={link.href}>
+                          <Link
+                            href={link.href}
+                            className={cn(
+                              'block py-3 font-serif text-navy transition-colors hover:text-gold',
+                              index < authenticatedLinks.length - 1 && 'border-b border-gold/10',
+                            )}
+                          >
+                            {link.label}
+                          </Link>
+                        </li>
+                      ))
+                    : null}
                 </ul>
               </nav>
 
-              {/* Divider */}
               <div className="mx-6 border-t border-gold/30" />
 
-              {/* Auth section */}
               <div className="px-6 py-4">
                 {isAuthenticated ? (
                   <form action={signOut}>
