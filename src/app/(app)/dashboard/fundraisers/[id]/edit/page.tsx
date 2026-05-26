@@ -98,7 +98,7 @@ export default async function EditFundraiserPage({ params }: { params: { id: str
         </section>
       ) : null}
 
-      <form action={resubmitFundraiser} className="space-y-6">
+      <form action={resubmitFundraiser} encType="multipart/form-data" className="space-y-6">
         <input type="hidden" name="fundraiserId" value={fundraiser.id} />
 
         <section className="rounded-2xl border border-gold/20 bg-white p-6 shadow-sm">
