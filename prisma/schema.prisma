@@ -207,6 +207,8 @@ model Profile {
   fundraiserUpdatesCreated    FundraiserUpdate[]               @relation("FundraiserUpdateCreator")
   fundraiserReportsCreated    FundraiserAccountabilityReport[] @relation("FundraiserReportCreator")
   fundraiserAuditLogs         FundraiserAuditLog[]             @relation("FundraiserAuditActor")
+  // Counselling relations
+  counsellingRequests         CounsellingRequest[]             @relation("ProfileCounsellingRequests")
   // Messaging relations
   messages                    Message[]
   conversationParticipants    ConversationParticipant[]
@@ -983,6 +985,65 @@ model FundraiserAuditLog {
   @@index([action])
   @@index([createdAt])
   @@map("fundraiser_audit_logs")
+}
+
+// ---------------------------------------------------------------------------
+// Counselling enums
+// ---------------------------------------------------------------------------
+
+enum CounsellingCategory {
+  MARRIAGE_FAMILY
+  GRIEF_LOSS
+  ADDICTION
+  MENTAL_HEALTH
+  SPIRITUAL_GUIDANCE
+  RELATIONSHIPS
+  FINANCIAL_STRESS
+  YOUTH
+  OTHER
+}
+
+enum CounsellingStatus {
+  PENDING
+  ASSIGNED
+  CONTACTED
+  IN_PROGRESS
+  CLOSED
+}
+
+enum CounsellingContactMethod {
+  PHONE
+  WHATSAPP
+  EMAIL
+  IN_PERSON
+}
+
+// ---------------------------------------------------------------------------
+// Counselling models
+// ---------------------------------------------------------------------------
+
+model CounsellingRequest {
+  id             String                   @id @default(cuid())
+  requesterId    String                   @db.Uuid
+  category       CounsellingCategory
+  description    String
+  contactMethod  CounsellingContactMethod
+  contactDetails String
+  status         CounsellingStatus        @default(PENDING)
+  assignedTo     String?
+  adminNotes     String?
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+  contactedAt    DateTime?
+  closedAt       DateTime?
+
+  requester Profile @relation("ProfileCounsellingRequests", fields: [requesterId], references: [id], onDelete: Cascade)
+
+  @@index([requesterId])
+  @@index([category])
+  @@index([status])
+  @@index([createdAt])
+  @@map("counselling_requests")
 }
 
 // ---------------------------------------------------------------------------
