@@ -1,6 +1,37 @@
 ﻿import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 import { prisma } from '@/lib/prisma';
+import { createClient } from '@/lib/supabase/server';
+import { canAdmin, fromPrismaRole } from '@/lib/auth/roles';
+
+async function requireAdmin() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/sign-in');
+  }
+
+  const profile = await prisma.profile.findUnique({
+    where: { id: user.id },
+    select: {
+      id: true,
+      role: true,
+    },
+  });
+
+  const role = fromPrismaRole(profile?.role ?? null);
+
+  if (!profile || !canAdmin(role)) {
+    redirect('/dashboard');
+  }
+
+  return profile;
+}
 
 function formatCurrency(amount: unknown, currency: string) {
   const numericAmount = Number(amount || 0);
@@ -20,6 +51,8 @@ function formatStatus(status: string) {
 }
 
 export default async function AdminFundraisersPage() {
+  await requireAdmin();
+
   const fundraisers = await prisma.fundraiser.findMany({
     orderBy: {
       createdAt: 'desc',
@@ -46,9 +79,7 @@ export default async function AdminFundraisersPage() {
   });
 
   const pendingReviews = fundraisers.filter((fundraiser) =>
-    ['SUBMITTED', 'UNDER_REVIEW', 'MORE_INFO_REQUIRED'].includes(
-      fundraiser.status,
-    ),
+    ['SUBMITTED', 'UNDER_REVIEW', 'MORE_INFO_REQUIRED'].includes(fundraiser.status),
   ).length;
 
   const treasuryQueue = fundraisers.filter(
@@ -71,21 +102,16 @@ export default async function AdminFundraisersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-3xl font-bold text-navy">
-          Fundraiser Reviews
-        </h1>
+        <h1 className="font-serif text-3xl font-bold text-navy">Fundraiser Reviews</h1>
         <p className="mt-2 text-muted-foreground">
-          Review, approve, publish, reject, suspend, or close submitted
-          fundraisers.
+          Review, approve, publish, reject, suspend, or close submitted fundraisers.
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-5">
         <div className="rounded-2xl border border-gold/20 bg-white p-6 shadow-sm">
           <p className="text-sm text-muted-foreground">Pending Reviews</p>
-          <p className="mt-2 text-3xl font-bold text-navy">
-            {pendingReviews}
-          </p>
+          <p className="mt-2 text-3xl font-bold text-navy">{pendingReviews}</p>
         </div>
 
         <div className="rounded-2xl border border-gold/20 bg-white p-6 shadow-sm">
@@ -100,9 +126,7 @@ export default async function AdminFundraisersPage() {
 
         <div className="rounded-2xl border border-gold/20 bg-white p-6 shadow-sm">
           <p className="text-sm text-muted-foreground">Total Raised</p>
-          <p className="mt-2 text-3xl font-bold text-navy">
-            {formatCurrency(totalRaised, 'KES')}
-          </p>
+          <p className="mt-2 text-3xl font-bold text-navy">{formatCurrency(totalRaised, 'KES')}</p>
         </div>
 
         <div className="rounded-2xl border border-gold/20 bg-white p-6 shadow-sm">
@@ -130,12 +154,9 @@ export default async function AdminFundraisersPage() {
       ) : (
         <div className="rounded-2xl border border-gold/20 bg-white shadow-sm">
           <div className="border-b border-border/60 p-6">
-            <h2 className="font-serif text-2xl font-semibold text-navy">
-              Submitted Fundraisers
-            </h2>
+            <h2 className="font-serif text-2xl font-semibold text-navy">Submitted Fundraisers</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Open a fundraiser to review its details, payment channels, and
-              verification status.
+              Open a fundraiser to review its details, payment channels, and verification status.
             </p>
           </div>
 
@@ -157,18 +178,14 @@ export default async function AdminFundraisersPage() {
                 {fundraisers.map((fundraiser) => (
                   <tr key={fundraiser.id} className="align-top">
                     <td className="px-6 py-4">
-                      <p className="font-semibold text-navy">
-                        {fundraiser.title}
-                      </p>
+                      <p className="font-semibold text-navy">{fundraiser.title}</p>
                       <p className="mt-1 text-xs text-muted-foreground">
                         {formatStatus(fundraiser.type)}
                       </p>
                     </td>
 
                     <td className="px-6 py-4">
-                      <p className="font-medium text-navy">
-                        {fundraiser.requesterName}
-                      </p>
+                      <p className="font-medium text-navy">{fundraiser.requesterName}</p>
                       <p className="mt-1 text-xs text-muted-foreground">
                         {fundraiser.requesterContact}
                       </p>
@@ -197,17 +214,11 @@ export default async function AdminFundraisersPage() {
                     </td>
 
                     <td className="px-6 py-4 font-medium text-navy">
-                      {formatCurrency(
-                        fundraiser.targetAmount,
-                        fundraiser.currency,
-                      )}
+                      {formatCurrency(fundraiser.targetAmount, fundraiser.currency)}
                     </td>
 
                     <td className="px-6 py-4 font-medium text-navy">
-                      {formatCurrency(
-                        fundraiser.amountRaised,
-                        fundraiser.currency,
-                      )}
+                      {formatCurrency(fundraiser.amountRaised, fundraiser.currency)}
                     </td>
 
                     <td className="px-6 py-4">

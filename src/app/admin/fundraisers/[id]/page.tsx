@@ -1,7 +1,9 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 
 import { prisma } from '@/lib/prisma';
+import { createClient } from '@/lib/supabase/server';
+import { canAdmin, fromPrismaRole } from '@/lib/auth/roles';
 import {
   approveFundraiser,
   approvePaymentChannel,
@@ -14,6 +16,34 @@ import {
   suspendFundraiser,
   updateFundraiserAmountRaised,
 } from '@/lib/fundraisers/admin-actions';
+
+async function requireAdmin() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/sign-in');
+  }
+
+  const profile = await prisma.profile.findUnique({
+    where: { id: user.id },
+    select: {
+      id: true,
+      role: true,
+    },
+  });
+
+  const role = fromPrismaRole(profile?.role ?? null);
+
+  if (!profile || !canAdmin(role)) {
+    redirect('/dashboard');
+  }
+
+  return profile;
+}
 
 function formatCurrency(amount: unknown, currency: string) {
   const numericAmount = Number(amount || 0);
@@ -42,6 +72,8 @@ function formatDate(date: Date | null) {
 }
 
 export default async function AdminFundraiserDetailPage({ params }: { params: { id: string } }) {
+  await requireAdmin();
+
   const fundraiser = await prisma.fundraiser.findUnique({
     where: {
       id: params.id,
