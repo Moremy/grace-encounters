@@ -17,6 +17,7 @@ import {
   Video,
   BarChart3,
   Shield,
+  ShieldCheck,
   ScrollText,
 } from 'lucide-react';
 
@@ -31,6 +32,7 @@ const adminNavItems = [
   { label: 'Pending Reviews', href: '/admin/reviews', icon: ClipboardCheck },
   { label: 'Testimonies', href: '/admin/testimonies', icon: BookHeart },
   { label: 'Prayer Requests', href: '/admin/prayers', icon: HandHeart },
+  { label: 'Counselling', href: '/admin/counselling', icon: ShieldCheck },
   { label: 'Users', href: '/admin/users', icon: Users },
   { label: 'Devotionals', href: '/admin/devotionals', icon: Sun },
   { label: 'Community', href: '/admin/community', icon: Users },
@@ -48,12 +50,7 @@ const adminNavItems = [
 
 function AdminSidebar({ className }: { className?: string }) {
   return (
-    <aside
-      className={cn(
-        'flex h-full w-64 flex-col bg-navy-700 text-ivory',
-        className,
-      )}
-    >
+    <aside className={cn('flex h-full w-64 flex-col bg-navy-700 text-ivory', className)}>
       <div className="flex items-center gap-3 px-6 py-5">
         <Link href="/admin" aria-label="Admin home">
           <Wordmark variant="inverted" size="md" />
