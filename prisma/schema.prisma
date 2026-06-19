@@ -252,6 +252,7 @@ model Testimony {
   authorId     String          @db.Uuid
   status       TestimonyStatus @default(PENDING)
   featured     Boolean         @default(false)
+  isAnonymous Boolean @default(false)
   revisionNote String?
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
@@ -292,10 +293,14 @@ enum PrayerVisibility {
 }
 
 model PrayerRequest {
-  id          String              @id @default(cuid())
+  id          String              @id @default(uuid()) @db.Uuid
   title       String
-  content     String
+  content     String?
+  channel     String              @map("channel")
+  body        String              @map("body")
+  isAnonymous Boolean             @default(false) @map("is_anonymous")
   authorId    String              @db.Uuid
+  userId      String              @map("user_id") @db.Uuid
   status      PrayerRequestStatus @default(PENDING)
   visibility  PrayerVisibility    @default(PUBLIC)
   prayerCount Int                 @default(0)
@@ -312,8 +317,8 @@ model PrayerRequest {
 }
 
 model PrayerIntercession {
-  id              String   @id @default(cuid())
-  prayerRequestId String
+  id              String   @id @default(uuid()) @db.Uuid
+  prayerRequestId String   @db.Uuid
   userId          String   @db.Uuid
   createdAt       DateTime @default(now())
 

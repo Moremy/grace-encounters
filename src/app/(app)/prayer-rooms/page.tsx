@@ -11,7 +11,7 @@ import { prisma } from '@/lib/prisma';
 import { canModerate, fromPrismaRole } from '@/lib/auth/roles';
 
 export const metadata: Metadata = {
-  title: 'Prayer Rooms | Light and Salt',
+  title: 'Prayer Rooms | Light Bearers',
   description: 'Join live prayer rooms and connect with the community in prayer.',
 };
 

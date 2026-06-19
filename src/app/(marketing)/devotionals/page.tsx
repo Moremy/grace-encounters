@@ -13,15 +13,21 @@ import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/brand/reveal';
 import { ScriptureBanner } from '@/components/marketing/scripture-banner';
 import { getPublishedDevotionals } from '@/lib/devotional/actions';
+import { generateDailyDevotional } from '@/lib/devotional/generate';
 
 export const metadata: Metadata = {
   title: 'Daily Devotionals',
   description:
-    'Daily devotional readings from Light and Salt to nourish your spirit and draw you closer to God.',
+    'Daily devotional readings from Light Bearers to nourish your spirit and draw you closer to God.',
 };
 
 export default async function DevotionalsPage() {
-  const devotionals = await getPublishedDevotionals();
+  // Today's devotional is generated (and cached in the DB) on the first visit
+  // of the day; subsequent visits reuse the stored row. `getPublishedDevotionals`
+  // returns everything published, so we exclude today's entry from the list.
+  const today = await generateDailyDevotional();
+  const published = await getPublishedDevotionals();
+  const past = published.filter((devotional) => devotional.id !== today?.id);
 
   return (
     <>
@@ -40,18 +46,61 @@ export default async function DevotionalsPage() {
         </div>
       </section>
 
+      {today && (
+        <section className="bg-background pt-24">
+          <div className="max-w-3xl mx-auto px-6">
+            <Reveal>
+              <p className="text-center text-xs uppercase tracking-widest text-gold">
+                Today&apos;s Devotional
+              </p>
+              <Card className="mt-6 border-gold/30">
+                <CardHeader>
+                  <div className="h-12 w-12 rounded-full bg-gold/15 text-gold flex items-center justify-center">
+                    <Sun className="h-6 w-6" />
+                  </div>
+                  <CardDescription className="mt-4">
+                    {today.scriptureReference}
+                  </CardDescription>
+                  <CardTitle className="text-2xl md:text-3xl">
+                    {today.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <blockquote className="pl-6 border-l-4 border-gold font-serif text-lg italic text-navy">
+                    {today.scripture}
+                  </blockquote>
+                  <p className="mt-6 text-muted-foreground">{today.excerpt}</p>
+                  <Button variant="sacred" className="mt-6" asChild>
+                    <Link href={`/devotionals/${today.slug}`}>
+                      Read Today&apos;s Devotional
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </Reveal>
+          </div>
+        </section>
+      )}
+
       <section className="bg-background py-24">
         <div className="max-w-6xl mx-auto px-6">
           <Reveal>
-            {devotionals.length === 0 ? (
-              <div className="text-center py-16">
-                <p className="text-muted-foreground">
-                  No devotionals published yet. Check back soon for daily readings.
-                </p>
-              </div>
+            {past.length > 0 && (
+              <h2 className="mb-8 font-serif text-2xl text-navy">
+                Past Devotionals
+              </h2>
+            )}
+            {past.length === 0 ? (
+              !today && (
+                <div className="text-center py-16">
+                  <p className="text-muted-foreground">
+                    No devotionals published yet. Check back soon for daily readings.
+                  </p>
+                </div>
+              )
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {devotionals.map((devotional) => (
+                {past.map((devotional) => (
                   <Card key={devotional.id}>
                     <CardHeader>
                       <div className="h-10 w-10 rounded-full bg-gold/15 text-gold flex items-center justify-center">

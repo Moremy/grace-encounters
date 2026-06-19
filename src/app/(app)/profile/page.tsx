@@ -9,7 +9,7 @@ import { ProfileHeader } from '@/components/profile/profile-header';
 import { getMyProfile } from '@/lib/profile/actions';
 
 export const metadata: Metadata = {
-  title: 'My Profile | Light and Salt',
+  title: 'My Profile | Light Bearers',
   description: 'View and manage your profile.',
 };
 

@@ -8,7 +8,7 @@ import { ConversationList } from '@/components/messaging/conversation-list';
 import { getMyConversations } from '@/lib/messaging/actions';
 
 export const metadata: Metadata = {
-  title: 'Messages | Light and Salt',
+  title: 'Messages | Light Bearers',
   description: 'Your conversations and messages.',
 };
 

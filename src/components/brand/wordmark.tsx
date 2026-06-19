@@ -6,14 +6,14 @@ export function Wordmark() {
     <Link href="/" className="flex items-center gap-3">
       <Image
         src="/logo.png"
-        alt="Light and Salt"
+        alt="Light Bearers"
         width={42}
         height={42}
         className="rounded-md object-contain"
         priority
       />
 
-      <span className="text-xl font-semibold tracking-tight">Light and Salt</span>
+      <span className="text-xl font-semibold tracking-tight">Light Bearers</span>
     </Link>
   );
 }

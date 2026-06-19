@@ -11,7 +11,7 @@ import { getMyBookmarks, addBookmark } from '@/lib/bible-study/actions';
 import { createClient } from '@/lib/supabase/server';
 
 export const metadata: Metadata = {
-  title: 'Scripture Bookmarks | Light and Salt',
+  title: 'Scripture Bookmarks | Light Bearers',
   description: 'Your saved scripture bookmarks and notes.',
 };
 

@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 
-const CACHE_NAME = 'light-and-salt-v1';
+const CACHE_NAME = 'light-bearers-v1';
 const OFFLINE_URL = '/offline';
 
 const APP_SHELL_ASSETS = ['/offline', '/manifest.json'];
@@ -110,7 +110,7 @@ self.addEventListener('push', (event) => {
     data: { url: data.url || '/dashboard' },
   };
 
-  event.waitUntil(self.registration.showNotification(data.title || 'Light and Salt', options));
+  event.waitUntil(self.registration.showNotification(data.title || 'Light Bearers', options));
 });
 
 // Notification click event

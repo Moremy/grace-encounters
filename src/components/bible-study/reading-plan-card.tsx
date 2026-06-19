@@ -29,7 +29,7 @@ export function ReadingPlanCard({ plan, userProgress }: ReadingPlanCardProps) {
     : 0;
 
   return (
-    <Link href={`/bible-study/plans/${plan.slug}`} className="group block">
+    <Link href={`/dashboard/bible-study/plans/${plan.slug}`} className="group block">
       <Card className="h-full overflow-hidden transition-shadow group-hover:shadow-md">
         {plan.coverImageUrl ? (
           <div

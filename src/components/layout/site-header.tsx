@@ -1,65 +1,74 @@
 import * as React from 'react';
 import Link from 'next/link';
-import { Search } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Wordmark } from '@/components/brand/wordmark';
-import { ScrollAwareShell } from '@/components/layout/scroll-aware-shell';
+import { LighthouseMark } from '@/components/brand/lighthouse-mark';
 import { MobileDrawer } from '@/components/layout/mobile-drawer';
 import { LanguageSwitcher } from '@/components/i18n/language-switcher';
 
-const navLinks: { label: string; href: string }[] = [
-  { label: 'Books', href: '/books' },
-  { label: 'Blog', href: '/blog' },
+const navLinks: { label: string; href: string; active?: boolean }[] = [
+  { label: 'Home', href: '/', active: true },
+  { label: 'About', href: '/about' },
+  { label: 'Ministries', href: '/#ministries' },
+  { label: 'Resources', href: '/media' },
   { label: 'Events', href: '/events' },
-  { label: 'Media', href: '/media' },
-  { label: 'Community', href: '/community' },
-  { label: 'Donate', href: '/donate' },
+  { label: 'Contact', href: '/#contact' },
 ];
 
 /**
- * Server-rendered marketing header. The only piece that needs the browser
- * is the scroll-driven backdrop blur, which is isolated in
- * `<ScrollAwareShell>` so the wordmark, nav links, and CTA ship as static
- * markup.
+ * Server-rendered marketing header with a solid teal background. Ships as
+ * static markup — no scroll-driven backdrop effect.
  */
 export function SiteHeader() {
   return (
-    <ScrollAwareShell
-      className="sticky top-0 z-40 w-full transition-colors duration-300"
-      baseClassName="bg-transparent"
-      scrolledClassName="backdrop-blur-md bg-ivory/70 border-b border-border/50"
-    >
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <MobileDrawer />
-          <Link href="/" aria-label="Light and Salt home" className="flex items-center">
-            <Wordmark size="md" />
-          </Link>
-        </div>
-        <nav aria-label="Primary" className="hidden md:flex items-center gap-8">
+    <header className="sticky top-0 z-40 w-full bg-[#4A0E1A] text-white">
+      <div className="flex h-16 w-full items-center px-8">
+        <Link
+          href="/"
+          aria-label="Light Bearers home"
+          className="flex shrink-0 items-center gap-3"
+        >
+          <LighthouseMark className="h-8 w-8 text-white" />
+          <span className="flex flex-col leading-none">
+            <span className="font-serif text-base font-semibold uppercase tracking-wide">
+              Light Bearers
+            </span>
+            <span className="text-[9px] uppercase tracking-[0.2em] text-white/70">
+              Shining Truth. Transforming Lives.
+            </span>
+          </span>
+        </Link>
+        <nav
+          aria-label="Primary"
+          className="ml-auto mr-8 hidden items-center gap-6 md:flex"
+        >
           {navLinks.map((link) => (
             <Link
               key={link.label}
               href={link.href}
-              className="text-sm text-foreground/80 transition-colors hover:text-primary hover:underline underline-offset-4"
+              className={
+                link.active
+                  ? 'text-xs font-semibold uppercase tracking-widest text-white underline underline-offset-4'
+                  : 'text-xs font-semibold uppercase tracking-widest text-white/80 hover:text-white transition-colors'
+              }
             >
               {link.label}
             </Link>
           ))}
         </nav>
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-3 text-white">
           <LanguageSwitcher />
-          <Button variant="ghost" size="icon" asChild className="hidden sm:inline-flex">
-            <Link href="/search" aria-label="Search">
-              <Search className="h-4 w-4" />
-            </Link>
+          <Button
+            asChild
+            className="bg-[#1A6B6B] text-white hover:bg-[#1A6B6B]/90"
+          >
+            <Link href="/donate">Give Today</Link>
           </Button>
-          <Button variant="sacred" asChild className="hidden sm:inline-flex">
-            <Link href="#share">Share Your Story</Link>
-          </Button>
+          <div className="text-white">
+            <MobileDrawer />
+          </div>
         </div>
       </div>
-    </ScrollAwareShell>
+    </header>
   );
 }

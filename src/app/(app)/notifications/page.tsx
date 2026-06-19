@@ -5,7 +5,7 @@ import { NotificationItem } from '@/components/notifications/notification-item';
 import { getMyNotifications, markAllAsRead } from '@/lib/notification/actions';
 
 export const metadata: Metadata = {
-  title: 'Notifications | Light and Salt',
+  title: 'Notifications | Light Bearers',
 };
 
 export default async function NotificationsPage() {

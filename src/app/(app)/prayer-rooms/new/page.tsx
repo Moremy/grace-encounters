@@ -12,7 +12,7 @@ import { prisma } from '@/lib/prisma';
 import { canModerate, fromPrismaRole } from '@/lib/auth/roles';
 
 export const metadata: Metadata = {
-  title: 'Create Prayer Room | Light and Salt',
+  title: 'Create Prayer Room | Light Bearers',
   description: 'Create a new prayer room for the community.',
 };
 

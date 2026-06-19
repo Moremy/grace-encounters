@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return {
-    title: `${profile.displayName ?? 'Member'} | Light and Salt`,
+    title: `${profile.displayName ?? 'Member'} | Light Bearers`,
     description: profile.bio ?? 'Community member profile.',
   };
 }

@@ -4,25 +4,26 @@
 
 @layer base {
   :root {
-    --background: 36 33% 97%;
+    /* Light Bearers palette: cream background, burgundy primary, teal secondary */
+    --background: 37 39% 94%;
     --foreground: 211 67% 14%;
     --card: 0 0% 100%;
     --card-foreground: 211 67% 14%;
-    --popover: 36 33% 97%;
+    --popover: 37 39% 94%;
     --popover-foreground: 211 67% 14%;
-    --primary: 38 44% 61%;
-    --primary-foreground: 211 67% 14%;
-    --secondary: 211 67% 14%;
-    --secondary-foreground: 36 33% 97%;
-    --muted: 36 20% 92%;
+    --primary: 348 56% 27%;
+    --primary-foreground: 37 39% 94%;
+    --secondary: 180 61% 26%;
+    --secondary-foreground: 37 39% 94%;
+    --muted: 37 24% 90%;
     --muted-foreground: 211 25% 35%;
-    --accent: 84 14% 42%;
-    --accent-foreground: 36 33% 97%;
+    --accent: 180 61% 26%;
+    --accent-foreground: 37 39% 94%;
     --destructive: 0 70% 45%;
     --destructive-foreground: 0 0% 100%;
-    --border: 36 20% 86%;
-    --input: 36 20% 86%;
-    --ring: 38 44% 61%;
+    --border: 37 22% 85%;
+    --input: 37 22% 85%;
+    --ring: 348 56% 27%;
     --radius: 0.5rem;
     --font-serif: 'Fraunces', ui-serif, Georgia, serif;
     --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
@@ -35,19 +36,19 @@
     --card-foreground: 36 33% 95%;
     --popover: 211 50% 12%;
     --popover-foreground: 36 33% 95%;
-    --primary: 38 44% 61%;
-    --primary-foreground: 211 67% 8%;
-    --secondary: 36 33% 95%;
+    --primary: 348 50% 45%;
+    --primary-foreground: 37 39% 95%;
+    --secondary: 180 45% 42%;
     --secondary-foreground: 211 67% 8%;
     --muted: 211 30% 18%;
     --muted-foreground: 36 20% 75%;
-    --accent: 84 14% 42%;
-    --accent-foreground: 36 33% 95%;
+    --accent: 180 45% 42%;
+    --accent-foreground: 211 67% 8%;
     --destructive: 0 60% 40%;
     --destructive-foreground: 0 0% 100%;
     --border: 211 30% 22%;
     --input: 211 30% 22%;
-    --ring: 38 44% 61%;
+    --ring: 348 50% 45%;
   }
 
   * {
@@ -80,7 +81,7 @@
     text-wrap: pretty;
   }
 
-  .gradient-radial-gold {
+  .gradient-radial-primary {
     background-image: radial-gradient(
       closest-side at 50% 30%,
       hsl(var(--primary) / 0.18),

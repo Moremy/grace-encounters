@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { createEvent } from '@/lib/event/actions';
 
 export const metadata: Metadata = {
-  title: 'New Event | Admin | Light and Salt',
+  title: 'New Event | Admin | Light Bearers',
   description: 'Create a new crusade or event.',
 };
 

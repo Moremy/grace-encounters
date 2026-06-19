@@ -13,7 +13,7 @@ import {
 import { getMyPrayerRequests } from '@/lib/prayer/actions';
 
 export const metadata: Metadata = {
-  title: 'My Prayer Requests | Light and Salt',
+  title: 'My Prayer Requests | Light Bearers',
   description: 'View and manage your submitted prayer requests.',
 };
 
@@ -113,6 +113,23 @@ export default async function MyPrayerRequestsPage() {
                   {prayer.prayerCount === 1 ? 'person has' : 'people have'}{' '}
                   prayed for this
                 </p>
+                <div className="mt-4">
+                  {prayer.status === 'PENDING' ? (
+                    <Button variant="outline" asChild>
+                      <Link href={`/prayer-wall/${prayer.id}/edit`}>
+                        Edit Prayer Request
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      disabled
+                      title="This prayer request cannot be edited"
+                    >
+                      Edit Prayer Request
+                    </Button>
+                  )}
+                </div>
               </CardContent>
             </Card>
           ))}

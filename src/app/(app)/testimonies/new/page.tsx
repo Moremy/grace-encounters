@@ -6,7 +6,7 @@ import { createTestimony } from '@/lib/testimony/actions';
 import { TestimonyFormClient } from './testimony-form-client';
 
 export const metadata: Metadata = {
-  title: 'Share a Testimony | Light and Salt',
+  title: 'Share a Testimony | Light Bearers',
   description: 'Share your testimony of how God has moved in your life.',
 };
 

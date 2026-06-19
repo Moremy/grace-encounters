@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getMyProfile, updateProfile } from '@/lib/profile/actions';
 
 export const metadata: Metadata = {
-  title: 'Edit Profile | Light and Salt',
+  title: 'Edit Profile | Light Bearers',
   description: 'Edit your community profile.',
 };
 

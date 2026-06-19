@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { getAllArticlesAdmin, updateArticleStatus } from '@/lib/blog/actions';
 
 export const metadata: Metadata = {
-  title: 'Manage Blog Articles | Admin | Light and Salt',
+  title: 'Manage Blog Articles | Admin | Light Bearers',
   description: 'Create, edit, and manage blog articles.',
 };
 

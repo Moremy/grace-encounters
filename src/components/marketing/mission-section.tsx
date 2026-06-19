@@ -1,70 +1,81 @@
 import * as React from 'react';
-import { BookHeart, HandHeart, Sun } from 'lucide-react';
+import { Building2, Users, Globe } from 'lucide-react';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Reveal } from '@/components/brand/reveal';
 
-type Pillar = {
+type Stat = {
   title: string;
   description: string;
   Icon: React.ComponentType<{ className?: string }>;
 };
 
-const pillars: Pillar[] = [
+const stats: Stat[] = [
   {
-    title: 'Testify',
-    description:
-      'Share what God has done in plain words. Your story makes room for someone else to hope.',
-    Icon: BookHeart,
+    title: 'Building Stronger Lives',
+    description: 'Discipleship and teaching that ground people in lasting truth.',
+    Icon: Building2,
   },
   {
-    title: 'Intercede',
-    description:
-      "Lift one another's burdens with quiet, faithful prayer. No request is too small to bring.",
-    Icon: HandHeart,
+    title: 'Transforming Communities',
+    description: 'Outreach that meets real needs and restores hope close to home.',
+    Icon: Users,
   },
   {
-    title: 'Abide',
-    description:
-      'Return each day to scripture and stillness. Let the Word steady your heart.',
-    Icon: Sun,
+    title: 'Bringing Light to the World',
+    description: 'Carrying the message of truth far beyond our own doorstep.',
+    Icon: Globe,
   },
 ];
 
 export function MissionSection() {
   return (
-    <section className="bg-background py-24">
-      <div className="max-w-6xl mx-auto px-6">
-        <h2 className="font-serif text-3xl md:text-4xl text-navy">
-          A quiet place for sacred work.
-        </h2>
-        <p className="mt-4 max-w-2xl text-muted-foreground">
-          Light and Salt gathers testimonies, prayer, and devotion into one reverent
-          space. Built slowly, kept gently, and held in the hands of the One who began it.
-        </p>
-
-        <Reveal>
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-            {pillars.map(({ title, description, Icon }) => (
-              <Card key={title}>
-                <CardHeader>
-                  <div className="h-10 w-10 rounded-full bg-gold/15 text-gold flex items-center justify-center">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <CardTitle className="mt-4">{title}</CardTitle>
-                  <CardDescription>{description}</CardDescription>
-                </CardHeader>
-                <CardContent />
-              </Card>
-            ))}
+    <section id="about" className="scroll-mt-20 bg-cream py-24">
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          <div className="relative">
+            <div
+              aria-hidden="true"
+              className="absolute -left-3 -top-3 h-24 w-24 rounded bg-burgundy"
+            />
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded bg-gray-200" />
           </div>
-        </Reveal>
+
+          <div>
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-teal">
+                About Us
+              </span>
+              <span className="h-px w-12 bg-teal" aria-hidden="true" />
+            </div>
+
+            <h2 className="mt-4 font-serif text-3xl text-burgundy md:text-4xl">
+              A Mission That Makes a Difference
+            </h2>
+
+            <p className="mt-4 max-w-2xl text-muted-foreground">
+              Light Bearers gathers testimonies, prayer, and devotion into one reverent
+              space. We exist to shine truth into everyday life and to walk alongside
+              people as God transforms them — built slowly, kept gently, and held in the
+              hands of the One who began it.
+            </p>
+
+            <Reveal>
+              <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-3">
+                {stats.map(({ title, description, Icon }) => (
+                  <div key={title}>
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal text-white">
+                      <Icon className="h-6 w-6" />
+                    </div>
+                    <h3 className="mt-4 font-serif text-base font-semibold text-burgundy">
+                      {title}
+                    </h3>
+                    <p className="mt-2 text-sm text-muted-foreground">{description}</p>
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+          </div>
+        </div>
       </div>
     </section>
   );

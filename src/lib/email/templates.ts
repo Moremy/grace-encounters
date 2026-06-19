@@ -17,7 +17,7 @@ function emailLayout(content: string, preheader?: string): string {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Light and Salt</title>
+  <title>Light Bearers</title>
 </head>
 <body style="margin:0;padding:0;background-color:${COLORS.ivory};font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
   ${preheader ? `<div style="display:none;max-height:0;overflow:hidden;">${preheader}</div>` : ''}
@@ -28,7 +28,7 @@ function emailLayout(content: string, preheader?: string): string {
           <!-- Header -->
           <tr>
             <td style="background-color:${COLORS.navy};padding:24px 32px;text-align:center;">
-              <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:700;letter-spacing:0.5px;">Light and Salt</h1>
+              <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:700;letter-spacing:0.5px;">Light Bearers</h1>
             </td>
           </tr>
           <!-- Content -->
@@ -41,7 +41,7 @@ function emailLayout(content: string, preheader?: string): string {
           <tr>
             <td style="padding:24px 32px;background-color:${COLORS.ivory};text-align:center;border-top:1px solid #e5e5e5;">
               <p style="margin:0;color:${COLORS.muted};font-size:12px;">
-                Light and Salt Community<br/>
+                Light Bearers Community<br/>
                 <a href="{unsubscribe_url}" style="color:${COLORS.gold};text-decoration:underline;">Unsubscribe</a>
               </p>
             </td>
@@ -93,12 +93,12 @@ We have received your donation of ${data.currency} ${data.amount} on ${data.date
 
 Thank you for your support.
 
-- Light and Salt Community`;
+- Light Bearers Community`;
 
   return {
     html: emailLayout(content, 'Thank you for your generous donation'),
     text,
-    subject: 'Donation Receipt - Light and Salt',
+    subject: 'Donation Receipt - Light Bearers',
   };
 }
 
@@ -145,12 +145,12 @@ Here are some prayer requests from our community:
 
 ${textPrayers}
 
-- Light and Salt Community`;
+- Light Bearers Community`;
 
   return {
     html: emailLayout(content, 'Prayer requests need your intercession'),
     text,
-    subject: 'Prayer Reminders - Light and Salt',
+    subject: 'Prayer Reminders - Light Bearers',
   };
 }
 
@@ -180,12 +180,12 @@ ${data.scriptureReference}
 
 ${data.excerpt}
 
-- Light and Salt Community`;
+- Light Bearers Community`;
 
   return {
     html: emailLayout(content, `New devotional: ${data.title}`),
     text,
-    subject: `New Devotional: ${data.title} - Light and Salt`,
+    subject: `New Devotional: ${data.title} - Light Bearers`,
   };
 }
 
@@ -228,12 +228,12 @@ Location: ${data.location}
 
 ${data.description}
 
-- Light and Salt Community`;
+- Light Bearers Community`;
 
   return {
     html: emailLayout(content, `Reminder: ${data.eventTitle}`),
     text,
-    subject: `Event Reminder: ${data.eventTitle} - Light and Salt`,
+    subject: `Event Reminder: ${data.eventTitle} - Light Bearers`,
   };
 }
 
@@ -254,7 +254,7 @@ export function renderNewsletterEmail(data: NewsletterEmailData): {
 
   return {
     html: emailLayout(htmlContent, data.subject),
-    text: `${data.subject}\n\n${data.content.replace(/<[^>]*>/g, '')}\n\n- Light and Salt Community`,
-    subject: `${data.subject} - Light and Salt`,
+    text: `${data.subject}\n\n${data.content.replace(/<[^>]*>/g, '')}\n\n- Light Bearers Community`,
+    subject: `${data.subject} - Light Bearers`,
   };
 }

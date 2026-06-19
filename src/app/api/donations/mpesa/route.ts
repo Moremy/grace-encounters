@@ -62,7 +62,7 @@ export async function POST(request: Request) {
   //   phoneNumber: data.phone,
   //   amount: data.amount,
   //   accountReference: donation.id,
-  //   transactionDesc: 'Donation to Light and Salt',
+  //   transactionDesc: 'Donation to Light Bearers',
   // });
 
   return NextResponse.json({

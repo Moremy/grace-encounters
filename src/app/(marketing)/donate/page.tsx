@@ -8,7 +8,7 @@ import { getDonationCampaigns } from '@/lib/donation/actions';
 export const metadata: Metadata = {
   title: 'Donate',
   description:
-    'Support the ministry of Light and Salt. Give generously and help transform lives.',
+    'Support the ministry of Light Bearers. Give generously and help transform lives.',
 };
 
 export default async function DonatePage() {
@@ -116,7 +116,7 @@ export default async function DonatePage() {
               <div>
                 <h3 className="font-medium text-navy">Is my donation tax-deductible?</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Yes. Light and Salt is a registered nonprofit organization. You will
+                  Yes. Light Bearers is a registered nonprofit organization. You will
                   receive a donation receipt for tax purposes.
                 </p>
               </div>

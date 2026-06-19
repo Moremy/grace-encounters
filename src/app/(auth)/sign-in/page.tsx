@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useFormStatus } from 'react-dom';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -20,6 +21,17 @@ function SubmitButton() {
 }
 
 export default function SignInPage() {
+  // Read ?next=... from the URL so we can return the user to the page they
+  // were trying to reach before middleware bounced them here.
+  const searchParams = useSearchParams();
+  const next = searchParams.get('next') ?? '';
+
+  // Pass `next` through to the sign-up link too, so the redirect target
+  // survives an account creation in the middle of the flow.
+  const signUpHref = next
+    ? `/sign-up?next=${encodeURIComponent(next)}`
+    : '/sign-up';
+
   return (
     <Card>
       <CardHeader>
@@ -29,6 +41,8 @@ export default function SignInPage() {
       <CardContent>
         <AuthMessage />
         <form action={signIn} className="space-y-4">
+          {/* Carry the redirect target through the server action. */}
+          <input type="hidden" name="next" value={next} />
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" name="email" type="email" placeholder="you@example.com" required />
@@ -60,7 +74,7 @@ export default function SignInPage() {
       <CardFooter className="justify-center">
         <p className="text-sm text-muted-foreground">
           Don&apos;t have an account?{' '}
-          <Link href="/sign-up" className="font-medium text-navy underline-offset-4 hover:underline">
+          <Link href={signUpHref} className="font-medium text-navy underline-offset-4 hover:underline">
             Sign up
           </Link>
         </p>

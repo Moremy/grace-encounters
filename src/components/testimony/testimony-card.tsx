@@ -18,6 +18,7 @@ interface TestimonyCardProps {
     excerpt: string;
     mediaType: string;
     category: string | null;
+    isAnonymous?: boolean;
     author: { displayName: string | null };
   };
 }
@@ -45,21 +46,32 @@ export function TestimonyCard({ testimony }: TestimonyCardProps) {
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gold/15 text-gold">
             {icon}
           </div>
+
           {categoryLabel && (
             <span className="rounded-full bg-gold/15 px-2.5 py-0.5 text-xs font-medium text-gold">
               {categoryLabel}
             </span>
           )}
         </div>
+
         <CardDescription className="mt-4">
-          {testimony.author.displayName}
+          {testimony.isAnonymous
+            ? 'Anonymous'
+            : testimony.author.displayName}
         </CardDescription>
+
         <CardTitle>{testimony.title}</CardTitle>
       </CardHeader>
+
       <CardContent>
-        <p className="text-sm text-muted-foreground">{testimony.excerpt}</p>
+        <p className="text-sm text-muted-foreground">
+          {testimony.excerpt}
+        </p>
+
         <Button variant="link" className="mt-4 px-0" asChild>
-          <Link href={`/testimonies/${testimony.slug}`}>Read More</Link>
+          <Link href={`/testimonies/${testimony.slug}`}>
+            Read More
+          </Link>
         </Button>
       </CardContent>
     </Card>

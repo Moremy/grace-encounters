@@ -14,7 +14,7 @@ import {
 import { Users, UserPlus, BookHeart, DollarSign } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Analytics | Light and Salt Admin',
+  title: 'Analytics | Light Bearers Admin',
   description: 'Detailed platform analytics and growth metrics.',
 };
 

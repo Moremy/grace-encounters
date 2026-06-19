@@ -6,7 +6,7 @@ import { SearchResults } from '@/components/search/search-results';
 import { globalSearch } from '@/lib/search/actions';
 
 export const metadata: Metadata = {
-  title: 'Search | Light and Salt',
+  title: 'Search | Light Bearers',
   description: 'Search testimonies, devotionals, events, media, and more.',
 };
 

@@ -17,7 +17,7 @@ import {
 } from '@/lib/testimony/actions';
 
 export const metadata: Metadata = {
-  title: 'Review Testimonies | Admin | Light and Salt',
+  title: 'Review Testimonies | Admin | Light Bearers',
   description: 'Review and moderate submitted testimonies.',
 };
 
@@ -94,7 +94,6 @@ export default async function AdminReviewsPage() {
                       null,
                       testimony.id,
                       'APPROVED',
-                      undefined,
                     )}
                   >
                     <Button type="submit" variant="sacred" size="sm">
@@ -107,7 +106,6 @@ export default async function AdminReviewsPage() {
                       null,
                       testimony.id,
                       'REJECTED',
-                      undefined,
                     )}
                   >
                     <Button type="submit" variant="destructive" size="sm">
@@ -120,7 +118,6 @@ export default async function AdminReviewsPage() {
                       null,
                       testimony.id,
                       'FEATURED',
-                      undefined,
                     )}
                   >
                     <Button
@@ -139,15 +136,11 @@ export default async function AdminReviewsPage() {
                     Request Revision
                   </summary>
                   <form
-                    action={async (formData: FormData) => {
-                      'use server';
-                      const note = formData.get('revisionNote') as string;
-                      await updateTestimonyStatus(
-                        testimony.id,
-                        'NEEDS_REVISION',
-                        note,
-                      );
-                    }}
+                    action={updateTestimonyStatus.bind(
+                      null,
+                      testimony.id,
+                      'NEEDS_REVISION',
+                    )}
                     className="mt-3 space-y-3"
                   >
                     <div className="space-y-2">

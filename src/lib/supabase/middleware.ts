@@ -40,36 +40,37 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  // Protected app routes: /dashboard and everything under (app) group
-  // If no user, redirect to sign-in
-  if (pathname.startsWith('/dashboard') && !user) {
+  // Helper: redirect unauthenticated users to /sign-in while preserving the
+  // originally requested URL in the `next` query param so we can send them
+  // back after sign-in.
+  const redirectToSignIn = () => {
     const url = request.nextUrl.clone();
     url.pathname = '/sign-in';
+    // Preserve full path + query of the originally requested URL.
+    const originalTarget = pathname + (request.nextUrl.search || '');
+    url.search = `?next=${encodeURIComponent(originalTarget)}`;
     return NextResponse.redirect(url);
-  }
+  };
 
-  // Protected testimony routes: /testimonies/new and /testimonies/mine
-  // If no user, redirect to sign-in
-  if (
-    (pathname.startsWith('/testimonies/new') ||
-      pathname.startsWith('/testimonies/mine')) &&
-    !user
-  ) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/sign-in';
-    return NextResponse.redirect(url);
-  }
+  // Routes that require a signed-in user. These cover user-driven actions:
+  // donating, starting a fundraiser, requesting counselling, posting prayer
+  // requests, and sharing testimonies. Browsing the approved fundraiser
+  // list, the community pages, public testimonies, and the public prayer
+  // wall is left readable on purpose so visitors can see what God is doing
+  // before they sign up — the "create" / "give" CTAs themselves are what
+  // bounce them through auth.
+  const authRequiredPrefixes = [
+    '/dashboard',
+    '/donate',
+    '/fundraisers/new',
+    '/testimonies/new',
+    '/testimonies/mine',
+    '/prayer-wall/new',
+    '/prayer-wall/mine',
+  ];
 
-  // Protected prayer wall routes: /prayer-wall/new and /prayer-wall/mine
-  // If no user, redirect to sign-in
-  if (
-    (pathname.startsWith('/prayer-wall/new') ||
-      pathname.startsWith('/prayer-wall/mine')) &&
-    !user
-  ) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/sign-in';
-    return NextResponse.redirect(url);
+  if (!user && authRequiredPrefixes.some((prefix) => pathname.startsWith(prefix))) {
+    return redirectToSignIn();
   }
 
   // Protected admin routes: /admin/*

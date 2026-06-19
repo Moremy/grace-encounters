@@ -3,14 +3,13 @@ import { Suspense } from 'react';
 
 import { Reveal } from '@/components/brand/reveal';
 import { TestimonyCard } from '@/components/testimony/testimony-card';
-import { FeaturedTestimonies } from '@/components/testimony/featured-testimonies';
 import { TestimonyFilters } from '@/components/testimony/testimony-filters';
-import { getFeaturedTestimonies, getFilteredTestimonies } from '@/lib/testimony/actions';
+import { getFilteredTestimonies } from '@/lib/testimony/actions';
 
 export const metadata: Metadata = {
   title: 'Testimonies',
   description:
-    'Stories of grace, healing, and transformation from the Light and Salt community.',
+    'Stories of grace, healing, and transformation from the Light Bearers community.',
 };
 
 export default async function TestimoniesPage({
@@ -23,10 +22,9 @@ export default async function TestimoniesPage({
   const mediaType =
     typeof searchParams.mediaType === 'string' ? searchParams.mediaType : undefined;
 
-  const [featured, testimonies] = await Promise.all([
-    getFeaturedTestimonies(),
-    getFilteredTestimonies(category, mediaType),
-  ]);
+  // Only featured testimonies are visible publicly — getFilteredTestimonies
+  // applies that filter at the data layer.
+  const testimonies = await getFilteredTestimonies(category, mediaType);
 
   return (
     <>
@@ -45,9 +43,6 @@ export default async function TestimoniesPage({
         </div>
       </section>
 
-      {/* Featured Section */}
-      <FeaturedTestimonies testimonies={featured} />
-
       <section className="bg-background py-24">
         <div className="max-w-6xl mx-auto px-6">
           {/* Filters */}
@@ -61,8 +56,8 @@ export default async function TestimoniesPage({
             {testimonies.length === 0 ? (
               <div className="text-center py-16">
                 <p className="text-muted-foreground">
-                  No testimonies yet. Be the first to share what God has done in your
-                  life.
+                  No featured testimonies yet. Check back soon — stories are
+                  prayerfully reviewed before being shared here.
                 </p>
               </div>
             ) : (

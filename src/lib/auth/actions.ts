@@ -7,9 +7,25 @@ import { canAdmin, fromPrismaRole } from '@/lib/auth/roles';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
+/**
+ * Sanitize a `next` redirect target read from form/query data. We only
+ * follow paths that look like local app paths — never external URLs and
+ * never protocol-relative URLs — to avoid open-redirect bugs on the
+ * sign-in form.
+ */
+function safeNextPath(next: string | null | undefined): string | null {
+  if (!next) return null;
+  // Reject anything that doesn't start with a single `/`, or that starts
+  // with `//` (protocol-relative) or `/\\` (Windows-style).
+  if (!next.startsWith('/')) return null;
+  if (next.startsWith('//') || next.startsWith('/\\')) return null;
+  return next;
+}
+
 export async function signIn(formData: FormData) {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
+  const next = safeNextPath(formData.get('next') as string | null);
 
   const supabase = await createClient();
 
@@ -19,13 +35,19 @@ export async function signIn(formData: FormData) {
   });
 
   if (error) {
-    redirect(`/sign-in?error=${encodeURIComponent(error.message)}`);
+    // Preserve `next` across the error round-trip so the user still
+    // ends up where they were headed once they get the password right.
+    const errParams = new URLSearchParams({ error: error.message });
+    if (next) errParams.set('next', next);
+    redirect(`/sign-in?${errParams.toString()}`);
   }
 
   const userId = data.user?.id;
 
   if (!userId) {
-    redirect('/sign-in?error=Unable%20to%20verify%20user');
+    const errParams = new URLSearchParams({ error: 'Unable to verify user' });
+    if (next) errParams.set('next', next);
+    redirect(`/sign-in?${errParams.toString()}`);
   }
 
   const profile = await prisma.profile.findUnique({
@@ -35,11 +57,15 @@ export async function signIn(formData: FormData) {
 
   const role = fromPrismaRole(profile?.role ?? null);
 
+  // Admins always land on the admin console regardless of `next` — they
+  // can navigate from there if they need to.
   if (canAdmin(role)) {
     redirect('/admin');
   }
 
-  redirect('/dashboard');
+  // If the user was bounced to sign-in from a protected page, send them
+  // back to it. Otherwise default to the dashboard.
+  redirect(next ?? '/dashboard');
 }
 
 export async function signUp(formData: FormData) {

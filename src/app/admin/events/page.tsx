@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { getAllEventsAdmin, updateEventStatus } from '@/lib/event/actions';
 
 export const metadata: Metadata = {
-  title: 'Manage Events | Admin | Light and Salt',
+  title: 'Manage Events | Admin | Light Bearers',
   description: 'Create and manage crusades and events.',
 };
 

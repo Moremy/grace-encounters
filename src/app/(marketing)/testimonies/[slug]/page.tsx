@@ -32,6 +32,10 @@ export default async function TestimonyDetailPage({ params }: Props) {
     notFound();
   }
 
+  const authorName = testimony.isAnonymous
+    ? 'Anonymous'
+    : testimony.author?.displayName ?? 'Anonymous';
+
   return (
     <>
       <section className="bg-ivory py-24">
@@ -41,12 +45,13 @@ export default async function TestimonyDetailPage({ params }: Props) {
               Featured
             </span>
           )}
+
           <h1 className="font-serif text-3xl md:text-4xl text-navy">
             {testimony.title}
           </h1>
-          <p className="mt-4 text-muted-foreground">
-            By {testimony.author.displayName}
-          </p>
+
+          <p className="mt-4 text-muted-foreground">By {authorName}</p>
+
           {testimony.publishedAt && (
             <p className="mt-2 text-xs text-muted-foreground">
               {new Date(testimony.publishedAt).toLocaleDateString('en-US', {
@@ -57,13 +62,14 @@ export default async function TestimonyDetailPage({ params }: Props) {
             </p>
           )}
 
-          {/* Category and Tags */}
           <div className="mt-4 flex items-center justify-center gap-2 flex-wrap">
             {testimony.category && (
               <span className="rounded-full bg-gold/15 px-3 py-1 text-xs font-medium text-gold">
-                {testimony.category.charAt(0) + testimony.category.slice(1).toLowerCase()}
+                {testimony.category.charAt(0) +
+                  testimony.category.slice(1).toLowerCase()}
               </span>
             )}
+
             {testimony.tags.map((tag) => (
               <span
                 key={tag}
@@ -79,7 +85,6 @@ export default async function TestimonyDetailPage({ params }: Props) {
       <section className="bg-background py-24">
         <div className="max-w-3xl mx-auto px-6">
           <Reveal>
-            {/* Media Player */}
             {testimony.mediaUrl && testimony.mediaType !== 'TEXT' && (
               <div className="mb-10">
                 <MediaPlayer

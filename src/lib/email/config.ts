@@ -23,7 +23,7 @@ export const emailConfig = {
   /** Default "from" email address */
   fromAddress: process.env.EMAIL_FROM_ADDRESS ?? 'noreply@lightandsalt.church',
   /** Default "from" display name */
-  fromName: process.env.EMAIL_FROM_NAME ?? 'Light and Salt',
+  fromName: process.env.EMAIL_FROM_NAME ?? 'Light Bearers',
   /** Secret used for generating unsubscribe tokens */
   unsubscribeSecret: getUnsubscribeSecret(),
   /** Whether email sending is enabled (requires API key) */

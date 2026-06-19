@@ -47,12 +47,17 @@ export async function createPrayerRequest(formData: FormData) {
       data: {
         title,
         content,
+        channel: 'web',
+        body: content,
+        isAnonymous: false,
         authorId: user.id,
+        userId: user.id,
         visibility: validation.data.visibility,
         status: validation.data.visibility === 'PRIVATE' ? 'APPROVED' : 'PENDING',
       },
     });
-  } catch {
+  } catch (e) {
+    console.error('createPrayerRequest error:', e);
     const message = encodeURIComponent('Unable to create prayer request. Please try again.');
     redirect(`/prayer-wall/new?error=${message}`);
   }
@@ -86,6 +91,79 @@ export async function getMyPrayerRequests() {
     where: { authorId: user.id },
     orderBy: { createdAt: 'desc' },
   });
+}
+
+export async function getMyPrayerRequestById(id: string) {
+  const supabase = await createClient();
+  const { data: { user }, error } = await supabase.auth.getUser();
+
+  if (error || !user) {
+    redirect('/sign-in');
+  }
+
+  return prisma.prayerRequest.findFirst({
+    where: { id, authorId: user.id },
+  });
+}
+
+export async function updateMyPrayerRequest(
+  requestId: string,
+  formData: FormData,
+) {
+  const supabase = await createClient();
+  const { data: { user }, error } = await supabase.auth.getUser();
+
+  if (error || !user) {
+    redirect('/sign-in');
+  }
+
+  const existing = await prisma.prayerRequest.findFirst({
+    where: { id: requestId, authorId: user.id },
+    select: { id: true, status: true },
+  });
+
+  // Not found, or not owned by the current user.
+  if (!existing) {
+    redirect('/prayer-wall/mine');
+  }
+
+  // Only pending prayer requests may be edited.
+  if (existing.status !== 'PENDING') {
+    const message = encodeURIComponent('This prayer request cannot be edited');
+    redirect(`/prayer-wall/mine?error=${message}`);
+  }
+
+  const title = formData.get('title') as string;
+  const content = formData.get('content') as string;
+  const visibility = formData.get('visibility') as string;
+
+  const validation = createPrayerRequestSchema.safeParse({ title, content, visibility });
+
+  if (!validation.success) {
+    const message = encodeURIComponent(validation.error.errors[0]?.message ?? 'Invalid input');
+    redirect(`/prayer-wall/${requestId}/edit?error=${message}`);
+  }
+
+  try {
+    await prisma.prayerRequest.update({
+      where: { id: requestId },
+      data: {
+        title: validation.data.title,
+        content: validation.data.content,
+        visibility: validation.data.visibility,
+        // Mirror create(): a request made private needs no moderation.
+        status: validation.data.visibility === 'PRIVATE' ? 'APPROVED' : 'PENDING',
+      },
+    });
+  } catch {
+    const message = encodeURIComponent('Unable to update prayer request. Please try again.');
+    redirect(`/prayer-wall/${requestId}/edit?error=${message}`);
+  }
+
+  revalidatePath('/prayer-wall/mine');
+  revalidatePath('/admin/prayers');
+
+  redirect('/prayer-wall/mine');
 }
 
 export async function getPendingPrayerRequests() {
@@ -235,7 +313,7 @@ export async function prayForRequest(prayerRequestId: string) {
         prayerRequest.authorId,
         'PRAYER_REPLY',
         'Someone prayed for you',
-        'A member of Light and Salt has interceded for your prayer request.',
+        'A member of Light Bearers has interceded for your prayer request.',
         '/prayer-wall',
       );
     } catch {

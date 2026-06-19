@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { UnsubscribeConfirm } from '@/components/email/unsubscribe-confirm';
 
 export const metadata: Metadata = {
-  title: 'Unsubscribe — Light and Salt',
+  title: 'Unsubscribe — Light Bearers',
 };
 
 interface PageProps {

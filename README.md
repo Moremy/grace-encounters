@@ -1,4 +1,4 @@
-# Light and Salt
+# Light Bearers
 
 Real encounters with Jesus. Shared in reverence. Held in prayer.
 
@@ -6,7 +6,7 @@ Real encounters with Jesus. Shared in reverence. Held in prayer.
 
 ## About
 
-Light and Salt is a Christ-centered platform for testimonies, prayer requests, and devotionals. Every submission is reviewed before publication, so the space stays reverent in tone, language, and intent. The design is quiet and premium, written to feel more like a sanctuary than a feed.
+Light Bearers is a Christ-centered platform for testimonies, prayer requests, and devotionals. Every submission is reviewed before publication, so the space stays reverent in tone, language, and intent. The design is quiet and premium, written to feel more like a sanctuary than a feed.
 
 ## Tech stack
 

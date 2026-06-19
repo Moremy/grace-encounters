@@ -21,9 +21,9 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const room = await getPrayerRoomBySlug(params.slug);
-  if (!room) return { title: 'Prayer Room | Light and Salt' };
+  if (!room) return { title: 'Prayer Room | Light Bearers' };
   return {
-    title: `${room.title} | Prayer Rooms | Light and Salt`,
+    title: `${room.title} | Prayer Rooms | Light Bearers`,
     description: room.description,
   };
 }

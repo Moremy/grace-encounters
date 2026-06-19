@@ -52,7 +52,7 @@ export function UnsubscribeConfirm({ email, token }: UnsubscribeConfirmProps) {
       </h2>
       <p className="text-muted-foreground">
         Are you sure you want to unsubscribe <strong>{email}</strong> from the
-        Light and Salt newsletter?
+        Light Bearers newsletter?
       </p>
       {status === 'error' && (
         <p className="text-sm text-red-600" role="alert">

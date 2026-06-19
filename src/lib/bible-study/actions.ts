@@ -108,7 +108,7 @@ export async function markDayComplete(planId: string, dayNumber: number) {
     });
   }
 
-  revalidatePath('/bible-study');
+  revalidatePath('/dashboard/bible-study');
 }
 
 export async function saveReflectionNote(
@@ -147,7 +147,7 @@ export async function saveReflectionNote(
     });
   }
 
-  revalidatePath('/bible-study');
+  revalidatePath('/dashboard/bible-study');
 }
 
 export async function getMyBookmarks() {
@@ -189,7 +189,7 @@ export async function addBookmark(
     },
   });
 
-  revalidatePath('/bible-study/bookmarks');
+  revalidatePath('/dashboard/bible-study/bookmarks');
 }
 
 export async function removeBookmark(bookmarkId: string) {
@@ -211,7 +211,7 @@ export async function removeBookmark(bookmarkId: string) {
     where: { id: bookmarkId },
   });
 
-  revalidatePath('/bible-study/bookmarks');
+  revalidatePath('/dashboard/bible-study/bookmarks');
 }
 
 export async function getUserStudyStats() {
@@ -301,7 +301,7 @@ export async function createReadingPlan(formData: FormData) {
     const message = encodeURIComponent(
       validation.error.errors[0]?.message ?? 'Invalid input',
     );
-    redirect(`/bible-study?error=${message}`);
+    redirect(`/admin/bible-study?error=${message}`);
   }
 
   const slug = slugify(validation.data.title);
@@ -321,11 +321,13 @@ export async function createReadingPlan(formData: FormData) {
     const message = encodeURIComponent(
       'Unable to create reading plan. Please try again.',
     );
-    redirect(`/bible-study?error=${message}`);
+    redirect(`/admin/bible-study?error=${message}`);
   }
 
+  revalidatePath('/admin/bible-study');
   revalidatePath('/bible-study');
-  redirect('/bible-study');
+  revalidatePath('/dashboard/bible-study');
+  redirect('/admin/bible-study');
 }
 
 export async function addPlanDay(formData: FormData) {
@@ -367,8 +369,15 @@ export async function addPlanDay(formData: FormData) {
     const message = encodeURIComponent(
       validation.error.errors[0]?.message ?? 'Invalid input',
     );
-    redirect(`/bible-study?error=${message}`);
+    redirect(`/admin/bible-study?error=${message}`);
   }
+
+  // Look up the plan slug so we can redirect the admin back to the page they
+  // submitted from instead of dumping them at the dashboard.
+  const plan = await prisma.bibleStudyPlan.findUnique({
+    where: { id: validation.data.planId },
+    select: { slug: true },
+  });
 
   try {
     await prisma.bibleStudyDay.create({
@@ -385,8 +394,21 @@ export async function addPlanDay(formData: FormData) {
     const message = encodeURIComponent(
       'Unable to add day. Please try again.',
     );
-    redirect(`/bible-study?error=${message}`);
+    redirect(
+      plan
+        ? `/admin/bible-study/${plan.slug}?error=${message}`
+        : `/admin/bible-study?error=${message}`,
+    );
   }
 
+  revalidatePath('/admin/bible-study');
   revalidatePath('/bible-study');
+  revalidatePath('/dashboard/bible-study');
+  if (plan) {
+    revalidatePath(`/admin/bible-study/${plan.slug}`);
+    revalidatePath(`/bible-study/${plan.slug}`);
+    revalidatePath(`/dashboard/bible-study/plans/${plan.slug}`);
+    redirect(`/admin/bible-study/${plan.slug}`);
+  }
+  redirect('/admin/bible-study');
 }

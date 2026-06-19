@@ -21,7 +21,7 @@ import {
 import { createClient } from '@/lib/supabase/server';
 
 export const metadata: Metadata = {
-  title: 'Bible Study | Light and Salt',
+  title: 'Bible Study | Light Bearers',
   description: 'Grow in faith through structured reading plans, daily scripture, and community study.',
 };
 
@@ -125,7 +125,7 @@ export default async function BibleStudyPage() {
           <div className="flex items-center justify-between">
             <h2 className="font-serif text-xl text-navy">My Bookmarks</h2>
             <Button variant="ghost" size="sm" asChild>
-              <Link href="/bible-study/bookmarks">View All</Link>
+              <Link href="/dashboard/bible-study/bookmarks">View All</Link>
             </Button>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">

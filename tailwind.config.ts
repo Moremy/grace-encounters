@@ -15,7 +15,7 @@ const config: Config = {
       colors: {
         // Sanctuary palette
         ivory: {
-          DEFAULT: '#FAF7F2',
+          DEFAULT: '#F5F0E8', // remapped to cream (brand)
           50: '#FFFFFF',
           100: '#FDFBF7',
           200: '#FAF7F2',
@@ -24,7 +24,7 @@ const config: Config = {
           500: '#D6CBB5',
         },
         navy: {
-          DEFAULT: '#0E2A47',
+          DEFAULT: '#6B1E2E', // remapped to burgundy (brand); navy-700/800/900 kept dark for body text
           50: '#E8EDF3',
           100: '#C7D2E0',
           200: '#8FA4BF',
@@ -37,7 +37,7 @@ const config: Config = {
           900: '#030911',
         },
         gold: {
-          DEFAULT: '#C9A96E',
+          DEFAULT: '#1A6B6B', // remapped to teal (brand)
           50: '#FBF6EC',
           100: '#F4E8CE',
           200: '#E9D2A0',
@@ -61,6 +61,40 @@ const config: Config = {
           700: '#414A37',
           800: '#2D3326',
           900: '#181B14',
+        },
+        // Light Bearers brand palette (dominant)
+        burgundy: {
+          DEFAULT: '#6B1E2E',
+          50: '#F6E9EC',
+          100: '#E9C6CD',
+          200: '#D38E9C',
+          300: '#B85A6E',
+          400: '#933246',
+          500: '#6B1E2E',
+          600: '#5A1926',
+          700: '#48141F',
+          800: '#350F17',
+          900: '#22090F',
+        },
+        teal: {
+          DEFAULT: '#1A6B6B',
+          50: '#E6F2F2',
+          100: '#C0DEDE',
+          200: '#8AC2C2',
+          300: '#52A3A3',
+          400: '#2C8585',
+          500: '#1A6B6B',
+          600: '#155757',
+          700: '#104242',
+          800: '#0B2E2E',
+          900: '#061A1A',
+        },
+        cream: {
+          DEFAULT: '#F5F0E8',
+          100: '#FBF8F3',
+          200: '#F5F0E8',
+          300: '#ECE3D5',
+          400: '#DED0BB',
         },
         // Semantic shadcn tokens backed by CSS variables
         border: 'hsl(var(--border))',

@@ -62,7 +62,7 @@ export default async function FundraisersPage() {
           </p>
 
           <h1 className="mt-3 font-serif text-4xl font-bold text-navy">
-            Support Verified Light and Salt Causes
+            Support Verified Light Bearers Causes
           </h1>
 
           <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">
@@ -71,7 +71,7 @@ export default async function FundraisersPage() {
           </p>
 
           <div className="mt-6 rounded-xl border border-gold/30 bg-gold/10 p-4 text-sm text-navy">
-            Only support fundraisers marked as verified. Light and Salt reviews fundraiser details
+            Only support fundraisers marked as verified. Light Bearers reviews fundraiser details
             and payment channels before public display.
           </div>
 
@@ -81,13 +81,6 @@ export default async function FundraisersPage() {
               className="rounded-lg bg-navy px-5 py-3 text-sm font-semibold text-ivory transition hover:bg-navy/90"
             >
               Start a Fundraiser
-            </Link>
-
-            <Link
-              href="/dashboard/fundraisers"
-              className="rounded-lg border border-navy/20 px-5 py-3 text-sm font-semibold text-navy transition hover:bg-navy/5"
-            >
-              My Fundraisers
             </Link>
           </div>
         </div>

@@ -41,7 +41,7 @@ export function InstallPrompt() {
         </div>
         <div className="flex-1">
           <p className="text-sm font-medium text-[#1e3a5f]">
-            Install Light and Salt
+            Install Light Bearers
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
             Add to your home screen for quick access and offline support.

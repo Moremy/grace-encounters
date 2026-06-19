@@ -6,7 +6,7 @@ import { getStreamReplays } from '@/lib/livestream/actions';
 import { StreamCard } from '@/components/livestream/stream-card';
 
 export const metadata: Metadata = {
-  title: 'Stream Replays - Light and Salt',
+  title: 'Stream Replays - Light Bearers',
   description: 'Watch replays of past live worship services, sermons, and events.',
 };
 

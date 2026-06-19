@@ -9,7 +9,7 @@ import { MessageInput } from '@/components/messaging/message-input';
 import { getConversationById } from '@/lib/messaging/actions';
 
 export const metadata: Metadata = {
-  title: 'Conversation | Light and Salt',
+  title: 'Conversation | Light Bearers',
   description: 'View your conversation.',
 };
 

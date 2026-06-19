@@ -13,8 +13,8 @@ import { ScriptureRecommendations } from '@/components/ai/scripture-recommendati
 import { ContentRecommendations } from '@/components/ai/content-recommendations';
 
 export const metadata: Metadata = {
-  title: 'Dashboard | Light and Salt',
-  description: 'Your Light and Salt dashboard.',
+  title: 'Dashboard | Light Bearers',
+  description: 'Your Light Bearers dashboard.',
 };
 
 const quickActions = [

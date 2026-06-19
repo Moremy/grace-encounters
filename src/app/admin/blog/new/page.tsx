@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { createArticle } from '@/lib/blog/actions';
 
 export const metadata: Metadata = {
-  title: 'New Article | Admin | Light and Salt',
+  title: 'New Article | Admin | Light Bearers',
   description: 'Create a new blog article.',
 };
 

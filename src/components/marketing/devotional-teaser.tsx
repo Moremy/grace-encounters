@@ -24,6 +24,14 @@ export async function DevotionalTeaser() {
   return (
     <section className="py-24">
       <div className="max-w-6xl mx-auto px-6">
+        <div className="mx-auto mb-12 max-w-3xl text-center">
+          <h2 className="font-serif text-3xl text-burgundy md:text-4xl">
+            Daily Devotional
+          </h2>
+          <p className="mt-3 text-muted-foreground">
+            Today&apos;s reading.
+          </p>
+        </div>
         <Card className="max-w-3xl mx-auto">
           <CardHeader>
             <TodayDate className="text-xs uppercase tracking-widest text-muted-foreground" />

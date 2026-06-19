@@ -28,16 +28,16 @@ export function LanguageSwitcher() {
 
   return (
     <div className="flex items-center gap-1.5">
-      <Globe className="h-4 w-4 text-foreground/60" aria-hidden="true" />
+      <Globe className="h-4 w-4 opacity-80" aria-hidden="true" />
 
       <select
         value={selectedLocale}
         onChange={handleChange}
         aria-label="Select language"
-        className="cursor-pointer rounded border-none bg-transparent px-1 py-0.5 text-sm text-foreground/80 outline-none hover:text-primary focus:ring-1 focus:ring-primary"
+        className="cursor-pointer rounded border-none bg-transparent px-1 py-0.5 text-sm text-current outline-none hover:opacity-100 focus:ring-1 focus:ring-current"
       >
         {supportedLocales.map((loc) => (
-          <option key={loc} value={loc}>
+          <option key={loc} value={loc} className="bg-white text-navy">
             {localeNames[loc]}
           </option>
         ))}

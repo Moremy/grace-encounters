@@ -13,7 +13,7 @@ import {
 import { getMyTestimonies } from '@/lib/testimony/actions';
 
 export const metadata: Metadata = {
-  title: 'My Testimonies | Light and Salt',
+  title: 'My Testimonies | Light Bearers',
   description: 'View and manage your submitted testimonies.',
 };
 
@@ -87,25 +87,42 @@ export default async function MyTestimoniesPage() {
                   })}
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  {testimony.excerpt}
-                </p>
-                {testimony.revisionNote && (
-                  <div className="mt-4 bg-muted p-3 rounded-md text-sm">
-                    <p className="font-medium text-foreground">
-                      Reviewer Note:
-                    </p>
-                    <p className="mt-1 text-muted-foreground">
-                      {testimony.revisionNote}
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+  <CardContent>
+  <p className="text-sm text-muted-foreground">
+    {testimony.excerpt}
+  </p>
+
+  {testimony.revisionNote && (
+    <div className="mt-4 bg-muted p-3 rounded-md text-sm">
+      <p className="font-medium text-foreground">
+        Reviewer Note:
+      </p>
+      <p className="mt-1 text-muted-foreground">
+        {testimony.revisionNote}
+      </p>
     </div>
-  );
+  )}
+
+  <div className="mt-4">
+    {testimony.status === 'PENDING' || testimony.status === 'NEEDS_REVISION' ? (
+      <Button variant="outline" asChild>
+        <Link href={`/testimonies/${testimony.slug}/edit`}>Edit Testimony</Link>
+      </Button>
+    ) : (
+      <Button
+        variant="outline"
+        disabled
+        title="Approved testimonies cannot be edited."
+      >
+        Edit Testimony
+      </Button>
+    )}
+  </div>
+</CardContent>
+</Card>
+))}
+</div>
+)}
+</div>
+);
 }

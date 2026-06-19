@@ -4,7 +4,7 @@ import { EmailPreferences } from '@/components/email/email-preferences';
 import { getNotificationPreferences } from '@/lib/email/actions';
 
 export const metadata = {
-  title: 'Notification Settings — Light and Salt',
+  title: 'Notification Settings — Light Bearers',
 };
 
 export default async function NotificationSettingsPage() {
@@ -20,7 +20,7 @@ export default async function NotificationSettingsPage() {
       </div>
 
       <p className="text-muted-foreground">
-        Manage how you receive notifications from Light and Salt.
+        Manage how you receive notifications from Light Bearers.
       </p>
 
       <div className="space-y-4">

@@ -4,8 +4,8 @@ import { Mail } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 export const metadata: Metadata = {
-  title: 'Verify Email - Light and Salt',
-  description: 'Check your email to verify your Light and Salt account.',
+  title: 'Verify Email - Light Bearers',
+  description: 'Check your email to verify your Light Bearers account.',
 };
 
 export default function VerifyEmailPage() {

@@ -17,7 +17,7 @@ import {
 } from '@/lib/prayer-room/actions';
 
 export const metadata: Metadata = {
-  title: 'Manage Prayer Rooms | Admin | Light and Salt',
+  title: 'Manage Prayer Rooms | Admin | Light Bearers',
   description: 'Manage live prayer rooms and sessions.',
 };
 

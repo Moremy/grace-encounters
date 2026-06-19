@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { getAllGroupsAdmin } from '@/lib/community/actions';
 
 export const metadata: Metadata = {
-  title: 'Manage Community Groups | Admin | Light and Salt',
+  title: 'Manage Community Groups | Admin | Light Bearers',
   description: 'Create and manage community groups.',
 };
 

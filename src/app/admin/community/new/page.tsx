@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { createGroup } from '@/lib/community/actions';
 
 export const metadata: Metadata = {
-  title: 'New Community Group | Admin | Light and Salt',
+  title: 'New Community Group | Admin | Light Bearers',
   description: 'Create a new community group.',
 };
 

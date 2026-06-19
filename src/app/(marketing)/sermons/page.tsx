@@ -21,7 +21,7 @@ import { formatDuration } from '@/lib/media/utils';
 export const metadata: Metadata = {
   title: 'Sermons',
   description:
-    'Listen to sermons from Light and Salt. Browse by series, speaker, or topic.',
+    'Listen to sermons from Light Bearers. Browse by series, speaker, or topic.',
 };
 
 export default async function SermonsPage({

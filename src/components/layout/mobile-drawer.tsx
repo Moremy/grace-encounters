@@ -13,19 +13,21 @@ import { signOut } from '@/lib/auth/actions';
 
 const publicLinks: { label: string; href: string }[] = [
   { label: 'Home', href: '/' },
+  { label: 'About', href: '/about' },
   { label: 'Testimonies', href: '/testimonies' },
+  { label: 'Bible Study', href: '/bible-study' },
   { label: 'Books', href: '/books' },
   { label: 'Blog', href: '/blog' },
-  { label: 'Faith News', href: '/news' },
-  { label: 'Events / Crusades', href: '/events' },
+  { label: 'Events & Faith News', href: '/events' },
   { label: 'Media', href: '/media' },
   { label: 'Community', href: '/community' },
+  { label: 'Prayer Wall', href: '/prayer-wall' },
   { label: 'Fundraisers', href: '/fundraisers' },
+  { label: 'Donate', href: '/donate' },
 ];
 
 const authenticatedLinks: { label: string; href: string }[] = [
   { label: 'Dashboard', href: '/dashboard' },
-  { label: 'My Fundraisers', href: '/dashboard/fundraisers' },
   { label: 'Counselling', href: '/dashboard/counselling' },
 ];
 
@@ -80,7 +82,7 @@ export function MobileDrawer() {
         aria-label="Open navigation menu"
         className={cn(
           'inline-flex items-center justify-center rounded-md p-2',
-          'text-navy transition-colors hover:text-gold',
+          'text-white transition-colors hover:text-gold',
         )}
         onClick={() => setIsOpen(true)}
       >
@@ -110,7 +112,7 @@ export function MobileDrawer() {
               )}
             >
               <div className="flex h-16 items-center justify-between border-b border-gold/30 px-6">
-                <Wordmark size="md" />
+                <Wordmark />
                 <button
                   type="button"
                   aria-label="Close navigation menu"

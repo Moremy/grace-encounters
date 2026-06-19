@@ -290,7 +290,7 @@ export default function NewFundraiserPage({
 
           <div className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
             <p>
-              By submitting this fundraiser, you acknowledge that Light and Salt
+              By submitting this fundraiser, you acknowledge that Light Bearers
               will review the details, supporting evidence, beneficiary
               information, and payment channels before publication.
             </p>

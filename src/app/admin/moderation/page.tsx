@@ -7,7 +7,7 @@ import { getModerationQueue, getModerationStats } from '@/lib/admin/moderation';
 import { ClipboardCheck, CheckCircle2, XCircle, BookHeart } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Content Moderation | Light and Salt Admin',
+  title: 'Content Moderation | Light Bearers Admin',
   description: 'Review and moderate user-submitted content.',
 };
 

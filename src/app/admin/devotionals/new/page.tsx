@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { createDevotional } from '@/lib/devotional/actions';
 
 export const metadata: Metadata = {
-  title: 'New Devotional | Admin | Light and Salt',
+  title: 'New Devotional | Admin | Light Bearers',
   description: 'Create a new devotional entry.',
 };
 

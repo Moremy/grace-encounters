@@ -6,9 +6,9 @@ import { StreamCard } from '@/components/livestream/stream-card';
 import { StreamSchedule } from '@/components/livestream/stream-schedule';
 
 export const metadata: Metadata = {
-  title: 'Live Streams - Light and Salt',
+  title: 'Live Streams - Light Bearers',
   description:
-    'Watch live worship services, sermons, and special events from Light and Salt.',
+    'Watch live worship services, sermons, and special events from Light Bearers.',
 };
 
 export default async function LivePage() {

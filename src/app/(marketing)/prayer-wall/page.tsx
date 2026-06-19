@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { HandHeart } from 'lucide-react';
 
 import {
@@ -14,7 +15,7 @@ import { PrayButton } from '@/components/prayer/pray-button';
 import { getApprovedPrayerRequests } from '@/lib/prayer/actions';
 
 export const metadata: Metadata = {
-  title: 'Prayer Wall | Light and Salt',
+  title: 'Prayer Wall | Light Bearers',
   description:
     'Join our community in prayer. Read, pray, and stand alongside one another in faith.',
 };
@@ -36,6 +37,11 @@ export default async function PrayerWallPage() {
             A gentle place to lay down what is heavy. Read, pray, and quietly stand
             with one another in faith.
           </p>
+          <div className="mt-8">
+            <Button variant="sacred" asChild>
+              <Link href="/prayer-wall/new">Share a Prayer Request</Link>
+            </Button>
+          </div>
         </div>
       </section>
 

@@ -15,9 +15,9 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const plan = await getPlanBySlug(params.slug);
-  if (!plan) return { title: 'Reading Plan | Light and Salt' };
+  if (!plan) return { title: 'Reading Plan | Light Bearers' };
   return {
-    title: `${plan.title} | Bible Study | Light and Salt`,
+    title: `${plan.title} | Bible Study | Light Bearers`,
     description: plan.description,
   };
 }

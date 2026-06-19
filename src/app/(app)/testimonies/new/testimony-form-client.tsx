@@ -41,14 +41,13 @@ export function TestimonyFormClient({ action }: TestimonyFormClientProps) {
 
   function handleFileSelect(file: File | null) {
     setSelectedFile(file);
-    // Clear mediaUrl when file is removed
+
     if (!file) {
       setMediaUrl('');
     }
   }
 
   async function handleSubmit(formData: FormData) {
-    // If there is a selected file, upload it first
     if (selectedFile && mediaType !== 'TEXT') {
       const uploadData = new FormData();
       uploadData.append('file', selectedFile);
@@ -64,7 +63,7 @@ export function TestimonyFormClient({ action }: TestimonyFormClientProps) {
           formData.set('mediaUrl', result.url);
         }
       } catch {
-        // Upload failed - form will submit without mediaUrl
+        // Upload failed. The form will still submit without mediaUrl.
       }
     }
 
@@ -74,7 +73,6 @@ export function TestimonyFormClient({ action }: TestimonyFormClientProps) {
 
   return (
     <form action={handleSubmit} className="space-y-6">
-      {/* Media Type Selector */}
       <div className="space-y-2">
         <Label>Media Type</Label>
         <div className="flex flex-wrap gap-2">
@@ -99,7 +97,6 @@ export function TestimonyFormClient({ action }: TestimonyFormClientProps) {
         </div>
       </div>
 
-      {/* File Upload - shown for non-text types */}
       {mediaType !== 'TEXT' && (
         <div className="space-y-2">
           <Label>Upload {mediaType} File</Label>
@@ -149,7 +146,6 @@ export function TestimonyFormClient({ action }: TestimonyFormClientProps) {
         />
       </div>
 
-      {/* Category */}
       <div className="space-y-2">
         <Label htmlFor="category">Category</Label>
         <select
@@ -165,7 +161,6 @@ export function TestimonyFormClient({ action }: TestimonyFormClientProps) {
         </select>
       </div>
 
-      {/* Tags */}
       <div className="space-y-2">
         <Label htmlFor="tags">Tags</Label>
         <Input
@@ -178,7 +173,23 @@ export function TestimonyFormClient({ action }: TestimonyFormClientProps) {
         </p>
       </div>
 
-      {/* Hidden inputs */}
+      <div className="flex items-start gap-3 rounded-md border bg-muted/30 p-4">
+        <input
+          id="isAnonymous"
+          name="isAnonymous"
+          type="checkbox"
+          value="true"
+          className="mt-1 h-4 w-4 rounded border-input"
+        />
+        <div>
+          <Label htmlFor="isAnonymous">Post anonymously</Label>
+          <p className="text-sm text-muted-foreground">
+            Your testimony will be shown publicly as Anonymous instead of your
+            profile name.
+          </p>
+        </div>
+      </div>
+
       <input type="hidden" name="mediaType" value={mediaType} />
       <input type="hidden" name="mediaUrl" value={mediaUrl} />
 

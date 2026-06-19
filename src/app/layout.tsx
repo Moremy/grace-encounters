@@ -32,7 +32,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'Light and Salt — Real encounters with Jesus.',
+  title: 'Light Bearers — Shining Truth. Transforming Lives.',
   description: 'A reverent space for testimonies, prayer, and daily devotion.',
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
@@ -41,13 +41,13 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Light and Salt',
+    title: 'Light Bearers',
   },
   openGraph: {
-    title: 'Light and Salt — Real encounters with Jesus.',
+    title: 'Light Bearers — Shining Truth. Transforming Lives.',
     description: 'A reverent space for testimonies, prayer, and daily devotion.',
     type: 'website',
-    siteName: 'Light and Salt',
+    siteName: 'Light Bearers',
   },
   twitter: {
     card: 'summary_large_image',

@@ -9,7 +9,7 @@ import { getPublishedMedia, getFeaturedMedia, getMediaPlaylists } from '@/lib/me
 export const metadata: Metadata = {
   title: 'Media Library',
   description:
-    'Watch, listen, and connect with Light and Salt through sermons, worship, teaching, and more.',
+    'Watch, listen, and connect with Light Bearers through sermons, worship, teaching, and more.',
 };
 
 const CATEGORIES = [

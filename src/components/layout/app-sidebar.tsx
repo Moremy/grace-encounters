@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import {
   LayoutDashboard,
   BookHeart,
+  ScrollText,
   HandHeart,
   Sun,
   User,
@@ -31,10 +32,11 @@ import { defaultLocale, LOCALE_COOKIE, isValidLocale } from '@/lib/i18n/config';
 const navItems = [
   { label: 'Dashboard', translationKey: 'nav.dashboard', href: '/dashboard', icon: LayoutDashboard },
   { label: 'Share Testimony', translationKey: 'nav.shareTestimony', href: '/testimonies/new', icon: BookHeart },
+  { label: 'My Testimonies', translationKey: 'nav.myTestimonies', href: '/testimonies/mine', icon: ScrollText },
   { label: 'Prayer Wall', translationKey: 'nav.prayerWall', href: '/prayer-wall', icon: HandHeart },
   { label: 'Prayer Rooms', translationKey: 'nav.prayerRooms', href: '/prayer-rooms', icon: Radio },
   { label: 'Devotionals', translationKey: 'nav.devotionals', href: '/devotionals', icon: Sun },
-  { label: 'Bible Study', translationKey: 'nav.bibleStudy', href: '/bible-study', icon: BookOpen },
+  { label: 'Bible Study', translationKey: 'nav.bibleStudy', href: '/dashboard/bible-study', icon: BookOpen },
   { label: 'Media', translationKey: 'nav.media', href: '/media', icon: Play },
   { label: 'Sermons', translationKey: 'nav.sermons', href: '/sermons', icon: Headphones },
   { label: 'Blog', translationKey: 'nav.blog', href: '/blog', icon: Newspaper },
@@ -75,8 +77,8 @@ export async function AppSidebar({ className }: { className?: string }) {
       )}
     >
       <div className="flex items-center px-6 py-5">
-        <Link href="/dashboard" aria-label="Light and Salt home">
-          <Wordmark variant="inverted" size="md" />
+        <Link href="/dashboard" aria-label="Light Bearers home">
+          <Wordmark />
         </Link>
       </div>
       <nav aria-label="Member navigation" className="flex-1 overflow-y-auto px-3 py-4">

@@ -16,7 +16,7 @@ import {
 } from '@/lib/devotional/actions';
 
 export const metadata: Metadata = {
-  title: 'Manage Devotionals | Admin | Light and Salt',
+  title: 'Manage Devotionals | Admin | Light Bearers',
   description: 'Create, edit, and manage daily devotionals.',
 };
 

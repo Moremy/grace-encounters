@@ -26,8 +26,8 @@ import {
 import { getModerationQueue } from '@/lib/admin/moderation';
 
 export const metadata: Metadata = {
-  title: 'Admin Dashboard | Light and Salt',
-  description: 'Administration overview for Light and Salt.',
+  title: 'Admin Dashboard | Light Bearers',
+  description: 'Administration overview for Light Bearers.',
 };
 
 export default async function AdminDashboardPage() {
