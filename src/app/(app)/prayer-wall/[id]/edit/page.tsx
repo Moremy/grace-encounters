@@ -93,7 +93,7 @@ export default async function EditPrayerRequestPage({
               <textarea
                 id="content"
                 name="content"
-                defaultValue={prayer.content}
+                defaultValue={prayer.content ?? ''}
                 placeholder="Share what you'd like prayer for..."
                 required
                 minLength={10}
