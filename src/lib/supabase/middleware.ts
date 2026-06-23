@@ -1,64 +1,193 @@
-// Standard Supabase SSR middleware pattern (https://supabase.com/docs/guides/auth/server-side/nextjs).
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
+// Middleware auth for Next.js 14 Edge Runtime. Uses fetch() to call Supabase
+// APIs directly so that @supabase/supabase-js (which references process.version
+// at module scope) is never imported into the Edge Runtime bundle.
 import { NextResponse, type NextRequest } from 'next/server';
 
-export async function updateSession(request: NextRequest) {
-  let response = NextResponse.next({ request: { headers: request.headers } });
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value;
+function getUrl(): string | null {
+  return process.env.NEXT_PUBLIC_SUPABASE_URL ?? null;
+}
+
+function getKey(): string | null {
+  return process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? null;
+}
+
+/**
+ * Extracts access + refresh tokens from the Supabase auth cookie.
+ * The cookie name is `sb-{projectRef}-auth-token`; we match by the suffix.
+ */
+function parseAuthCookie(request: NextRequest): {
+  accessToken: string | null;
+  refreshToken: string | null;
+} {
+  const all = request.cookies.getAll();
+  const cookie = all.find((c) => c.name.endsWith('-auth-token'));
+  if (!cookie) return { accessToken: null, refreshToken: null };
+
+  try {
+    const parsed = JSON.parse(cookie.value);
+    if (!Array.isArray(parsed) || parsed.length < 2) {
+      return { accessToken: null, refreshToken: null };
+    }
+    return {
+      accessToken: typeof parsed[0] === 'string' ? parsed[0] : null,
+      refreshToken: typeof parsed[1] === 'string' ? parsed[1] : null,
+    };
+  } catch {
+    return { accessToken: null, refreshToken: null };
+  }
+}
+
+/**
+ * Calls Supabase Auth API to get the current user.
+ * Returns the user ID, or null if the token is invalid/expired.
+ */
+async function verifyUser(
+  accessToken: string,
+): Promise<{ id: string } | null> {
+  const url = getUrl();
+  const key = getKey();
+  if (!url || !key) return null;
+
+  try {
+    const res = await fetch(`${url}/auth/v1/user`, {
+      headers: { apikey: key, Authorization: `Bearer ${accessToken}` },
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as { id: string };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Refreshes the auth session using the refresh token.
+ * Returns new tokens on success, null on failure.
+ */
+async function refreshSession(
+  refreshToken: string,
+): Promise<{
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
+} | null> {
+  const url = getUrl();
+  const key = getKey();
+  if (!url || !key) return null;
+
+  try {
+    const res = await fetch(
+      `${url}/auth/v1/token?grant_type=refresh_token`,
+      {
+        method: 'POST',
+        headers: {
+          apikey: key,
+          'Content-Type': 'application/json',
         },
-        set(name: string, value: string, options: CookieOptions) {
-          request.cookies.set({ name, value, ...options });
-          response = NextResponse.next({ request: { headers: request.headers } });
-          response.cookies.set({ name, value, ...options });
-        },
-        remove(name: string, options: CookieOptions) {
-          request.cookies.set({ name, value: '', ...options });
-          response = NextResponse.next({ request: { headers: request.headers } });
-          response.cookies.set({ name, value: '', ...options });
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      },
+    );
+    if (!res.ok) return null;
+    return (await res.json()) as {
+      access_token: string;
+      refresh_token: string;
+      expires_in: number;
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Looks up the profile role for a user. Returns the lowercase role string,
+ * or null on failure.
+ */
+async function getUserRole(userId: string): Promise<string | null> {
+  const url = getUrl();
+  const key = getKey();
+  if (!url || !key) return null;
+
+  try {
+    const res = await fetch(
+      `${url}/rest/v1/profiles?select=role&id=eq.${encodeURIComponent(userId)}`,
+      {
+        headers: {
+          apikey: key,
+          Authorization: `Bearer ${key}`,
         },
       },
-    },
-  );
-
-  // Session refresh is lenient - if it fails, allow the request through
-  // rather than blocking all routes due to a network issue.
-  let user: { id: string } | null = null;
-  try {
-    const { data } = await supabase.auth.getUser();
-    user = data.user;
+    );
+    if (!res.ok) return null;
+    const rows = (await res.json()) as { role: string }[];
+    return rows[0]?.role?.toLowerCase() ?? null;
   } catch {
-    // Session refresh failed - allow the request through without protection.
-    return response;
+    return null;
   }
+}
+
+// ---------------------------------------------------------------------------
+// Public API (same shape as before so middleware.ts doesn't change)
+// ---------------------------------------------------------------------------
+
+export async function updateSession(request: NextRequest) {
+  const response = NextResponse.next({ request: { headers: request.headers } });
+
+  // -----------------------------------------------------------------------
+  // 1. Get a valid session (with silent refresh)
+  // -----------------------------------------------------------------------
+
+  let userId: string | null = null;
+  const { accessToken, refreshToken } = parseAuthCookie(request);
+
+  if (accessToken) {
+    // Try the current access token first.
+    const user = await verifyUser(accessToken);
+    if (user) {
+      userId = user.id;
+    } else if (refreshToken) {
+      // Token expired — try to refresh.
+      const refreshed = await refreshSession(refreshToken);
+      if (refreshed?.access_token) {
+        // Write the new tokens to the response cookie.
+        const projectRef = new URL(getUrl()!).hostname.split('.')[0];
+        const cookieName = `sb-${projectRef}-auth-token`;
+        const cookieValue = JSON.stringify([
+          refreshed.access_token,
+          refreshed.refresh_token,
+          // Supabase cookie value includes expires_at as third element
+          Math.floor(Date.now() / 1000) + refreshed.expires_in,
+        ]);
+        response.cookies.set(cookieName, cookieValue, {
+          path: '/',
+          maxAge: refreshed.expires_in,
+          sameSite: 'lax',
+          httpOnly: true,
+          secure: true,
+        });
+
+        const user = await verifyUser(refreshed.access_token);
+        if (user) userId = user.id;
+      }
+    }
+  }
+
+  // -----------------------------------------------------------------------
+  // 2. Route protection (identical logic to the original middleware)
+  // -----------------------------------------------------------------------
 
   const pathname = request.nextUrl.pathname;
 
-  // Helper: redirect unauthenticated users to /sign-in while preserving the
-  // originally requested URL in the `next` query param so we can send them
-  // back after sign-in.
   const redirectToSignIn = () => {
     const url = request.nextUrl.clone();
     url.pathname = '/sign-in';
-    // Preserve full path + query of the originally requested URL.
     const originalTarget = pathname + (request.nextUrl.search || '');
     url.search = `?next=${encodeURIComponent(originalTarget)}`;
     return NextResponse.redirect(url);
   };
 
-  // Routes that require a signed-in user. These cover user-driven actions:
-  // donating, starting a fundraiser, requesting counselling, posting prayer
-  // requests, and sharing testimonies. Browsing the approved fundraiser
-  // list, the community pages, public testimonies, and the public prayer
-  // wall is left readable on purpose so visitors can see what God is doing
-  // before they sign up — the "create" / "give" CTAs themselves are what
-  // bounce them through auth.
   const authRequiredPrefixes = [
     '/dashboard',
     '/donate',
@@ -69,39 +198,31 @@ export async function updateSession(request: NextRequest) {
     '/prayer-wall/mine',
   ];
 
-  if (!user && authRequiredPrefixes.some((prefix) => pathname.startsWith(prefix))) {
+  if (
+    !userId &&
+    authRequiredPrefixes.some((prefix) => pathname.startsWith(prefix))
+  ) {
     return redirectToSignIn();
   }
 
-  // Protected admin routes: /admin/*
-  // If no user, redirect to sign-in
-  // If user but not admin/moderator, redirect to dashboard
+  // Protected admin routes
   if (pathname.startsWith('/admin')) {
-    if (!user) {
+    if (!userId) {
       const url = request.nextUrl.clone();
       url.pathname = '/sign-in';
       return NextResponse.redirect(url);
     }
 
-    // Query the profile role from the profiles table.
-    // This check is fail-closed: if the query fails, deny access.
+    // Role check — fail-closed: if the query fails, deny access.
     let role: string | undefined;
     try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-
-      role = profile?.role?.toLowerCase();
+      role = (await getUserRole(userId)) ?? undefined;
     } catch {
-      // Query failed - fail closed by redirecting to dashboard
       const url = request.nextUrl.clone();
       url.pathname = '/dashboard';
       return NextResponse.redirect(url);
     }
 
-    // Only moderator and admin roles can access /admin
     if (!role || (role !== 'moderator' && role !== 'admin')) {
       const url = request.nextUrl.clone();
       url.pathname = '/dashboard';
@@ -111,7 +232,7 @@ export async function updateSession(request: NextRequest) {
 
   // Auth pages: redirect authenticated users away to dashboard
   const authPages = ['/sign-in', '/sign-up', '/magic-link', '/forgot-password'];
-  if (user && authPages.includes(pathname)) {
+  if (userId && authPages.includes(pathname)) {
     const url = request.nextUrl.clone();
     url.pathname = '/dashboard';
     return NextResponse.redirect(url);
