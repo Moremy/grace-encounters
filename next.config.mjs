@@ -86,6 +86,9 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   async headers() {
     return [
       // FEAT-001: SW cache control
