@@ -34,7 +34,7 @@ const heroText = {
   },
   sw: {
     title: 'Kuwa Nuru. Linda Ukweli.',
-    subtitle: 'Ukweli unaong’aa. Maisha yanayobadilishwa.',
+    subtitle: 'Ukweli unaong'aa. Maisha yanayobadilishwa.',
     learn: 'Jifunze Zaidi',
     about: 'Kutuhusu',
   },
@@ -51,27 +51,24 @@ export function Hero() {
   const text = heroText[locale] ?? heroText.en;
 
   return (
-    <section className="grid min-h-[560px] grid-cols-1 overflow-hidden bg-[#1A3A3A] md:min-h-[620px] md:grid-cols-[55%_45%]">
-      <div className="flex items-center bg-[#1A3A3A] px-12 py-24 md:px-16 lg:px-24">
+    <section className="grid min-h-[420px] grid-cols-1 overflow-hidden bg-[#1A3A3A] md:min-h-[480px] md:grid-cols-[55%_45%]">
+      <div className="flex items-center bg-[#1A3A3A] px-8 py-16 md:px-12 lg:px-16">
         <div className="w-full max-w-xl motion-safe:animate-fade-up">
-          <h1 className="text-balance font-serif text-5xl leading-tight text-white sm:text-6xl md:text-7xl">
+          <h1 className="text-balance font-serif text-3xl leading-tight text-white sm:text-4xl md:text-5xl">
             {text.title}
           </h1>
-
-          <p className="mt-6 text-xl text-white/85 md:text-2xl">{text.subtitle}</p>
-
-          <div className="mt-10 flex flex-wrap gap-4">
+          <p className="mt-4 text-base text-white/85 md:text-lg">{text.subtitle}</p>
+          <div className="mt-6 flex flex-wrap gap-3">
             <Button
-              size="lg"
+              size="default"
               asChild
               className="bg-burgundy text-white hover:bg-burgundy/90"
             >
               <Link href="/#about">{text.learn}</Link>
             </Button>
-
             <Button
               variant="outline"
-              size="lg"
+              size="default"
               asChild
               className="border-white bg-transparent text-white hover:bg-white hover:text-teal"
             >
@@ -81,7 +78,7 @@ export function Hero() {
         </div>
       </div>
 
-      <div className="relative min-h-[320px] bg-[#1A3A3A] md:min-h-0">
+      <div className="relative min-h-[260px] bg-[#1A3A3A] md:min-h-0">
         <Image
           src="/images/lighthouse.jpg"
           alt="A lighthouse shining out over the sea at dusk"
