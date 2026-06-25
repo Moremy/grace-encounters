@@ -66,7 +66,7 @@ export function SiteHeader() {
           >
             <Link href="/donate">Give Today</Link>
           </Button>
-          <div className="flex lg:hidden text-white">
+          <div className="flex text-white">
             <MobileDrawer />
           </div>
         </div>
