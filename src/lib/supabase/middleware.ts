@@ -61,6 +61,28 @@ export async function updateSession(request: NextRequest) {
       url.pathname = '/sign-in';
       return NextResponse.redirect(url);
     }
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/profiles?select=role&id=eq.${user.id}`,
+        {
+          headers: {
+            apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!}`,
+          },
+        }
+      );
+      const rows = await res.json() as { role: string }[];
+      const role = rows[0]?.role?.toLowerCase();
+      if (!role || (role !== 'moderator' && role !== 'admin')) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/dashboard';
+        return NextResponse.redirect(url);
+      }
+    } catch {
+      const url = request.nextUrl.clone();
+      url.pathname = '/dashboard';
+      return NextResponse.redirect(url);
+    }
   }
 
   const authPages = ['/sign-in', '/sign-up', '/magic-link', '/forgot-password'];
