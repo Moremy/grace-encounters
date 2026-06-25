@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Link from 'next/link';
-
 import { Button } from '@/components/ui/button';
 import { LighthouseMark } from '@/components/brand/lighthouse-mark';
 import { MobileDrawer } from '@/components/layout/mobile-drawer';
@@ -15,32 +14,28 @@ const navLinks: { label: string; href: string; active?: boolean }[] = [
   { label: 'Contact', href: '/#contact' },
 ];
 
-/**
- * Server-rendered marketing header with a solid teal background. Ships as
- * static markup — no scroll-driven backdrop effect.
- */
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 w-full overflow-hidden bg-[#4A0E1A] text-white">
-      <div className="flex h-16 w-full items-center px-8">
+      <div className="flex h-14 w-full items-center px-4">
         <Link
           href="/"
           aria-label="Light Bearers home"
-          className="flex shrink-0 items-center gap-3"
+          className="flex shrink-0 items-center gap-2"
         >
-          <LighthouseMark className="h-8 w-8 text-white" />
+          <LighthouseMark className="h-7 w-7 text-white" />
           <span className="flex flex-col leading-none">
-            <span className="font-serif text-base font-semibold uppercase tracking-wide">
+            <span className="font-serif text-sm font-semibold uppercase tracking-wide">
               Light Bearers
             </span>
-            <span className="text-[9px] uppercase tracking-[0.2em] text-white/70">
+            <span className="text-[8px] uppercase tracking-[0.15em] text-white/70">
               Shining Truth. Transforming Lives.
             </span>
           </span>
         </Link>
         <nav
           aria-label="Primary"
-          className="ml-auto mr-8 hidden items-center gap-6 md:flex"
+          className="ml-auto mr-4 hidden items-center gap-4 md:flex"
         >
           {navLinks.map((link) => (
             <Link
@@ -48,21 +43,22 @@ export function SiteHeader() {
               href={link.href}
               className={
                 link.active
-                  ? 'text-xs font-semibold uppercase tracking-widest text-white underline underline-offset-4'
-                  : 'text-xs font-semibold uppercase tracking-widest text-white/80 hover:text-white transition-colors'
+                  ? 'text-[10px] font-semibold uppercase tracking-wider text-white underline underline-offset-4'
+                  : 'text-[10px] font-semibold uppercase tracking-wider text-white/80 hover:text-white transition-colors'
               }
             >
               {link.label}
             </Link>
           ))}
         </nav>
-        <div className="ml-auto flex shrink-0 items-center gap-3 text-white">
+        <div className="ml-auto flex shrink-0 items-center gap-2 text-white">
           <div className="hidden sm:flex">
             <LanguageSwitcher />
           </div>
           <Button
             asChild
-            className="hidden sm:inline-flex bg-[#1A6B6B] text-white hover:bg-[#1A6B6B]/90"
+            size="sm"
+            className="hidden sm:inline-flex bg-[#1A6B6B] text-white hover:bg-[#1A6B6B]/90 text-xs px-3"
           >
             <Link href="/donate">Give Today</Link>
           </Button>
