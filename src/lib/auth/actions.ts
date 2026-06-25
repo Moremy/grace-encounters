@@ -50,12 +50,16 @@ export async function signIn(formData: FormData) {
     redirect(`/sign-in?${errParams.toString()}`);
   }
 
-  const profile = await prisma.profile.findUnique({
-    where: { id: userId },
-    select: { role: true },
-  });
-
-  const role = fromPrismaRole(profile?.role ?? null);
+  let role;
+  try {
+    const profile = await prisma.profile.findUnique({
+      where: { id: userId },
+      select: { role: true },
+    });
+    role = fromPrismaRole(profile?.role ?? null);
+  } catch {
+    role = fromPrismaRole(null);
+  }
 
   // Admins always land on the admin console regardless of `next` — they
   // can navigate from there if they need to.
