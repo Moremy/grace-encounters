@@ -21,7 +21,7 @@ const navLinks: { label: string; href: string; active?: boolean }[] = [
  */
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#4A0E1A] text-white">
+    <header className="sticky top-0 z-40 w-full overflow-hidden bg-[#4A0E1A] text-white">
       <div className="flex h-16 w-full items-center px-8">
         <Link
           href="/"
@@ -56,15 +56,17 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <div className="flex shrink-0 items-center gap-3 text-white">
-          <LanguageSwitcher />
+        <div className="ml-auto flex shrink-0 items-center gap-3 text-white">
+          <div className="hidden sm:flex">
+            <LanguageSwitcher />
+          </div>
           <Button
             asChild
-            className="bg-[#1A6B6B] text-white hover:bg-[#1A6B6B]/90"
+            className="hidden sm:inline-flex bg-[#1A6B6B] text-white hover:bg-[#1A6B6B]/90"
           >
             <Link href="/donate">Give Today</Link>
           </Button>
-          <div className="text-white">
+          <div className="flex lg:hidden text-white">
             <MobileDrawer />
           </div>
         </div>
