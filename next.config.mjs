@@ -32,7 +32,7 @@ const securityHeaders = [
       "default-src 'self'",
       isDev
         ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
-        : "script-src 'self'",
+        : "script-src 'self' 'unsafe-inline'",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://*.supabase.co https://res.cloudinary.com",
       "font-src 'self' data:",
