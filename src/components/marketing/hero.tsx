@@ -34,7 +34,7 @@ const heroText = {
   },
   sw: {
     title: 'Kuwa Nuru. Linda Ukweli.',
-    subtitle: 'Ukweli unaong'aa. Maisha yanayobadilishwa.',
+    subtitle: "Ukweli unaong'aa. Maisha yanayobadilishwa.",
     learn: 'Jifunze Zaidi',
     about: 'Kutuhusu',
   },
