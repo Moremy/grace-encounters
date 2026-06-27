@@ -1,7 +1,9 @@
 'use client';
+
 import * as React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+
 import { Button } from '@/components/ui/button';
 import { useLocaleContext } from '@/lib/i18n/locale-context';
 
@@ -49,20 +51,24 @@ export function Hero() {
   const text = heroText[locale] ?? heroText.en;
 
   return (
-    <section className="grid min-h-[280px] grid-cols-1 overflow-hidden bg-[#1A3A3A] md:min-h-[320px] md:grid-cols-[55%_45%]">
-      <div className="flex items-center bg-[#1A3A3A] px-6 py-8 md:px-10 lg:px-12">
-        <div className="w-full max-w-lg motion-safe:animate-fade-up">
-          <h1 className="text-balance font-serif text-2xl leading-tight text-white sm:text-3xl md:text-4xl">
+    <section className="grid min-h-[420px] grid-cols-1 overflow-hidden bg-[#1A3A3A] md:min-h-[480px] md:grid-cols-[55%_45%]">
+      <div className="flex items-center bg-[#1A3A3A] px-8 py-16 md:px-12 lg:px-16">
+        <div className="w-full max-w-xl motion-safe:animate-fade-up">
+          <h1 className="text-balance font-serif text-3xl leading-tight text-white sm:text-4xl md:text-5xl">
             {text.title}
           </h1>
-          <p className="mt-2 text-sm text-white/85 md:text-base">{text.subtitle}</p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Button size="sm" asChild className="bg-burgundy text-white hover:bg-burgundy/90">
+          <p className="mt-4 text-base text-white/85 md:text-lg">{text.subtitle}</p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Button
+              size="default"
+              asChild
+              className="bg-burgundy text-white hover:bg-burgundy/90"
+            >
               <Link href="/#about">{text.learn}</Link>
             </Button>
             <Button
               variant="outline"
-              size="sm"
+              size="default"
               asChild
               className="border-white bg-transparent text-white hover:bg-white hover:text-teal"
             >
@@ -71,7 +77,8 @@ export function Hero() {
           </div>
         </div>
       </div>
-      <div className="relative min-h-[180px] bg-[#1A3A3A] md:min-h-0">
+
+      <div className="relative min-h-[260px] bg-[#1A3A3A] md:min-h-0">
         <Image
           src="/images/lighthouse.jpg"
           alt="A lighthouse shining out over the sea at dusk"
