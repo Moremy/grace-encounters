@@ -80,14 +80,9 @@ export default function AboutPage() {
             <span className="h-px w-12 bg-teal" aria-hidden="true" />
           </div>
           <h2 className="mt-4 font-serif text-3xl text-burgundy md:text-4xl">
-            A world quietly transformed by the truth of Christ.
+            Inspiring a generation to walk confidently in their identity as the Light of
+            the world.
           </h2>
-          <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-            We long to see lives renewed in every corner — homes restored, communities
-            healed, and a generation that knows the steady, sustaining presence of God.
-            Not through noise or spectacle, but through truth held faithfully and shared
-            generously, one life at a time.
-          </p>
           <blockquote className="mt-8 border-l-4 border-gold pl-6 italic text-navy/70">
             &ldquo;You are the light of the world. A town built on a hill cannot be
             hidden.&rdquo;
@@ -108,32 +103,51 @@ export default function AboutPage() {
             <span className="h-px w-12 bg-teal" aria-hidden="true" />
           </div>
           <h2 className="mt-4 font-serif text-3xl text-burgundy md:text-4xl">
-            To shine truth, gather the church in prayer, and walk with people as God
-            transforms them.
+            To gather, disciple and walk alongside people as they discover and embrace
+            their identity in Christ through prayer, testimony and truth.
           </h2>
           <div className="mt-8 grid gap-6 md:grid-cols-3">
             <div>
-              <h3 className="font-serif text-lg font-semibold text-burgundy">Shine</h3>
+              <h3 className="font-serif text-lg font-semibold text-burgundy">Gather</h3>
               <p className="mt-2 text-sm text-muted-foreground">
-                Publish faithful teaching, devotionals, and testimonies that point clearly
-                to Christ.
+                Draw people together around prayer, scripture, and shared life — online
+                and in person.
               </p>
             </div>
             <div>
-              <h3 className="font-serif text-lg font-semibold text-burgundy">Gather</h3>
+              <h3 className="font-serif text-lg font-semibold text-burgundy">Disciple</h3>
               <p className="mt-2 text-sm text-muted-foreground">
-                Hold a steady place for prayer, scripture, and shared life — online and
-                in person.
+                Ground believers in the Word so they come to know and embrace their true
+                identity in Christ.
               </p>
             </div>
             <div>
               <h3 className="font-serif text-lg font-semibold text-burgundy">Walk</h3>
               <p className="mt-2 text-sm text-muted-foreground">
-                Stand alongside people through counsel, community, and care as God
-                does His slow, good work.
+                Stand alongside people through prayer, testimony, and truth as God does
+                His slow, good work.
               </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Motto */}
+      <section className="bg-cream py-24">
+        <div className="mx-auto max-w-4xl px-6">
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-teal">
+              Our Motto
+            </span>
+            <span className="h-px w-12 bg-teal" aria-hidden="true" />
+          </div>
+          <blockquote className="mt-6 border-l-4 border-gold pl-6 font-serif text-2xl italic leading-relaxed text-burgundy md:text-3xl">
+            &ldquo;Let your light shine before others, that they may see your good deeds
+            and glorify your Father in heaven.&rdquo;
+            <cite className="mt-4 block font-sans text-sm not-italic text-muted-foreground">
+              &mdash; Matthew 5:16
+            </cite>
+          </blockquote>
         </div>
       </section>
 

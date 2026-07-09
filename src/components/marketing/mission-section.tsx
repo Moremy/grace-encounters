@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Building2, Users, Globe } from 'lucide-react';
+import { Users, BookOpen, Footprints } from 'lucide-react';
 
 import { Reveal } from '@/components/brand/reveal';
 
@@ -11,19 +11,22 @@ type Stat = {
 
 const stats: Stat[] = [
   {
-    title: 'Building Stronger Lives',
-    description: 'Discipleship and teaching that ground people in lasting truth.',
-    Icon: Building2,
-  },
-  {
-    title: 'Transforming Communities',
-    description: 'Outreach that meets real needs and restores hope close to home.',
+    title: 'Gather',
+    description:
+      'Draw people together around prayer, scripture, and shared life — online and in person.',
     Icon: Users,
   },
   {
-    title: 'Bringing Light to the World',
-    description: 'Carrying the message of truth far beyond our own doorstep.',
-    Icon: Globe,
+    title: 'Disciple',
+    description:
+      'Ground believers in the Word so they come to know and embrace their true identity in Christ.',
+    Icon: BookOpen,
+  },
+  {
+    title: 'Walk',
+    description:
+      'Stand alongside people through prayer, testimony, and truth as God does His slow, good work.',
+    Icon: Footprints,
   },
 ];
 
@@ -53,10 +56,12 @@ export function MissionSection() {
             </h2>
 
             <p className="mt-4 max-w-2xl text-muted-foreground">
-              Light Bearers gathers testimonies, prayer, and devotion into one reverent
-              space. We exist to shine truth into everyday life and to walk alongside
-              people as God transforms them — built slowly, kept gently, and held in the
-              hands of the One who began it.
+              To gather, disciple and walk alongside people as they discover and embrace
+              their identity in Christ through prayer, testimony and truth.
+            </p>
+            <p className="mt-3 max-w-2xl text-sm italic text-muted-foreground">
+              Inspiring a generation to walk confidently in their identity as the Light of
+              the world.
             </p>
 
             <Reveal>
