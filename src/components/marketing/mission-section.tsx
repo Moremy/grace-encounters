@@ -44,7 +44,7 @@ export function MissionSection() {
             <div className="relative aspect-[4/3] w-full overflow-hidden rounded bg-gray-200">
               <Image
                 src="/images/light-and-salt.jpg"
-                alt="Believers gathered in prayer beneath a descending dove, framed by the words Light and Salt"
+                alt="Believers gathered in prayer beneath a descending dove holding an olive branch"
                 fill
                 sizes="(min-width: 1024px) 480px, 100vw"
                 className="object-cover"
