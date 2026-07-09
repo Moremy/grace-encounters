@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Link from 'next/link';
-import { Facebook, Instagram, Youtube, Twitter, MapPin, Phone, Mail, Globe } from 'lucide-react';
+import { Facebook, Instagram, Youtube, MapPin, Phone, Mail, Globe } from 'lucide-react';
 
 import { LighthouseMark } from '@/components/brand/lighthouse-mark';
 import { CurrentYear } from '@/components/layout/current-year';
@@ -34,12 +34,41 @@ const columns: FooterColumn[] = [
   },
 ];
 
+function TikTokIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43V9.01a8.16 8.16 0 0 0 4.77 1.52V7.09a4.85 4.85 0 0 1-1.84-.4z" />
+    </svg>
+  );
+}
+
 const socials: { label: string; href: string; Icon: React.ComponentType<{ className?: string }> }[] =
   [
-    { label: 'Facebook', href: '#facebook', Icon: Facebook },
-    { label: 'Instagram', href: '#instagram', Icon: Instagram },
-    { label: 'YouTube', href: '#youtube', Icon: Youtube },
-    { label: 'Twitter', href: '#twitter', Icon: Twitter },
+    {
+      label: 'Facebook',
+      href: 'https://www.facebook.com/people/Light-Bearers-Global-Ministry/61590475810349/',
+      Icon: Facebook,
+    },
+    {
+      label: 'Instagram',
+      href: 'https://www.instagram.com/lightbearersglobalministry?igsh=MWRqYmM5aDd5c3l6Yg==',
+      Icon: Instagram,
+    },
+    {
+      label: 'YouTube',
+      href: 'https://www.youtube.com/@LightBearersGlobalINT',
+      Icon: Youtube,
+    },
+    {
+      label: 'TikTok',
+      href: 'https://www.tiktok.com/@lghtbeareresminis',
+      Icon: TikTokIcon,
+    },
   ];
 
 export function SiteFooter() {
@@ -63,14 +92,16 @@ export function SiteFooter() {
             </p>
             <div className="mt-6 flex items-center gap-4">
               {socials.map(({ label, href, Icon }) => (
-                <Link
+                <a
                   key={label}
                   href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={label}
                   className="text-white/80 transition-colors hover:text-white"
                 >
                   <Icon className="h-5 w-5" />
-                </Link>
+                </a>
               ))}
             </div>
           </div>
