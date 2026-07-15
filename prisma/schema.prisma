@@ -47,6 +47,11 @@ enum EventStatus {
   CANCELLED
 }
 
+enum BookStatus {
+  DRAFT
+  PUBLISHED
+}
+
 enum BlogCategory {
   DEVOTIONAL_THOUGHT
   FAITH_LIVING
@@ -1337,4 +1342,20 @@ model BackgroundJob {
   @@index([scheduledFor])
   @@index([type])
   @@map("background_jobs")
+}
+
+model Book {
+  id          String     @id @default(cuid())
+  title       String
+  author      String
+  description String
+  fileUrl     String?
+  externalUrl String?
+  status      BookStatus @default(PUBLISHED)
+  createdById String     @db.Uuid
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([status])
+  @@map("books")
 }

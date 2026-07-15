@@ -82,6 +82,11 @@ const nextConfig = {
   },
   experimental: {
     optimizePackageImports: ['lucide-react'],
+    serverActions: {
+      // Book PDFs (up to 20MB) and fundraiser documents upload via server
+      // actions; the Next.js default limit is 1MB.
+      bodySizeLimit: '25mb',
+    },
   },
   eslint: {
     ignoreDuringBuilds: true,

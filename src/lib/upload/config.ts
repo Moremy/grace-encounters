@@ -35,6 +35,7 @@ export const STORAGE_BUCKETS = {
   events: 'events',
   devotionals: 'devotionals',
   blog: 'blog',
+  books: 'books',
   general: 'general',
 } as const;
 

@@ -1,5 +1,14 @@
 import type { Metadata } from 'next';
-import { BookOpen, Library, Bookmark, Scroll, BookMarked, Sparkles } from 'lucide-react';
+import {
+  BookOpen,
+  Library,
+  Bookmark,
+  Scroll,
+  BookMarked,
+  Sparkles,
+  FileText,
+  ExternalLink,
+} from 'lucide-react';
 
 import {
   Card,
@@ -8,13 +17,17 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/brand/reveal';
+import { getPublishedBooks } from '@/lib/book/actions';
 
 export const metadata: Metadata = {
   title: 'Books & Recommendations',
   description:
     'Curated books and resources to renew your mind through the written word. Faith-building reads recommended by the Light Bearers community.',
 };
+
+export const revalidate = 300;
 
 type BookItem = {
   title: string;
@@ -23,7 +36,7 @@ type BookItem = {
   Icon: React.ComponentType<{ className?: string }>;
 };
 
-const books: BookItem[] = [
+const classics: BookItem[] = [
   {
     title: 'Knowing God',
     author: 'J.I. Packer',
@@ -68,7 +81,9 @@ const books: BookItem[] = [
   },
 ];
 
-export default function BooksPage() {
+export default async function BooksPage() {
+  const books = await getPublishedBooks();
+
   return (
     <>
       <section className="bg-ivory py-24">
@@ -86,11 +101,90 @@ export default function BooksPage() {
         </div>
       </section>
 
-      <section className="bg-background py-24">
+      {books.length > 0 && (
+        <section className="bg-background py-24">
+          <div className="max-w-6xl mx-auto px-6">
+            <Reveal>
+              <div className="text-center">
+                <p className="text-xs uppercase tracking-widest text-muted-foreground">
+                  From the Ministry
+                </p>
+                <h2 className="mt-3 font-serif text-2xl md:text-3xl text-navy">
+                  Our Library
+                </h2>
+                <p className="mt-3 max-w-2xl mx-auto text-muted-foreground">
+                  Books shared by the ministry — read them right here, or follow
+                  the links to find them.
+                </p>
+              </div>
+              <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {books.map((book) => (
+                  <Card key={book.id} className="flex flex-col">
+                    <CardHeader>
+                      <div className="h-10 w-10 rounded-full bg-gold/15 text-gold flex items-center justify-center">
+                        {book.fileUrl ? (
+                          <FileText className="h-5 w-5" />
+                        ) : (
+                          <BookOpen className="h-5 w-5" />
+                        )}
+                      </div>
+                      <CardTitle className="mt-4">{book.title}</CardTitle>
+                      <CardDescription>by {book.author}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex flex-1 flex-col">
+                      <p className="text-sm text-muted-foreground">
+                        {book.description}
+                      </p>
+                      {(book.fileUrl || book.externalUrl) && (
+                        <div className="mt-auto flex flex-wrap gap-3 pt-6">
+                          {book.fileUrl && (
+                            <Button asChild variant="sacred" size="sm">
+                              <a
+                                href={book.fileUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <FileText className="mr-2 h-4 w-4" />
+                                Read Book
+                              </a>
+                            </Button>
+                          )}
+                          {book.externalUrl && (
+                            <Button asChild variant="outline" size="sm">
+                              <a
+                                href={book.externalUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <ExternalLink className="mr-2 h-4 w-4" />
+                                Learn More
+                              </a>
+                            </Button>
+                          )}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </Reveal>
+          </div>
+        </section>
+      )}
+
+      <section className={`${books.length > 0 ? 'bg-ivory' : 'bg-background'} py-24`}>
         <div className="max-w-6xl mx-auto px-6">
           <Reveal>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {books.map(({ title, author, description, Icon }) => (
+            <div className="text-center">
+              <p className="text-xs uppercase tracking-widest text-muted-foreground">
+                Recommended Reads
+              </p>
+              <h2 className="mt-3 font-serif text-2xl md:text-3xl text-navy">
+                Classics That Shaped Us
+              </h2>
+            </div>
+            <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {classics.map(({ title, author, description, Icon }) => (
                 <Card key={title}>
                   <CardHeader>
                     <div className="h-10 w-10 rounded-full bg-gold/15 text-gold flex items-center justify-center">
