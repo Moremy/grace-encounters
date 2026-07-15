@@ -4,48 +4,29 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 export type WordmarkSize = 'sm' | 'md' | 'lg';
-export type WordmarkVariant = 'default' | 'inverted';
 
 interface WordmarkProps {
   size?: WordmarkSize;
-  variant?: WordmarkVariant;
   className?: string;
 }
 
-const SIZE_MAP: Record<WordmarkSize, { image: number; text: string }> = {
-  sm: { image: 32, text: 'text-base' },
-  md: { image: 42, text: 'text-xl' },
-  lg: { image: 56, text: 'text-2xl' },
+const SIZE_MAP: Record<WordmarkSize, string> = {
+  sm: 'h-8',
+  md: 'h-10',
+  lg: 'h-14',
 };
 
-export function Wordmark({
-  size = 'md',
-  variant = 'default',
-  className,
-}: WordmarkProps = {}) {
-  const { image, text } = SIZE_MAP[size];
+export function Wordmark({ size = 'md', className }: WordmarkProps = {}) {
   return (
-    <Link
-      href="/"
-      className={cn('flex items-center gap-3', className)}
-    >
+    <Link href="/" className={cn('inline-flex items-center', className)}>
       <Image
-        src="/logo.png"
-        alt="Light Bearers"
-        width={image}
-        height={image}
-        className="rounded-md object-contain"
+        src="/images/logo.svg"
+        alt="The Light Bearers Ministry"
+        width={180}
+        height={68}
         priority
+        className={cn('w-auto rounded-md bg-cream px-2 py-1', SIZE_MAP[size])}
       />
-      <span
-        className={cn(
-          'font-semibold tracking-tight',
-          text,
-          variant === 'inverted' && 'text-ivory',
-        )}
-      >
-        Light Bearers
-      </span>
     </Link>
   );
 }

@@ -51,7 +51,7 @@ function AdminSidebar({ className }: { className?: string }) {
     <aside className={cn('flex h-full w-64 flex-col bg-navy-700 text-ivory', className)}>
       <div className="flex items-center gap-3 px-6 py-5">
         <Link href="/admin" aria-label="Admin home">
-          <Wordmark variant="inverted" size="md" />
+          <Wordmark size="md" />
         </Link>
         <span className="rounded bg-gold/20 px-2 py-0.5 text-xs font-semibold text-gold">
           Admin
