@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/lib/prisma';
 import { canModerate, fromPrismaRole } from '@/lib/auth/roles';
+import { broadcastPush } from '@/lib/push-notifications/send';
 import { slugify } from './utils';
 
 const VALID_STATUSES = ['DRAFT', 'PUBLISHED', 'SCHEDULED'] as const;
@@ -98,6 +99,7 @@ export async function createDevotional(formData: FormData) {
   }
 
   const slug = slugify(title);
+  let createdSlug = slug;
 
   try {
     await prisma.devotional.create({
@@ -136,6 +138,7 @@ export async function createDevotional(formData: FormData) {
             publishDate,
           },
         });
+        createdSlug = retrySlug;
       } catch (retryErr: unknown) {
         const message = encodeURIComponent(
           'Unable to create devotional. Please try again.',
@@ -148,6 +151,17 @@ export async function createDevotional(formData: FormData) {
       );
       redirect(`/admin/devotionals/new?error=${message}`);
     }
+  }
+
+  if (status === 'PUBLISHED') {
+    await broadcastPush(
+      {
+        title: 'New Devotional',
+        body: title,
+        url: `/devotionals/${createdSlug}`,
+      },
+      'devotionalNotifications',
+    );
   }
 
   redirect('/admin/devotionals');
@@ -185,14 +199,31 @@ export async function updateDevotionalStatus(
 
   const publishDate = newStatus === 'PUBLISHED' ? new Date() : undefined;
 
+  let updated;
   try {
-    await prisma.devotional.update({
+    const previous = await prisma.devotional.findUnique({
+      where: { id: devotionalId },
+      select: { status: true },
+    });
+
+    updated = await prisma.devotional.update({
       where: { id: devotionalId },
       data: {
         status: newStatus as (typeof VALID_STATUSES)[number],
         ...(publishDate !== undefined && { publishDate }),
       },
     });
+
+    if (newStatus === 'PUBLISHED' && previous?.status !== 'PUBLISHED') {
+      await broadcastPush(
+        {
+          title: 'New Devotional',
+          body: updated.title,
+          url: `/devotionals/${updated.slug}`,
+        },
+        'devotionalNotifications',
+      );
+    }
   } catch (err: unknown) {
     if (
       err &&

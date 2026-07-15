@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/lib/prisma';
 import { canModerate, fromPrismaRole } from '@/lib/auth/roles';
 import { createNotification } from '@/lib/notification/actions';
+import { broadcastPush } from '@/lib/push-notifications/send';
 
 const VALID_STATUSES = [
   'PENDING',
@@ -224,13 +225,38 @@ export async function updatePrayerRequestStatus(
   const answeredAt = newStatus === 'ANSWERED' ? new Date() : undefined;
 
   try {
-    await prisma.prayerRequest.update({
+    const previous = await prisma.prayerRequest.findUnique({
+      where: { id: requestId },
+      select: { status: true },
+    });
+
+    const updated = await prisma.prayerRequest.update({
       where: { id: requestId },
       data: {
         status: newStatus as typeof VALID_STATUSES[number],
         ...(answeredAt !== undefined && { answeredAt }),
       },
     });
+
+    // Notify the community when a request first appears on the prayer wall.
+    // Private requests never broadcast; anonymous ones get a generic body.
+    if (
+      newStatus === 'APPROVED' &&
+      previous?.status !== 'APPROVED' &&
+      updated.visibility !== 'PRIVATE'
+    ) {
+      await broadcastPush(
+        {
+          title: 'New Prayer Request',
+          body:
+            updated.visibility === 'ANONYMOUS'
+              ? 'A member of the community needs your prayers.'
+              : updated.title ?? 'A member of the community needs your prayers.',
+          url: '/prayer-wall',
+        },
+        'prayerReminders',
+      );
+    }
   } catch (err: unknown) {
     if (
       err &&

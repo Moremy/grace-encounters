@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/lib/prisma';
 import { canModerate, fromPrismaRole } from '@/lib/auth/roles';
+import { broadcastPush } from '@/lib/push-notifications/send';
 import { slugify } from './utils';
 
 const VALID_STATUSES = ['DRAFT', 'PUBLISHED', 'CANCELLED'] as const;
@@ -141,6 +142,7 @@ export async function createEvent(formData: FormData) {
 
   const { status } = validation.data;
   const slug = slugify(title);
+  let createdSlug = slug;
   const date = new Date(dateRaw);
   const endDate = endDateRaw ? new Date(endDateRaw) : null;
 
@@ -180,6 +182,7 @@ export async function createEvent(formData: FormData) {
             createdById: user.id,
           },
         });
+        createdSlug = retrySlug;
       } catch {
         const message = encodeURIComponent(
           'Unable to create event. Please try again.',
@@ -192,6 +195,17 @@ export async function createEvent(formData: FormData) {
       );
       redirect(`/admin/events/new?error=${message}`);
     }
+  }
+
+  if (status === 'PUBLISHED') {
+    await broadcastPush(
+      {
+        title: 'New Event',
+        body: title,
+        url: `/events/${createdSlug}`,
+      },
+      'eventReminders',
+    );
   }
 
   redirect('/admin/events');
@@ -224,12 +238,28 @@ export async function updateEventStatus(eventId: string, newStatus: string) {
   }
 
   try {
-    await prisma.event.update({
+    const previous = await prisma.event.findUnique({
+      where: { id: eventId },
+      select: { status: true },
+    });
+
+    const updated = await prisma.event.update({
       where: { id: eventId },
       data: {
         status: newStatus as (typeof VALID_STATUSES)[number],
       },
     });
+
+    if (newStatus === 'PUBLISHED' && previous?.status !== 'PUBLISHED') {
+      await broadcastPush(
+        {
+          title: 'New Event',
+          body: updated.title,
+          url: `/events/${updated.slug}`,
+        },
+        'eventReminders',
+      );
+    }
   } catch (err: unknown) {
     if (
       err &&
