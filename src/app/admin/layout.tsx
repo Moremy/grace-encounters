@@ -82,7 +82,7 @@ function AdminHeader() {
       <p className="text-sm font-medium text-navy">Admin Panel</p>
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="sm" asChild>
-          <Link href="/dashboard">Exit Admin</Link>
+          <Link href="/">Exit Admin</Link>
         </Button>
         <div
           className="flex h-9 w-9 items-center justify-center rounded-full bg-navy text-xs font-medium text-ivory"
