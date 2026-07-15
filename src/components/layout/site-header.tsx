@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { LighthouseMark } from '@/components/brand/lighthouse-mark';
 import { MobileDrawer } from '@/components/layout/mobile-drawer';
 import { LanguageSwitcher } from '@/components/i18n/language-switcher';
 
@@ -17,21 +17,20 @@ const navLinks: { label: string; href: string; active?: boolean }[] = [
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 w-full overflow-hidden bg-[#4A0E1A] text-white">
-      <div className="flex h-14 w-full items-center px-4">
+      <div className="flex w-full items-center px-4 py-4">
         <Link
           href="/"
           aria-label="Light Bearers home"
-          className="flex shrink-0 items-center gap-2"
+          className="flex shrink-0 items-center"
         >
-          <LighthouseMark className="h-7 w-7 text-white" />
-          <span className="flex flex-col leading-none">
-            <span className="font-serif text-sm font-semibold uppercase tracking-wide">
-              Light Bearers
-            </span>
-            <span className="text-[8px] uppercase tracking-[0.15em] text-white/70">
-              Shining Truth. Transforming Lives.
-            </span>
-          </span>
+          <Image
+            src="/images/logo.svg"
+            alt="The Light Bearers Ministry"
+            width={180}
+            height={50}
+            priority
+            className="h-[50px] w-auto rounded-md bg-[#FDF6EC] px-2 py-1"
+          />
         </Link>
         <nav
           aria-label="Primary"

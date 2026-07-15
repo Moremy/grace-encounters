@@ -1,8 +1,8 @@
 import * as React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Facebook, Instagram, Youtube, MapPin, Phone, Mail, Globe } from 'lucide-react';
 
-import { LighthouseMark } from '@/components/brand/lighthouse-mark';
 import { CurrentYear } from '@/components/layout/current-year';
 
 type FooterColumn = {
@@ -77,11 +77,14 @@ export function SiteFooter() {
       <div className="mx-auto max-w-6xl px-6 py-16">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div>
-            <Link href="/" aria-label="Light Bearers home" className="flex items-center gap-3">
-              <LighthouseMark className="h-9 w-9 shrink-0 text-white" />
-              <span className="font-serif text-lg font-semibold uppercase tracking-wide">
-                Light Bearers
-              </span>
+            <Link href="/" aria-label="Light Bearers home" className="inline-flex items-center">
+              <Image
+                src="/images/logo.svg"
+                alt="The Light Bearers Ministry"
+                width={180}
+                height={50}
+                className="h-[50px] w-auto rounded-md bg-[#FDF6EC] px-2 py-1"
+              />
             </Link>
             <p className="mt-3 text-xs uppercase tracking-[0.2em] text-white/70">
               Shining Truth. Transforming Lives.
