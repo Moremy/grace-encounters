@@ -34,6 +34,8 @@ type BookItem = {
   author: string;
   description: string;
   Icon: React.ComponentType<{ className?: string }>;
+  /** Link to a legally free full text (public domain only). */
+  freeUrl?: string;
 };
 
 const classics: BookItem[] = [
@@ -50,6 +52,7 @@ const classics: BookItem[] = [
     description:
       'A soul-stirring call to draw near to the heart of the Father with holy longing.',
     Icon: Library,
+    freeUrl: 'https://www.gutenberg.org/ebooks/25141',
   },
   {
     title: 'Mere Christianity',
@@ -184,7 +187,7 @@ export default async function BooksPage() {
               </h2>
             </div>
             <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {classics.map(({ title, author, description, Icon }) => (
+              {classics.map(({ title, author, description, Icon, freeUrl }) => (
                 <Card key={title}>
                   <CardHeader>
                     <div className="h-10 w-10 rounded-full bg-gold/15 text-gold flex items-center justify-center">
@@ -195,6 +198,16 @@ export default async function BooksPage() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground">{description}</p>
+                    {freeUrl && (
+                      <div className="pt-6">
+                        <Button asChild variant="outline" size="sm">
+                          <a href={freeUrl} target="_blank" rel="noopener noreferrer">
+                            <BookOpen className="mr-2 h-4 w-4" />
+                            Read Free
+                          </a>
+                        </Button>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}
