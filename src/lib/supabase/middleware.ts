@@ -55,15 +55,10 @@ export async function updateSession(request: NextRequest) {
     return redirectToSignIn();
   }
 
-  if (pathname.startsWith('/admin')) {
-    if (!user) {
-      const url = request.nextUrl.clone();
-      url.pathname = '/sign-in';
-      return NextResponse.redirect(url);
-    }
+  const fetchRole = async (): Promise<string | null> => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/profiles?select=role&id=eq.${user.id}`,
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/profiles?select=role&id=eq.${user!.id}`,
         {
           headers: {
             apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -72,13 +67,20 @@ export async function updateSession(request: NextRequest) {
         }
       );
       const rows = await res.json() as { role: string }[];
-      const role = rows[0]?.role?.toLowerCase();
-      if (!role || (role !== 'moderator' && role !== 'admin')) {
-        const url = request.nextUrl.clone();
-        url.pathname = '/dashboard';
-        return NextResponse.redirect(url);
-      }
+      return rows[0]?.role?.toLowerCase() ?? null;
     } catch {
+      return null;
+    }
+  };
+
+  if (pathname.startsWith('/admin')) {
+    if (!user) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/sign-in';
+      return NextResponse.redirect(url);
+    }
+    const role = await fetchRole();
+    if (role !== 'moderator' && role !== 'admin') {
       const url = request.nextUrl.clone();
       url.pathname = '/dashboard';
       return NextResponse.redirect(url);
@@ -87,8 +89,10 @@ export async function updateSession(request: NextRequest) {
 
   const authPages = ['/sign-in', '/sign-up', '/magic-link', '/forgot-password'];
   if (user && authPages.includes(pathname)) {
+    const role = await fetchRole();
     const url = request.nextUrl.clone();
-    url.pathname = '/dashboard';
+    url.pathname = role === 'admin' || role === 'moderator' ? '/admin' : '/dashboard';
+    url.search = '';
     return NextResponse.redirect(url);
   }
 
