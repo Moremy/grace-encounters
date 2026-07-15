@@ -6,6 +6,7 @@ import {
   Scroll,
   BookMarked,
   Sparkles,
+  Compass,
   FileText,
   ExternalLink,
 } from 'lucide-react';
@@ -81,6 +82,13 @@ const classics: BookItem[] = [
     description:
       'An allegorical journey of faith, surrender, and the path to the high places with the Shepherd.',
     Icon: Sparkles,
+  },
+  {
+    title: 'The Purpose Driven Life',
+    author: 'Rick Warren',
+    description:
+      'A 40-day spiritual journey answering the question every heart asks: What on earth am I here for?',
+    Icon: Compass,
   },
 ];
 
