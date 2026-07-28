@@ -57,21 +57,21 @@ export function Hero() {
   const text = heroText[locale] ?? heroText.en;
 
   return (
-    <section className="grid min-h-[560px] grid-cols-1 overflow-hidden bg-[#1A3A3A] md:min-h-[620px] md:grid-cols-[55%_45%]">
-      <div className="flex items-center bg-[#1A3A3A] px-12 py-24 md:px-16 lg:px-24">
+    <section className="grid min-h-[400px] grid-cols-1 overflow-hidden bg-[#1A3A3A] md:min-h-[460px] md:grid-cols-[55%_45%]">
+      <div className="flex items-center bg-[#1A3A3A] px-8 py-16 md:px-12 lg:px-16">
         <div className="w-full max-w-xl motion-safe:animate-fade-up">
-          <h1 className="text-balance font-serif text-5xl leading-tight text-white sm:text-6xl md:text-7xl">
+          <h1 className="text-balance font-serif text-4xl leading-tight text-white sm:text-5xl md:text-6xl">
             {text.title}
           </h1>
-          <p className="mt-6 text-xl text-white/85 md:text-2xl">{text.subtitle}</p>
-          <p className="mt-4 text-sm italic text-white/50">{text.scripture}</p>
-          <div className="mt-10 flex flex-wrap gap-4">
-            <Button size="lg" asChild className="bg-burgundy text-white hover:bg-burgundy/90">
+          <p className="mt-4 text-lg text-white/85 md:text-xl">{text.subtitle}</p>
+          <p className="mt-3 text-xs italic text-white/50">{text.scripture}</p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button size="default" asChild className="bg-burgundy text-white hover:bg-burgundy/90">
               <Link href="/#about">{text.learn}</Link>
             </Button>
             <Button
               variant="outline"
-              size="lg"
+              size="default"
               asChild
               className="border-white bg-transparent text-white hover:bg-white hover:text-teal"
             >
@@ -81,14 +81,14 @@ export function Hero() {
         </div>
       </div>
 
-      <div className="relative min-h-[320px] bg-[#1A3A3A] md:min-h-0">
+      <div className="relative min-h-[280px] bg-[#1A3A3A] md:min-h-0">
         <Image
           src="/images/lighthouse.jpg"
           alt="A lighthouse shining out over the sea at dusk"
           fill
           priority
           sizes="(min-width: 768px) 45vw, 100vw"
-          className="object-cover object-center md:object-contain md:object-right-bottom"
+          className="object-cover object-center"
         />
       </div>
     </section>
