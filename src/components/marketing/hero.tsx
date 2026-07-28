@@ -57,32 +57,23 @@ export function Hero() {
   const text = heroText[locale] ?? heroText.en;
 
   return (
-    <section className="relative grid min-h-[380px] grid-cols-1 overflow-hidden md:min-h-[440px] md:grid-cols-[55%_45%]">
+    <section className="relative grid min-h-[260px] grid-cols-1 overflow-hidden md:min-h-[300px] md:grid-cols-[55%_45%]">
       {/* Left content */}
-      <div className="relative flex items-center bg-[#1A3A3A] px-8 py-12 md:px-12 lg:px-16">
-        {/* Gold accent line */}
-        <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-[#C9A84C] via-[#C9A84C]/60 to-transparent" />
-
-        <div className="w-full max-w-xl motion-safe:animate-fade-up">
-          {/* Label */}
-          <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C9A84C]">
+      <div className="flex items-center bg-[#1A3A3A] px-8 py-10 md:px-10 lg:px-14">
+        <div className="w-full max-w-lg motion-safe:animate-fade-up">
+          <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">
             Light Bearers Ministry
           </p>
-
-          <h1 className="text-balance font-serif text-3xl leading-tight text-white sm:text-4xl md:text-5xl">
+          <h1 className="text-balance font-serif text-2xl leading-snug text-white sm:text-3xl md:text-4xl">
             {text.title}
           </h1>
-
-          <p className="mt-3 text-sm text-white/80 md:text-base">{text.subtitle}</p>
-
-          {/* Scripture */}
-          <p className="mt-4 border-l-2 border-[#C9A84C]/60 pl-3 text-xs italic text-white/60">
+          <p className="mt-2 text-sm text-white/75">{text.subtitle}</p>
+          <p className="mt-3 text-xs italic text-white/50">
             {text.scripture}
           </p>
-
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="mt-5 flex flex-wrap gap-2">
             <Button
-              size="default"
+              size="sm"
               asChild
               className="bg-[#7A1E2E] text-white hover:bg-[#7A1E2E]/90"
             >
@@ -90,7 +81,7 @@ export function Hero() {
             </Button>
             <Button
               variant="outline"
-              size="default"
+              size="sm"
               asChild
               className="border-white/60 bg-transparent text-white hover:bg-white hover:text-[#1A3A3A]"
             >
@@ -101,7 +92,7 @@ export function Hero() {
       </div>
 
       {/* Right image */}
-      <div className="relative min-h-[240px] md:min-h-0">
+      <div className="relative min-h-[180px] md:min-h-0">
         <Image
           src="/images/lighthouse.jpg"
           alt="A lighthouse shining out over the sea at dusk"
@@ -110,8 +101,7 @@ export function Hero() {
           sizes="(min-width: 768px) 45vw, 100vw"
           className="object-cover object-center md:object-cover md:object-right"
         />
-        {/* Gradient overlay blending into left panel */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1A3A3A] via-[#1A3A3A]/20 to-transparent md:from-[#1A3A3A]/40 md:via-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1A3A3A]/50 via-transparent to-transparent md:from-[#1A3A3A]/30" />
       </div>
     </section>
   );
