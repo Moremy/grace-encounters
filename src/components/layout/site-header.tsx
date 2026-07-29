@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { MobileDrawer } from '@/components/layout/mobile-drawer';
 import { LanguageSwitcher } from '@/components/i18n/language-switcher';
 
-const navLinks: { label: string; href: string; active?: boolean }[] = [
-  { label: 'Home', href: '/', active: true },
+const navLinks: { label: string; href: string }[] = [
+  { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
   { label: 'Ministries', href: '/#ministries' },
   { label: 'Resources', href: '/media' },
@@ -16,41 +16,35 @@ const navLinks: { label: string; href: string; active?: boolean }[] = [
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 w-full overflow-hidden bg-[#4A0E1A] text-white">
-      <div className="flex w-full items-center px-4 py-4">
-        <Link
-          href="/"
-          aria-label="Light Bearers home"
-          className="flex shrink-0 items-center"
-        >
+    <header className="sticky top-0 z-40 w-full bg-[#4A0E1A] text-white">
+      <div className="flex w-full items-center gap-4 px-4 py-3">
+        {/* Logo */}
+        <Link href="/" aria-label="Light Bearers home" className="shrink-0">
           <Image
             src="/images/logo.svg"
             alt="The Light Bearers Ministry"
-            width={180}
-            height={50}
+            width={160}
+            height={44}
             priority
-            className="h-[50px] w-auto rounded-md bg-[#FDF6EC] px-2 py-1"
+            className="h-[44px] w-auto rounded-md bg-[#FDF6EC] px-2 py-1"
           />
         </Link>
-        <nav
-          aria-label="Primary"
-          className="ml-auto mr-4 hidden items-center gap-4 md:flex"
-        >
+
+        {/* Desktop nav — grows to fill available space */}
+        <nav aria-label="Primary" className="hidden flex-1 items-center justify-center gap-5 md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.label}
               href={link.href}
-              className={
-                link.active
-                  ? 'text-[10px] font-semibold uppercase tracking-wider text-white underline underline-offset-4'
-                  : 'text-[10px] font-semibold uppercase tracking-wider text-white/80 hover:text-white transition-colors'
-              }
+              className="text-[10px] font-semibold uppercase tracking-wider text-white/80 transition-colors hover:text-white"
             >
               {link.label}
             </Link>
           ))}
         </nav>
-        <div className="ml-auto flex shrink-0 items-center gap-2 text-white">
+
+        {/* Right side */}
+        <div className="ml-auto flex shrink-0 items-center gap-2">
           <div className="hidden sm:flex">
             <LanguageSwitcher />
           </div>
@@ -61,9 +55,7 @@ export function SiteHeader() {
           >
             <Link href="/donate">Give Today</Link>
           </Button>
-          <div className="flex text-white">
-            <MobileDrawer />
-          </div>
+          <MobileDrawer />
         </div>
       </div>
     </header>
